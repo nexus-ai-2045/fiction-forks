@@ -4,218 +4,164 @@
 
 ### フィクションの部品で、日本の未来をforkする。
 
-**アニメ・漫画・小説・ゲーム** × **技術ツリー** × **日本 2026→2036**
+**アニメ・漫画・小説・ゲーム** × **5人のAIエージェント** × **日本 2026→2036**
 
-`決定的シミュレーション`　`Pull Request = 新しい世界線`　`オープン参加`
+[![CI](https://github.com/nexus-ai-2045/fiction-forks/actions/workflows/ci.yml/badge.svg)](https://github.com/nexus-ai-2045/fiction-forks/actions/workflows/ci.yml)　`コード不要で参加`　`Pull Request = 新しい世界線`
 
 </div>
 
-```mermaid
-flowchart LR
-    now["🇯🇵 2026<br/>いまの日本"] -->|"何もしない"| collapse["⚠️ 2036<br/>修復不能へ"]
-    fiction["📚 FICTION<br/>未来を変える部品"] --> translate["🧩 TRANSLATE<br/>技術・制度・運用"]
-    translate --> tree["🌳 BUILD<br/>実装可能な技術ツリー"]
-    tree --> fork["⑂ FORK<br/>PRで世界線を追加"]
-    now --> fork
-    fork --> compare["⚖️ COMPARE<br/>同じ危機・同じseed"]
-    compare --> future["🌱 2036<br/>別の未来は可能か"]
+<p align="center">
+  <img src="https://raw.githubusercontent.com/nexus-ai-2045/fiction-forks/main/assets/readme/hero.svg" width="100%" alt="2026年の日本から、無介入なら2036年の修復不能へ進む世界線と、フィクションの機能を技術・制度・運用へ翻訳して別の2036年へ分岐する世界線">
+</p>
 
-    classDef danger fill:#4b161b,stroke:#ff6b6b,color:#ffffff,stroke-width:2px;
-    classDef action fill:#112d4e,stroke:#54a0ff,color:#ffffff,stroke-width:2px;
-    classDef hope fill:#12372a,stroke:#5ee49b,color:#ffffff,stroke-width:2px;
-    class collapse danger;
-    class fiction,translate,tree,fork,compare action;
-    class future hope;
+> **作品から「未来を変える機能」を一つ借りたら、日本の2036年はどう変わるか。**
+> アイデアをAIに伝えるだけで、技術・制度・運用の介入へ翻訳し、複数の社会役が議論する新しい世界線をPull Requestとして追加できます。
+
+> [!NOTE]
+> 現在公開しているrunはプロトコル検証用fixtureで、LLMの実測ではありません。live AI-agent runは未実行です。実装はlive providerに対応し、実行後はartifactとreplayを分けて記録します。
+
+## コードを書かずに参加する
+
+やることは一つです。好きな作品とアイデアを一文で書き、下をそのままAIへ渡してください。CLIやGitの知識は必要ありません。
+
+```text
+次のGitHubリポジトリで、私のアイデアを新しい世界線として実装してください。
+
+リポジトリ:
+https://github.com/nexus-ai-2045/fiction-forks
+
+アイデア:
+（作品名と、未来へ取り入れたい機能を一文で書く）
+
+専用ブランチで、介入、技術・制度・運用ツリー、AIエージェント対話、
+検証、必要なREADMEとADRを作り、結果と未確認事項を分けてPRにしてください。
+必須成果物は interventions の介入JSON、social config、同一seedの放置／介入比較、
+ノード遅延比較、全テスト結果です。CONTRIBUTING.mdの受入条件も満たしてください。
+第三者の画像、ロゴ、音声、台詞、キャラクター再現は追加しないでください。
+PR作成はmergeや公開完了ではないので、人間レビュー前で止めてください。
 ```
-
-| 何もしない世界 | あなたが加える部品 | 比較できる未来 |
-|:---:|:---:|:---:|
-| **2036年に破滅** | 作品の機能を現実へ翻訳 | 発動・遅延・副作用を同条件で検証 |
-| 修復能力を失う | 技術＋制度＋運用をつなぐ | PRごとに新しい世界線が増える |
-
-> [!IMPORTANT]
-> **一つのPull Requestが、一つの未来分岐になります。** 作品の強さを競うのではなく、その発想を現実に実装する条件と代償を競うゲームです。
-
-**[▶ 3分で試す](#クイックスタート)**　·　**[⑂ 未来をforkする](#未来をforkする)**　·　**[◎ 現在の世界を見る](#現在遊べる世界)**　·　**[◇ 設計を読む](#設計を読む)**
-
-アニメ、漫画、小説、ゲームは、未来技術のカタログであると同時に、専門や国籍が違う人どうしでも「この構造のこと」と短く指せる共通言語です。Fiction Forksでは、その共通言語を作品鑑賞で終わらせず、技術・制度・運用・完成証拠を持つ介入へ変換します。
-
-## 目的
-
-フィクションを、専門・国籍・世代の違う参加者が同じ未来問題を指せる共通言語にすることです。作品由来の機能を、実装年数、制度、費用、失敗条件を持つ反証可能な介入へ変換し、「面白いアイデア」で終わらない未来設計を作ります。
-
-### 何が面白いのか
-
-「ドラえもんの道具があれば解決」では終わりません。
-
-- その機能を現実では何に翻訳するか
-- 誰が作り、誰が所有し、誰が異議を申し立てられるか
-- 技術だけでなく、法律、運用、人材、訓練が何年で揃うか
-- 間に合わない、悪用される、維持費が重い世界では何が起きるか
-
-を宣言し、無介入世界と同じショック・同じ乱数seedで比較します。人気投票ではなく、反証可能な未来実装ゲームです。
-
-### ゲームループ
 
 ```mermaid
 flowchart LR
-    pick["① 選ぶ<br/>作品の機能"] --> question["② 問う<br/>社会の論点"]
-    question --> build["③ 組む<br/>技術ツリー"]
-    build --> run["④ 比べる<br/>同じseed"]
-    run --> break["⑤ 壊す<br/>遅延・費用・副作用"]
-    break --> pr["⑥ 提案する<br/>Pull Request"]
-    pr -. "次の参加者" .-> pick
+    idea["あなたの一文"] --> ai["AIが実装案へ翻訳"]
+    ai --> pr["1介入 = 1 PR"]
+    pr --> agents["5役のAIが3ターン対話"]
+    agents --> engine["決定論エンジンが世界を計算"]
+    engine --> result["2036年の世界線と検証ログ"]
+    result --> review{"人間レビュー"}
+    review -->|承認| merge["mergeして選択肢が増える"]
+    review -->|修正| ai
 ```
 
-## できること
+## 何をシミュレーションするのか
 
-- 無介入の日本2036世界線を、同じseedで再現する
-- 作品由来の介入を加え、破滅年と5つの状態値を比較する
-- 技術・制度・運用ノードの依存関係から介入発動年を計算する
-- 特定ノードを遅らせ、実装が間に合わない世界線を試す
-- 介入JSONと比較結果をPull Requestにして、新しい未来分岐を追加する
+放置した日本は2036年に「自分たちで誤りを発見し、代替し、直せない状態」へ入ります。国の消滅を断言する予測ではなく、破滅条件を先に公開したテスト世界です。
 
-## 現在遊べる世界
+フィクションの機能を持ち込むと、次の5役が異なる立場と部分観測から議論します。
 
-初期シナリオは、2026年から2036年までの日本です。島国であり、海上物流、海外資源、国際通信、海外AI基盤へ依存する一方、大国間対立、複合災害、情報操作へ同時に備える必要があります。
+| AIの役 | 守ろうとするもの |
+|---|---|
+| 市民監査役 | 説明可能性、停止条件、異論 |
+| 基盤技術者 | 小さく試せて地域で直せる技術 |
+| 物流運用者 | 代替経路、引継ぎ、共同訓練 |
+| 地域翻訳者 | 理解できる同意、撤回、地域差 |
+| 脅威分析役 | 悪用、依存、誤作動への防御境界 |
 
-無介入世界では2036年に破滅します。ここでいう破滅は国の消滅ではなく、生活基盤・認知主権・修復能力のうち2項目が35未満となり、それが2年続く「自力で誤りを見つけ、代替し、直せない状態」です。
+対話は「初期立場 → 複合障害 → 他役の懸念を翻訳して改訂」の3ターンです。各行動は `support`、`condition`、`oppose`、`abstain` の立場と、応答先の過去提案を持ちます。反対された提案は決定論的reducerで不採用になり、技術ツリーの遅延へ反映されます。AIは状態値や破滅判定を直接書き換えられません。不正な出力、未知field、失敗、timeoutは `abstain` になり、世界状態を変えません。
 
-現在実行できる最初の介入は、『ドラえもん』を「未来の道具への公共アクセス」というレンズとして使います。これを、監査可能な公共AI、地域データ信託、分散工作・修理拠点、共同運営訓練へ翻訳します。作品の画像、台詞、キャラクター、公式設定は収録しません。
+```mermaid
+flowchart TB
+    obs["役ごとの部分観測"] --> intent["構造化された行動提案"]
+    intent --> gate{"schema・証拠・権限検査"}
+    gate -->|有効| catalog["固定action catalog"]
+    gate -->|無効| abstain["abstain / 状態不変"]
+    catalog --> tree["技術・制度・運用ノードの遅延へ変換"]
+    tree --> physics["同じscenario・同じseedで世界を計算"]
+    physics --> log["before/after hash付きartifact"]
+```
 
-| 2036年の結果 | 無介入 | 『ドラえもん』レンズ介入 |
+詳細は [AIエージェント社会シミュレーション](docs/social-simulation.md) と [ADR 0008](docs/adr/0008-ai-agents-choose-bounded-actions.md) にあります。
+
+## 現在の世界線
+
+最初の介入は、『ドラえもん』を「未来の道具へ公共アクセスできる社会」というレンズで読み替えます。監査可能な公共AI、地域データ信託、分散工作・修理拠点、共同運営訓練へ翻訳しており、作品素材や公式設定は収録しません。
+
+| 2036年 | 放置世界 | 介入が間に合う世界 |
 |---|---:|---:|
-| 破滅判定 | 破滅（2036年） | 回避 |
+| 破滅判定 | 破滅 | 回避 |
 | 生活基盤 | 43 | 38 |
 | 戦略的自律性 | 17 | 40 |
 | 認知主権 | 6 | 11 |
 | 正統性 | 38 | 43 |
 | 修復能力 | 33 | 63 |
 
-介入は万能ではありません。平時の維持費として生活基盤を5点悪化させる一方、修復能力を30点、戦略的自律性を23点改善します。最後の共同運営・訓練が5年遅れると発動は2037年になり、2036年の破滅に間に合いません。
+最後の共同運営・訓練が5年遅れると発動は2037年になり、2036年の破滅に間に合いません。介入には費用、副作用、失敗条件があり、都合のよい力だけを取り出すことはできません。数値は未来予測ではなく、因果仮説を追跡するMVP用テスト値です。
 
-この数値は現実予測ではなく、因果仮説を追跡するMVP用のテスト値です。現実との接点と反証条件は [シナリオ根拠](docs/scenario-rationale.md) に分離しています。
+## PRがどう反映されるか
 
-## クイックスタート
-
-Python 3.11〜3.13を使用します。外部Python依存はありません。
-
-```powershell
-$env:PYTHONPATH = "src"
-python -m fiction_forks compare `
-  --scenario scenarios/japan-2036/scenario.json `
-  --intervention interventions/doraemon-public-tools.json `
-  --seed 2036
-```
-
-共同運営と危機訓練を5年遅らせ、実装が間に合わない世界も比較できます。
-
-```powershell
-$env:PYTHONPATH = "src"
-python -m fiction_forks compare `
-  --scenario scenarios/japan-2036/scenario.json `
-  --intervention interventions/doraemon-public-tools.json `
-  --delay-node joint-governance-and-drills=5 `
-  --seed 2036
-```
-
-基準世界だけを見る場合:
-
-```powershell
-$env:PYTHONPATH = "src"
-python -m fiction_forks simulate `
-  --scenario scenarios/japan-2036/scenario.json `
-  --seed 2036
-```
-
-## 未来をforkする
-
-参加者が行うことは6つです。
-
-1. 作品から、未来を変えそうな機能を一つ選ぶ。
-2. 作品を知らない人にも通じる社会の問いへ一文で翻訳する。
-3. `technology`、`institution`、`operations` の依存ツリーを作る。
-4. 各ノードへ観測可能な `completion_evidence` を書く。
-5. 費用、副作用、失敗条件、意図的な遅延を含めて比較する。
-6. 介入JSONと結果をPull Requestにする。
-
-『呪術廻戦』なら「大多数には見えない危機を専門家だけが認識する社会」、『攻殻機動隊』なら「接続社会の本人性と公権力監査」、『日本沈没』なら「巨大リスクをいつ信じて公正な退避へ変えるか」という入口にできます。作品を知らない人向けの同義表現は [フィクション・レンズ](docs/fiction-lenses.md) にあります。
-
-介入カードに必要な項目、技術ツリーの書き方、PRの検証方法は [コントリビューションガイド](CONTRIBUTING.md) を参照してください。
-
-## 技術ツリー
-
-介入は、最後の必須ノードが完成するまで効果を発生させません。
-
-```mermaid
-flowchart LR
-    publicAI["監査可能な公共AI 2029"] --> operations["共同運営・監査人材・危機訓練 2032"]
-    dataTrust["地域データ信託と異議申立て 2030"] --> operations
-    fabrication["分散工作・修理拠点 2030"] --> operations
-    operations --> activation["介入発動"]
-```
-
-コードや装置だけでは未完成です。権限移譲、異議申立て、単一事業者停止を含む訓練まで観測できて初めて、社会の状態値へ効果を与えます。
-
-## シミュレーション契約
-
-毎年、次の順序で状態を更新します。
-
-```text
-前年の状態
-  -> 基準世界の構造変化
-  -> 共通の外部ショック
-  -> 技術ツリーを満たした介入
-  -> 状態値の更新
-  -> 破滅条件の判定
-```
-
-5つの状態値を扱います。
-
-| 状態値 | 表すもの |
+| 状態 | 意味 |
 |---|---|
-| `living_systems` | 電力、食料、物流、通信、医療などの生活基盤 |
-| `strategic_autonomy` | 海外技術・資源が止まっても動ける度合い |
-| `cognitive_sovereignty` | 共通事実を保ち、情報操作を発見できる能力 |
-| `legitimacy` | 政策決定を監査し、異議を申し立てられる度合い |
-| `repair_capacity` | 失敗を観測し、代替し、制度を更新できる能力 |
+| アイデア受付 | 要望を受け取っただけ |
+| 実装中 | 専用branchで介入と対話条件を作成中 |
+| PR作成済み | 差分、結果、未確認事項をレビューできる |
+| 人間承認済み | 権利、安全、設計、検証を人が確認した |
+| merge済み | repositoryへ新しい世界線が追加された |
+| 反映確認済み | mainから再実行し、結果artifactを読み戻した |
 
-同じscenario、intervention、seedは同じ結果を返します。数値更新と破滅判定は決定的ルールエンジンが所有し、将来LLMを追加しても状態値を創作させません。詳細は [シミュレーション契約](docs/simulation-contract.md) を参照してください。
-
-## 設計を読む
-
-| 文書 | 答える問い |
-|---|---|
-| [プロダクト設計](docs/product-design.md) | 誰が何をして、何を面白いと感じるのか |
-| [UXフロー](docs/ux-flow.md) | Web版ではどの画面をどの順で使うのか |
-| [アーキテクチャ](docs/architecture.md) | ルールエンジン、UI、AI、GitHubをどう分離するか |
-| [ADR](docs/adr/README.md) | なぜ現在の設計判断を選んだのか |
-| [セキュリティモデル](docs/security-model.md) | 公開参加型repoで何を守り、何を入力させないか |
-| [PROJECT SSOT](PROJECT_SSOT.md) | どの情報の正本がどこにあるか |
-
-プロダクトの実装順は、まずCLIとJSON契約を安定させ、次に同じ結果を読むWeb UIを追加し、その後に制約内の説明や行動候補だけを扱うAI層を検討します。
-
-## 公式根拠
-
-本プロジェクトがハッカソンと「メタ安全保障」の公式根拠として扱うのは、次の2点だけです。
-
-- [AIエージェント社会シミュレーションハッカソン Vol.2 公式サイト](https://hackathon.automata-lab.jp/)
-- [構想ペーパー「メタ安全保障 — 概念解説とハッカソン課題の発想集」](https://prtimes.jp/a/?f=d80352-184-caedebb354dd205d5811c599da74761b.pdf)（片山俊大氏 v1.0ペーパー）
-
-この2点にない説明、数値、シナリオ、破滅条件、フィクション介入はFiction Forks独自の仮説です。政府統計などはシナリオの参照根拠であり、ハッカソンの公式見解ではありません。境界は [公式情報の正本](docs/official-sources.md) に固定しています。
+PRを作っただけでは完成、merge、release、公式化にはなりません。merge後も既存世界を上書きせず、比較できる選択肢が一つ増えます。
 
 ## 権利・安全・限界
 
-- 作品名と、Fiction Forksが独自に抽出した抽象的な機能を参照できます。
+- 作品名と、独自に抽出した抽象的な機能を共通言語として参照できます。
 - 公式画像、漫画コマ、台詞、音声、映像、音楽、ロゴ、キャラクター表現、特徴的な口調は収録しません。
-- 本プロジェクトは非公式であり、権利者、出版社、制作会社の公認・協力・推奨を示しません。
+- 本プロジェクトは非公式であり、権利者や制作会社の協力・公認を示しません。
 - 実在人物の個人情報、非公開会話、credential、実在システムの脆弱性・標的・攻撃手順を入力しません。
 - 出力は政策助言、災害予測、軍事予測ではありません。
 
-新規作成したコードと文書は [MIT License](LICENSE) で提供します。MIT Licenseは第三者IPへ適用されません。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) と [SECURITY.md](SECURITY.md) を参照してください。
+## 設計と実測結果
 
-## バージョンと正本
+| 文書 | 内容 |
+|---|---|
+| [RESULTS](RESULTS.md) | 実行済みrun、hash、未実測事項 |
+| [社会シミュレーション](docs/social-simulation.md) | 5役、3ターン、provider、replay |
+| [シミュレーション契約](docs/simulation-contract.md) | 年次状態更新と破滅条件 |
+| [フィクション・レンズ](docs/fiction-lenses.md) | 作品を知らない人にも通じる同義表現 |
+| [コントリビューションガイド](CONTRIBUTING.md) | PRに必要な介入カードと検証 |
+| [ADR](docs/adr/README.md) | 設計判断と見直し条件 |
+| [PROJECT SSOT](PROJECT_SSOT.md) | 正本と非公開情報の境界 |
 
-現在の版は `0.1.0` です。通常はpatchを小刻みに上げ、互換性を保った大きな機能追加でminor、schemaを破壊する変更でmajorを上げます。自動version bumpは行いません。規律は [VERSIONING.md](VERSIONING.md)、利用者影響は [CHANGELOG.md](CHANGELOG.md) に記録します。
+<details>
+<summary><strong>開発者向け：ローカルで実行する</strong></summary>
 
-コード、scenario、介入、設計文書の正本はこのリポジトリです。非公開の着想元や参加者情報は複製しません。詳しくは [PROJECT_SSOT.md](PROJECT_SSOT.md) を参照してください。
+Python 3.11〜3.13を使います。決定論fixtureで5役×3ターンを再現する場合:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m fiction_forks social `
+  --scenario scenarios/japan-2036/scenario.json `
+  --intervention interventions/doraemon-public-tools.json `
+  --social-config scenarios/japan-2036/social.json `
+  --provider fixture `
+  --fixture fixtures/social/japan-2036-cooperation.jsonl `
+  --output run.json
+```
+
+live providerの依存関係は、hash固定済みlockから導入します。
+
+```powershell
+python -m pip install --require-hashes -r requirements-agents.txt
+python -m pip install -e . --no-deps
+```
+
+そのうえで、モデル、API key、費用発生への明示確認がある場合だけ `--provider openai --model gpt-5.4-mini --confirm-live` で実行します。CIは外部APIを呼びません。生成したartifactは `--provider replay --replay run.json` で再検証できます。
+
+従来の年次比較だけを行う場合は `python -m fiction_forks compare --scenario scenarios/japan-2036/scenario.json --intervention interventions/doraemon-public-tools.json --seed 2036` です。
+
+</details>
+
+## 公式根拠
+
+- [AIエージェント社会シミュレーションハッカソン Vol.2 公式サイト](https://hackathon.automata-lab.jp/)
+- [構想ペーパー「メタ安全保障 — 概念解説とハッカソン課題の発想集」](https://prtimes.jp/a/?f=d80352-184-caedebb354dd205d5811c599da74761b.pdf)（片山俊大氏 v1.0）
+
+この2点にない数値、シナリオ、破滅条件、フィクション介入はFiction Forks独自の仮説です。現在の版は `0.2.0`。Git tagとGitHub Releaseは未作成です。

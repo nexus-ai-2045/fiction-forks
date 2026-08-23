@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import unittest
 from pathlib import Path
+from xml.etree import ElementTree
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,9 +14,12 @@ class DocumentationContractTests(unittest.TestCase):
         required = (
             "docs/product-design.md",
             "docs/ux-flow.md",
+            "docs/visual-system.md",
             "docs/architecture.md",
             "docs/security-model.md",
+            "docs/social-simulation.md",
             "docs/adr/README.md",
+            "RESULTS.md",
         )
         for relative_path in required:
             with self.subTest(path=relative_path):
@@ -34,14 +38,63 @@ class DocumentationContractTests(unittest.TestCase):
     def test_readme_keeps_core_participation_contract(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         for phrase in (
-            "一つのPull Requestが、一つの未来分岐",
-            "3分で試す",
-            "未来をforkする",
-            "作品を知らない人",
-            "決定的ルールエンジン",
+            "コードを書かずに参加する",
+            "https://github.com/nexus-ai-2045/fiction-forks",
+            "5人のAIエージェント",
+            "PR作成はmergeや公開完了ではない",
+            "反映確認済み",
+            "決定論エンジン",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, readme)
+
+    def test_readme_hero_is_safe_self_contained_svg(self) -> None:
+        hero = ROOT / "assets/readme/hero.svg"
+        self.assertTrue(hero.is_file())
+        root = ElementTree.parse(hero).getroot()
+        self.assertTrue(root.tag.endswith("svg"))
+
+        content = hero.read_text(encoding="utf-8")
+        self.assertNotRegex(content, r"(?i)<script\b")
+        for element in root.iter():
+            for raw_name, value in element.attrib.items():
+                name = raw_name.rsplit("}", 1)[-1].lower()
+                if name in {"href", "src"}:
+                    self.assertTrue(
+                        value.startswith("#"),
+                        f"external SVG reference in {name}: {value}",
+                    )
+                for match in re.findall(r"(?i)url\(([^)]+)\)", value):
+                    reference = match.strip().strip("\"'")
+                    self.assertTrue(
+                        reference.startswith("#"),
+                        f"external CSS reference: {reference}",
+                    )
+            if element.tag.rsplit("}", 1)[-1].lower() == "style":
+                for match in re.findall(r"(?i)url\(([^)]+)\)", element.text or ""):
+                    reference = match.strip().strip("\"'")
+                    self.assertTrue(
+                        reference.startswith("#"),
+                        f"external style reference: {reference}",
+                    )
+        self.assertIn("<title", content)
+        self.assertIn("<desc", content)
+        self.assertIn("BASELINE / 無介入", content)
+
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn(
+            "https://raw.githubusercontent.com/nexus-ai-2045/fiction-forks/"
+            "main/assets/readme/hero.svg",
+            readme,
+        )
+
+    def test_live_agent_dependencies_are_exact_and_hash_locked(self) -> None:
+        source = (ROOT / "requirements-agents.in").read_text(encoding="utf-8")
+        lock = (ROOT / "requirements-agents.txt").read_text(encoding="utf-8")
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertRegex(source, r"(?m)^openai==\d+\.\d+\.\d+$")
+        self.assertIn("--hash=sha256:", lock)
+        self.assertIn("--require-hashes -r requirements-agents.txt", readme)
 
     def test_relative_markdown_links_resolve(self) -> None:
         for markdown in ROOT.rglob("*.md"):

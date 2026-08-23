@@ -4,12 +4,16 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 ## [Unreleased]
 
-コード上の初期versionは`0.1.0`です。Git tagとGitHub Releaseは未作成であり、
+コード上の現在versionは`0.2.0`です。Git tagとGitHub Releaseは未作成であり、
 release時にexact main commit、版番号、実日付を別承認で確定します。
 
 ### Added
 
+- 5つの社会役が3ターン対話し、制約付きactionから技術・制度・運用ノードの遅延を決めるAIエージェント層
+- fixture、replay、OpenAI Responses Structured Outputsのprovider境界とbefore/after hash chain
+- コード不要の固定repo URL入り参加プロンプト、社会シミュレーション設計、ADR 0008、RESULTS
 - READMEを「30秒で世界観、3分で比較、PRで未来をfork」の参加導線へ再設計
+- README用のオリジナル世界線SVG、ビジュアルシステム、READMEを最初のプレイ画面とするADR
 - プロダクト設計、UXフロー、アーキテクチャ、セキュリティモデル
 - 決定的engine、フィクション・レンズ、PR単位、技術ツリー、破滅条件、Web/AI境界を固定するADR
 - 日本2036の無介入世界線と、2036年に修復不能へ入る透明な破滅条件

@@ -38,8 +38,10 @@ class SimulationContractTests(unittest.TestCase):
         project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
         project_version = project["project"]["version"]
         result = simulate(self.scenario, seed=2036)
+        comparison = compare_worlds(self.scenario, self.intervention, seed=2036)
         self.assertEqual(project_version, __version__)
         self.assertEqual(project_version, result["engine_version"])
+        self.assertEqual(project_version, comparison["engine_version"])
 
     def test_baseline_collapses_from_declared_gate(self) -> None:
         result = simulate(self.scenario, seed=2036)
@@ -108,7 +110,9 @@ class SimulationContractTests(unittest.TestCase):
         self.assertEqual(2036, result["comparison_year"])
 
     def test_all_versioned_inputs_satisfy_contract(self) -> None:
-        scenarios = [load_json(path) for path in (ROOT / "scenarios").rglob("*.json")]
+        scenarios = [
+            load_json(path) for path in (ROOT / "scenarios").rglob("scenario.json")
+        ]
         self.assertTrue(scenarios)
         for scenario in scenarios:
             validate_scenario(scenario)

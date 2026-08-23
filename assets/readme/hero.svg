@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 640" role="img" aria-labelledby="title desc">
+  <title id="title">Fiction Forks: 2026年から2036年へ分岐する未来実装シミュレーション</title>
+  <desc id="desc">何もしない世界線は2036年に修復不能へ入る。フィクションの機能を技術、制度、運用へ翻訳し、Pull Requestで別の世界線を追加する。</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.58" stop-color="#0b1b30"/>
+      <stop offset="1" stop-color="#102940"/>
+    </linearGradient>
+    <linearGradient id="forkLine" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#56ccf2"/>
+      <stop offset="1" stop-color="#63e6be"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#8fb3d1" stroke-opacity="0.08" stroke-width="1"/>
+    </pattern>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1440" height="640" rx="30" fill="url(#background)"/>
+  <rect width="1440" height="640" rx="30" fill="url(#grid)"/>
+  <path d="M0 520 C280 470 520 610 820 540 C1080 480 1240 520 1440 450 L1440 640 L0 640Z" fill="#07111f" fill-opacity="0.58"/>
+
+  <g font-family="Inter, Noto Sans JP, Segoe UI, sans-serif">
+    <text x="76" y="72" fill="#63e6be" font-size="20" font-weight="700" letter-spacing="5">FICTION FORKS</text>
+    <text x="76" y="137" fill="#f4f8fc" font-size="48" font-weight="800">フィクションの部品で、</text>
+    <text x="76" y="195" fill="#f4f8fc" font-size="48" font-weight="800">日本の未来を <tspan fill="#63e6be">fork</tspan> する。</text>
+    <text x="78" y="235" fill="#a9bbca" font-size="21">作品の機能 → 技術・制度・運用 → 同じ危機条件で比較</text>
+
+    <g transform="translate(1032 63)">
+      <rect width="330" height="91" rx="18" fill="#102940" stroke="#56ccf2" stroke-opacity="0.65"/>
+      <text x="24" y="35" fill="#9fb5c7" font-size="15" font-weight="700" letter-spacing="2">CONTRIBUTION UNIT</text>
+      <text x="24" y="68" fill="#f4f8fc" font-size="25" font-weight="800">1 PR = 1 WORLDLINE</text>
+    </g>
+
+    <g transform="translate(76 302)">
+      <line x1="49" y1="106" x2="1197" y2="106" stroke="#7f91a3" stroke-width="7" stroke-linecap="round"/>
+      <line x1="49" y1="106" x2="1197" y2="106" stroke="#ff6b6b" stroke-opacity="0.18" stroke-width="19" stroke-linecap="round"/>
+      <circle cx="49" cy="106" r="16" fill="#f4f8fc" stroke="#07111f" stroke-width="6"/>
+      <text x="28" y="151" fill="#f4f8fc" font-size="21" font-weight="800">2026</text>
+      <text x="-1" y="180" fill="#9fb5c7" font-size="15">NOW</text>
+
+      <path d="M420 106 C515 106 515 34 630 34 H1197" fill="none" stroke="url(#forkLine)" stroke-width="9" stroke-linecap="round" filter="url(#softGlow)"/>
+      <circle cx="420" cy="106" r="13" fill="#56ccf2" stroke="#07111f" stroke-width="5"/>
+      <text x="376" y="151" fill="#a9bbca" font-size="15" font-weight="700">FICTION LENS</text>
+
+      <g transform="translate(607 0)">
+        <rect width="180" height="68" rx="16" fill="#102940" stroke="#56ccf2"/>
+        <text x="90" y="27" text-anchor="middle" fill="#f4f8fc" font-size="15" font-weight="700">TECHNOLOGY</text>
+        <text x="90" y="49" text-anchor="middle" fill="#9fb5c7" font-size="13">実装できるか</text>
+      </g>
+      <g transform="translate(800 0)">
+        <rect width="180" height="68" rx="16" fill="#102940" stroke="#56ccf2"/>
+        <text x="90" y="27" text-anchor="middle" fill="#f4f8fc" font-size="15" font-weight="700">INSTITUTION</text>
+        <text x="90" y="49" text-anchor="middle" fill="#9fb5c7" font-size="13">統治できるか</text>
+      </g>
+      <g transform="translate(993 0)">
+        <rect width="180" height="68" rx="16" fill="#102940" stroke="#63e6be"/>
+        <text x="90" y="27" text-anchor="middle" fill="#f4f8fc" font-size="15" font-weight="700">OPERATIONS</text>
+        <text x="90" y="49" text-anchor="middle" fill="#9fb5c7" font-size="13">続けられるか</text>
+      </g>
+
+      <g transform="translate(1197 34)">
+        <circle r="21" fill="#63e6be" stroke="#07111f" stroke-width="7"/>
+        <text x="0" y="-35" text-anchor="middle" fill="#63e6be" font-size="21" font-weight="800">2036</text>
+        <text x="0" y="-14" text-anchor="middle" fill="#b9f5df" font-size="14" font-weight="700">ALTERNATIVE</text>
+      </g>
+
+      <g transform="translate(1197 106)">
+        <path d="M0 -22 L22 0 0 22 -22 0Z" fill="#ff6b6b" stroke="#07111f" stroke-width="7"/>
+        <text x="0" y="61" text-anchor="middle" fill="#ff8d8d" font-size="21" font-weight="800">2036</text>
+        <text x="0" y="84" text-anchor="middle" fill="#ffc2c2" font-size="14" font-weight="700">REPAIRABILITY LOST</text>
+        <text x="0" y="108" text-anchor="middle" fill="#9fb5c7" font-size="13" font-weight="700">BASELINE / 無介入</text>
+      </g>
+    </g>
+
+    <g transform="translate(76 564)">
+      <rect width="276" height="42" rx="21" fill="#f4f8fc" fill-opacity="0.08"/>
+      <text x="22" y="27" fill="#dce8f1" font-size="15" font-weight="700">SAME CRISIS · SAME SEED</text>
+      <rect x="290" width="282" height="42" rx="21" fill="#f4f8fc" fill-opacity="0.08"/>
+      <text x="312" y="27" fill="#dce8f1" font-size="15" font-weight="700">COST · DELAY · SIDE EFFECT</text>
+      <rect x="586" width="286" height="42" rx="21" fill="#f4f8fc" fill-opacity="0.08"/>
+      <text x="608" y="27" fill="#dce8f1" font-size="15" font-weight="700">DETERMINISTIC ENGINE</text>
+    </g>
+  </g>
+</svg>

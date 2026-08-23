@@ -17,6 +17,7 @@ METRICS = (
     "legitimacy",
     "repair_capacity",
 )
+ENGINE_VERSION = "0.2.0"
 
 
 class ContractError(ValueError):
@@ -479,7 +480,7 @@ def simulate(
 
     return {
         "schema_version": "fiction_forks_result.v1",
-        "engine_version": "0.1.0",
+        "engine_version": ENGINE_VERSION,
         "scenario_id": scenario["id"],
         "intervention_id": intervention["id"] if intervention else None,
         "seed": seed,
@@ -525,6 +526,7 @@ def compare_worlds(
     }
     return {
         "schema_version": "fiction_forks_comparison.v1",
+        "engine_version": ENGINE_VERSION,
         "scenario_id": scenario["id"],
         "intervention_id": intervention["id"],
         "seed": seed,
