@@ -1,0 +1,10 @@
+# Default owner for public contributions.
+* @nexus-ai-2045
+
+# Changes to trust boundaries and project authorities must notify the owner.
+/.github/ @nexus-ai-2045
+/.ai-ratchet-gate/baseline.txt @nexus-ai-2045
+/PROJECT_SSOT.md @nexus-ai-2045
+/PUBLIC_READY.md @nexus-ai-2045
+/SECURITY.md @nexus-ai-2045
+/requirements-tools.txt @nexus-ai-2045
