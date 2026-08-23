@@ -4,7 +4,8 @@
 
 ## 決定論fixture run
 
-- 状態: 実行済み（2026-08-24、未commitのPR作業tree上）
+- 状態: 実行済み（2026-08-24）
+- 実行実装commit: `5edebf7f0f7141d887281ea23a8b6b6e028959b3`
 - 用途: protocol、部分観測、fail-closed、hash chain、world physicsの回帰検査
 - AI実測: いいえ。fixtureは台本であり、LLMの挙動を示さない
 - Python: 3.13
@@ -15,6 +16,7 @@
 - input digest: `d3674fbb82db861487318ff61a864f82dcb1c5fc1b6393591e0fc0292f683a3e`
 - final event hash: `9e6aadfc484e44f966bfb8f54c004be50e3f09f4ed98241b8e250fe90c2760fe`
 - artifact: [`artifacts/runs/japan-2036-fixture.json`](artifacts/runs/japan-2036-fixture.json)
+- manifest: [`artifacts/runs/japan-2036-fixture.manifest.json`](artifacts/runs/japan-2036-fixture.manifest.json)
 - artifact SHA-256: `b0fb526a01c4a6e8c91727c8f7cf76ba625effed11b5b725cc8a9b44aa4efdb4`
 - actions: 15 / invalid: 0 / abstain: 0
 - capability coverage: 6 / interaction edges: 10 / conditioned intents: 15 / reversible action ratio: 1.0

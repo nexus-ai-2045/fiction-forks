@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import json
+import hashlib
 import io
+import json
 import sys
 import tempfile
 import unittest
@@ -166,6 +167,23 @@ class SocialSimulationTests(unittest.TestCase):
             seed=2036,
         )
         self.assertTrue(replay_equivalent(first, replay))
+
+    def test_curated_fixture_manifest_matches_artifact(self) -> None:
+        artifact_path = ROOT / "artifacts/runs/japan-2036-fixture.json"
+        manifest = json.loads(
+            (ROOT / "artifacts/runs/japan-2036-fixture.manifest.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
+        self.assertFalse(manifest["ai_measured"])
+        self.assertEqual(artifact["run_id"], manifest["run_id"])
+        self.assertEqual(artifact["input_digest"], manifest["input_digest"])
+        self.assertEqual(artifact["final_event_hash"], manifest["final_event_hash"])
+        self.assertEqual(
+            hashlib.sha256(artifact_path.read_bytes()).hexdigest(),
+            manifest["artifact_sha256"],
+        )
 
     def test_unknown_metric_delta_is_rejected_and_state_does_not_change(self) -> None:
         result = run_social_simulation(
