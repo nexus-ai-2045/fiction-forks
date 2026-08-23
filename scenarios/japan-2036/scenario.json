@@ -1,0 +1,104 @@
+{
+  "schema_version": "fiction_forks_scenario.v1",
+  "id": "japan-2036-centralization",
+  "title": "2036年日本：危機対応AIの集中と修復不能性",
+  "design_question": "輸入・通信・AI基盤への集中依存が続く日本は、複合ショック後も誤りを発見し、代替手段を動かし、制度を修正できるか。",
+  "causal_chain": [
+    "平時の効率化で危機対応AIと運用知が少数基盤へ集中する",
+    "供給制約と通信障害で海外基盤と物理部品の代替が遅れる",
+    "情報操作によって被害認識と資源配分への共通事実が崩れる",
+    "複合災害で生活基盤の損傷と復旧需要が同時に増える",
+    "生活基盤・認知主権・修復能力の複数が低位で固定される"
+  ],
+  "evidence_refs": [
+    "R-01-energy-self-sufficiency",
+    "R-02-maritime-trade-dependence",
+    "R-03-subsea-cable-dependence"
+  ],
+  "start_year": 2026,
+  "end_year": 2036,
+  "assumption_notice": "このscenarioは予言や政策助言ではなく、公開レビュー可能な因果仮説である。発生年と効果量はMVP用の仮置きであり、公式統計と専門家レビューで更新する。",
+  "initial_state": {
+    "living_systems": 75,
+    "strategic_autonomy": 55,
+    "cognitive_sovereignty": 60,
+    "legitimacy": 58,
+    "repair_capacity": 60
+  },
+  "baseline_annual_effects": {
+    "living_systems": 1,
+    "strategic_autonomy": -2,
+    "cognitive_sovereignty": -2,
+    "legitimacy": -1,
+    "repair_capacity": -1
+  },
+  "capability_availability": {
+    "auditable_public_ai": 2028,
+    "local_data_trusts": 2029,
+    "distributed_fabrication": 2029
+  },
+  "shocks": [
+    {
+      "id": "ai-platform-concentration",
+      "label": "海外AI基盤への依存と市場集中",
+      "year": 2028,
+      "variance": 1,
+      "effects": {
+        "strategic_autonomy": -10,
+        "cognitive_sovereignty": -5
+      }
+    },
+    {
+      "id": "supply-chain-restriction",
+      "label": "大国間対立による供給制約",
+      "year": 2030,
+      "variance": 2,
+      "effects": {
+        "living_systems": -10,
+        "strategic_autonomy": -8,
+        "repair_capacity": -3
+      }
+    },
+    {
+      "id": "cognitive-operation",
+      "label": "危機対応を狙う大規模な情報操作",
+      "year": 2032,
+      "variance": 2,
+      "effects": {
+        "cognitive_sovereignty": -16,
+        "legitimacy": -8,
+        "repair_capacity": -6
+      }
+    },
+    {
+      "id": "compound-disaster",
+      "label": "大規模災害と複数インフラ障害",
+      "year": 2033,
+      "variance": 2,
+      "effects": {
+        "living_systems": -22,
+        "repair_capacity": -12
+      }
+    },
+    {
+      "id": "second-supply-shock",
+      "label": "復旧途上での追加供給・情報ショック",
+      "year": 2035,
+      "variance": 1,
+      "effects": {
+        "living_systems": -10,
+        "cognitive_sovereignty": -8
+      }
+    }
+  ],
+  "collapse": {
+    "metrics": [
+      "living_systems",
+      "cognitive_sovereignty",
+      "repair_capacity"
+    ],
+    "threshold": 35,
+    "minimum_breaches": 2,
+    "consecutive_turns": 2
+  }
+}

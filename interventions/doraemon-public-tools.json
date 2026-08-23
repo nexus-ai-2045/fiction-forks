@@ -1,0 +1,88 @@
+{
+  "schema_version": "fiction_forks_intervention.v1",
+  "id": "doraemon-public-tools",
+  "fiction_reference": "『ドラえもん』",
+  "extracted_function": "未来の道具へ専門家以外も日常的にアクセスできる",
+  "realization_mode": "institutional_equivalent",
+  "implementation_hypothesis": "自治体が共同運営する監査可能な公共AI、地域データ信託、分散工作拠点を整備し、危機時の代替手段を住民へ開く。",
+  "prerequisites": [
+    "auditable_public_ai",
+    "local_data_trusts",
+    "distributed_fabrication"
+  ],
+  "technology_tree": {
+    "nodes": [
+      {
+        "id": "public-ai-reference-stack",
+        "label": "監査可能な公共AI参照実装",
+        "kind": "technology",
+        "lead_time_years": 1,
+        "completion_evidence": "独立した2主体が同一入力の監査ログを再現できる",
+        "depends_on": [
+          "auditable_public_ai"
+        ]
+      },
+      {
+        "id": "local-data-governance",
+        "label": "地域データ信託の運用規約と異議申立て",
+        "kind": "institution",
+        "lead_time_years": 1,
+        "completion_evidence": "住民が利用目的を確認し、拒否・訂正・異議申立てできる",
+        "depends_on": [
+          "local_data_trusts"
+        ]
+      },
+      {
+        "id": "regional-fabrication-cells",
+        "label": "自治体共同の分散工作・修理拠点",
+        "kind": "technology",
+        "lead_time_years": 1,
+        "completion_evidence": "共通設計から代替部品を複数地域で製造し相互検査できる",
+        "depends_on": [
+          "distributed_fabrication"
+        ]
+      },
+      {
+        "id": "joint-governance-and-drills",
+        "label": "共同運営契約、監査人材、住民参加型の危機訓練",
+        "kind": "operations",
+        "lead_time_years": 2,
+        "completion_evidence": "単一事業者停止を含む訓練で権限移譲と復旧時間を記録できる",
+        "depends_on": [
+          "public-ai-reference-stack",
+          "local-data-governance",
+          "regional-fabrication-cells"
+        ]
+      }
+    ],
+    "activation_requires": [
+      "joint-governance-and-drills"
+    ]
+  },
+  "activation_effects": {
+    "strategic_autonomy": 3,
+    "repair_capacity": 5
+  },
+  "annual_effects": {
+    "living_systems": -1,
+    "strategic_autonomy": 4,
+    "cognitive_sovereignty": 1,
+    "legitimacy": 1,
+    "repair_capacity": 5
+  },
+  "costs": [
+    "平時から公共拠点と監査人材を維持する費用",
+    "自治体間の仕様調整と責任分担"
+  ],
+  "side_effects": [
+    "道具へのアクセス格差",
+    "悪用や過信による局地的被害",
+    "維持費が短期の生活基盤投資を圧迫する"
+  ],
+  "failure_modes": [
+    "監査可能と称しながら実装が単一事業者へ依存する",
+    "利用者教育が間に合わず専門知の格差が残る",
+    "非常時の権限と責任主体が曖昧になる"
+  ],
+  "rights_notice": "作品名と抽象化した機能だけを参照し、画像、台詞、キャラクター表現、公式協力の示唆を含まない。"
+}
