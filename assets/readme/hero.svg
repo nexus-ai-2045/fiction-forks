@@ -73,6 +73,7 @@
         <path d="M0 -22 L22 0 0 22 -22 0Z" fill="#ff6b6b" stroke="#07111f" stroke-width="7"/>
         <text x="0" y="61" text-anchor="middle" fill="#ff8d8d" font-size="21" font-weight="800">2036</text>
         <text x="0" y="84" text-anchor="middle" fill="#ffc2c2" font-size="14" font-weight="700">REPAIRABILITY LOST</text>
+        <text x="0" y="108" text-anchor="middle" fill="#9fb5c7" font-size="13" font-weight="700">BASELINE / 無介入</text>
       </g>
     </g>
 

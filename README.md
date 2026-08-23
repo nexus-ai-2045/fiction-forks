@@ -11,7 +11,7 @@
 </div>
 
 <p align="center">
-  <img src="assets/readme/hero.svg" width="100%" alt="2026年の日本から、無介入なら2036年の修復不能へ進む世界線と、フィクションの機能を技術・制度・運用へ翻訳して別の2036年へ分岐する世界線">
+  <img src="https://raw.githubusercontent.com/nexus-ai-2045/fiction-forks/main/assets/readme/hero.svg" width="100%" alt="2026年の日本から、無介入なら2036年の修復不能へ進む世界線と、フィクションの機能を技術・制度・運用へ翻訳して別の2036年へ分岐する世界線">
 </p>
 
 > **作品から「未来を変える機能」を一つ借りたら、日本の2036年はどう変わるか。**

@@ -56,9 +56,37 @@ class DocumentationContractTests(unittest.TestCase):
 
         content = hero.read_text(encoding="utf-8")
         self.assertNotRegex(content, r"(?i)<script\b")
-        self.assertNotRegex(content, r"(?i)(?:href|src)=[\"']https?://")
+        for element in root.iter():
+            for raw_name, value in element.attrib.items():
+                name = raw_name.rsplit("}", 1)[-1].lower()
+                if name in {"href", "src"}:
+                    self.assertTrue(
+                        value.startswith("#"),
+                        f"external SVG reference in {name}: {value}",
+                    )
+                for match in re.findall(r"(?i)url\(([^)]+)\)", value):
+                    reference = match.strip().strip("\"'")
+                    self.assertTrue(
+                        reference.startswith("#"),
+                        f"external CSS reference: {reference}",
+                    )
+            if element.tag.rsplit("}", 1)[-1].lower() == "style":
+                for match in re.findall(r"(?i)url\(([^)]+)\)", element.text or ""):
+                    reference = match.strip().strip("\"'")
+                    self.assertTrue(
+                        reference.startswith("#"),
+                        f"external style reference: {reference}",
+                    )
         self.assertIn("<title", content)
         self.assertIn("<desc", content)
+        self.assertIn("BASELINE / 無介入", content)
+
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn(
+            "https://raw.githubusercontent.com/nexus-ai-2045/fiction-forks/"
+            "main/assets/readme/hero.svg",
+            readme,
+        )
 
     def test_live_agent_dependencies_are_exact_and_hash_locked(self) -> None:
         source = (ROOT / "requirements-agents.in").read_text(encoding="utf-8")
