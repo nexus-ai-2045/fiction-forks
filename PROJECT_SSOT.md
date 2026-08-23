@@ -5,12 +5,16 @@
 | 対象 | 正本 |
 |---|---|
 | プロダクトコード | このリポジトリの `src/` |
+| プロダクト体験とロードマップ | `docs/product-design.md` |
+| Web UXと画面引継ぎ | `docs/ux-flow.md` |
+| アーキテクチャと設計判断 | `docs/architecture.md` と `docs/adr/` |
 | シナリオ契約 | `scenarios/` と `docs/simulation-contract.md` |
 | シナリオの公開根拠と反証条件 | `docs/scenario-rationale.md` |
 | 介入カード | `interventions/` と `CONTRIBUTING.md` |
 | フィクション参照レンズ | `docs/fiction-lenses.md` |
 | 公開方針 | `README.md`、`SECURITY.md`、`PUBLIC_READY.md` |
-| バージョン | `pyproject.toml` の `project.version` |
+| セキュリティ境界 | `SECURITY.md` と `docs/security-model.md` |
+| バージョン | `pyproject.toml` の `project.version`。同期規律は `VERSIONING.md`、変更履歴は `CHANGELOG.md` |
 | 元議論・非公開証拠 | このリポジトリの外。本文や参加者情報を複製しない |
 | ハッカソンの公式根拠 | `docs/official-sources.md` に固定した公式サイトと片山俊大氏 v1.0ペーパー |
 
@@ -21,6 +25,7 @@ CLIのJSON出力、可視化、比較レポートは再生成可能な派生物�
 ## 変更ルール
 
 - schemaまたは破滅条件を変更するPRは、既存結果との非互換性を明示します。
+- Accepted ADRの意味を変える場合は、元ADRを履歴なしに書き換えず後続ADRで置換します。
 - 現実に関する数値は、出典と確認日を持たせます。
 - フィクション参照は、作品由来の機能と本プロジェクト独自の実装仮説を分離します。
 - 非公開会話、個人情報、秘密情報、実在システムの攻撃手順を取り込みません。

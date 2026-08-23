@@ -1,6 +1,6 @@
 <!-- repo-preflight:review-record -->
 
-# 公開準備記録
+# 公開状態・レビュー記録
 
 ## 公開対象
 
@@ -33,10 +33,13 @@
 
 ## GitHub側の確認
 
-- [x] visibilityをread-backした（PRIVATE）
+- [x] visibilityをread-backした（`PUBLIC`、2026-08-24）
 - [x] default branchをread-backした（`main`）
-- [ ] CIが公開予定のexact HEADでpassした
-- [ ] Private vulnerability reportingの状態を確認した
-- [ ] 公開前の人間レビューと明示承認を記録した
+- [x] 公開PR #2のHEAD `a28d74b` でLinux/Windows CIがpassした
+- [x] `protect-main` rulesetをactiveでread-backした
+- [x] secret scanningとpush protectionをenabledでread-backした
+- [x] Private vulnerability reportingをenabledでread-backした
+- [x] repositoryが人間操作で公開され、current conversationでread-backを承認した
+- [ ] CodeQL default setupの取得不能を解消した
 
-自動検査のpassは公開承認ではありません。公開時には、ファイルとコミット履歴がWebから閲覧可能になることを再確認します。
+このrepositoryは現在公開されています。自動検査のpassは、今後のPR merge、release、tag、外部告知を承認しません。README・権利・文書の未完了目視項目はPRレビューで継続します。

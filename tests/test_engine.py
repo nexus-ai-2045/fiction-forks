@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -11,6 +12,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+from fiction_forks import __version__
 from fiction_forks.engine import (
     ContractError,
     compare_worlds,
@@ -31,6 +33,13 @@ class SimulationContractTests(unittest.TestCase):
         first = simulate(self.scenario, seed=2036)
         second = simulate(self.scenario, seed=2036)
         self.assertEqual(first, second)
+
+    def test_version_ssot_is_synchronized(self) -> None:
+        project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+        project_version = project["project"]["version"]
+        result = simulate(self.scenario, seed=2036)
+        self.assertEqual(project_version, __version__)
+        self.assertEqual(project_version, result["engine_version"])
 
     def test_baseline_collapses_from_declared_gate(self) -> None:
         result = simulate(self.scenario, seed=2036)
@@ -112,12 +121,31 @@ class SimulationContractTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             simulate(broken)
 
+    def test_boolean_effect_is_not_accepted_as_a_number(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["baseline_annual_effects"]["living_systems"] = True
+        with self.assertRaisesRegex(ContractError, "must be numeric"):
+            simulate(broken)
+
+    def test_malformed_nested_shock_fails_with_contract_error(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["shocks"][0] = {"id": "broken", "effects": []}
+        with self.assertRaisesRegex(ContractError, "shock:broken"):
+            simulate(broken)
+
     def test_public_files_do_not_contain_windows_home_path(self) -> None:
         forbidden = "C:" + os.sep + "Users" + os.sep
         for path in ROOT.rglob("*"):
             if not path.is_file() or ".git" in path.parts:
                 continue
-            if path.suffix.lower() not in {".md", ".py", ".json", ".toml", ".txt", ".yml"}:
+            if path.suffix.lower() not in {
+                ".md",
+                ".py",
+                ".json",
+                ".toml",
+                ".txt",
+                ".yml",
+            }:
                 continue
             text = path.read_text(encoding="utf-8")
             self.assertNotIn(forbidden, text, str(path))
