@@ -17,3 +17,4 @@ release時にexact main commit、版番号、実日付を別承認で確定し�
 - 技術・制度・運用ツリーの完了年計算、循環検出、ノード遅延による感度分析
 - Python 3.11〜3.13対応のCLI、unit test、GitHub Actions
 - repo-preflight、ai-ratchet-gate v0.1.1、SSOT・公開・第三者IP境界
+- build backendを脆弱性修正版`setuptools==83.0.0`へ固定
