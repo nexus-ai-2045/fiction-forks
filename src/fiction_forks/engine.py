@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 import random
 from copy import deepcopy
 from pathlib import Path
@@ -30,16 +31,57 @@ def load_json(path: str | Path) -> dict[str, Any]:
     return value
 
 
-def _validate_effects(effects: Mapping[str, Any], label: str) -> None:
+def _require_mapping(value: Any, label: str) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        raise ContractError(f"{label} must be an object")
+    return value
+
+
+def _require_int(value: Any, label: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ContractError(f"{label} must be an integer")
+    return value
+
+
+def _require_number(value: Any, label: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ContractError(f"{label} must be a finite number")
+    try:
+        number = float(value)
+    except OverflowError as error:
+        raise ContractError(f"{label} must be a finite number") from error
+    if not math.isfinite(number):
+        raise ContractError(f"{label} must be a finite number")
+    return number
+
+
+def _require_string_list(
+    value: Any, label: str, *, non_empty: bool = True
+) -> list[str]:
+    if not isinstance(value, list) or (non_empty and not value):
+        requirement = "a non-empty list" if non_empty else "a list"
+        raise ContractError(f"{label} must be {requirement}")
+    if not all(isinstance(item, str) and item.strip() for item in value):
+        raise ContractError(f"{label} must contain non-empty strings")
+    return value
+
+
+def _validate_effects(effects: Any, label: str) -> None:
+    effects = _require_mapping(effects, label)
     unknown = sorted(set(effects) - set(METRICS))
     if unknown:
         raise ContractError(f"{label} has unknown metrics: {unknown}")
     for metric, delta in effects.items():
-        if not isinstance(delta, (int, float)):
-            raise ContractError(f"{label}.{metric} must be numeric")
+        try:
+            _require_number(delta, f"{label}.{metric}")
+        except ContractError as error:
+            raise ContractError(
+                f"{label}.{metric} must be numeric and finite"
+            ) from error
 
 
 def validate_scenario(scenario: Mapping[str, Any]) -> None:
+    scenario = _require_mapping(scenario, "scenario")
     required = {
         "schema_version",
         "id",
@@ -59,51 +101,90 @@ def validate_scenario(scenario: Mapping[str, Any]) -> None:
     missing = sorted(required - set(scenario))
     if missing:
         raise ContractError(f"scenario missing fields: {missing}")
-    if scenario["start_year"] > scenario["end_year"]:
+    for field in ("schema_version", "id", "title", "assumption_notice"):
+        if not isinstance(scenario[field], str) or not scenario[field].strip():
+            raise ContractError(f"scenario.{field} must be a non-empty string")
+    start_year = _require_int(scenario["start_year"], "start_year")
+    end_year = _require_int(scenario["end_year"], "end_year")
+    if start_year > end_year:
         raise ContractError("start_year must be <= end_year")
-    if not isinstance(scenario["design_question"], str) or not scenario[
-        "design_question"
-    ].strip():
+    if (
+        not isinstance(scenario["design_question"], str)
+        or not scenario["design_question"].strip()
+    ):
         raise ContractError("design_question must be a non-empty string")
-    if not isinstance(scenario["causal_chain"], list) or len(
-        scenario["causal_chain"]
-    ) < 2:
+    if (
+        not isinstance(scenario["causal_chain"], list)
+        or len(scenario["causal_chain"]) < 2
+    ):
         raise ContractError("causal_chain must contain at least two steps")
     if not all(
         isinstance(step, str) and step.strip() for step in scenario["causal_chain"]
     ):
         raise ContractError("causal_chain steps must be non-empty strings")
-    if not isinstance(scenario["evidence_refs"], list) or not scenario[
-        "evidence_refs"
-    ]:
-        raise ContractError("evidence_refs must be a non-empty list")
-    if set(scenario["initial_state"]) != set(METRICS):
+    _require_string_list(scenario["evidence_refs"], "evidence_refs")
+    initial_state = _require_mapping(scenario["initial_state"], "initial_state")
+    if set(initial_state) != set(METRICS):
         raise ContractError("initial_state must define exactly the five metrics")
-    _validate_effects(scenario["initial_state"], "initial_state")
-    for metric, value in scenario["initial_state"].items():
-        if not 0 <= float(value) <= 100:
+    _validate_effects(initial_state, "initial_state")
+    for metric, value in initial_state.items():
+        if not 0 <= _require_number(value, f"initial_state.{metric}") <= 100:
             raise ContractError(f"initial_state.{metric} must be between 0 and 100")
     _validate_effects(scenario["baseline_annual_effects"], "baseline_annual_effects")
-    for shock in scenario["shocks"]:
-        _validate_effects(shock["effects"], f"shock:{shock.get('id', 'unknown')}")
-        if shock.get("variance", 0) < 0:
+    capabilities = _require_mapping(
+        scenario["capability_availability"], "capability_availability"
+    )
+    for capability, year in capabilities.items():
+        if not isinstance(capability, str) or not capability.strip():
+            raise ContractError(
+                "capability_availability keys must be non-empty strings"
+            )
+        _require_int(year, f"capability_availability.{capability}")
+
+    shocks = scenario["shocks"]
+    if not isinstance(shocks, list):
+        raise ContractError("shocks must be a list")
+    for index, raw_shock in enumerate(shocks):
+        shock = _require_mapping(raw_shock, f"shock:{index}")
+        shock_id = shock.get("id", "unknown")
+        label = f"shock:{shock_id}"
+        if not isinstance(shock_id, str) or not shock_id.strip():
+            raise ContractError(f"shock:{index}.id must be a non-empty string")
+        if not isinstance(shock.get("label"), str) or not shock["label"].strip():
+            raise ContractError(f"{label}.label must be a non-empty string")
+        if "year" not in shock:
+            raise ContractError(f"{label}.year is required")
+        _require_int(shock["year"], f"{label}.year")
+        if "effects" not in shock:
+            raise ContractError(f"{label}.effects is required")
+        _validate_effects(shock["effects"], f"{label}.effects")
+        variance = _require_int(shock.get("variance", 0), f"{label}.variance")
+        if variance < 0:
             raise ContractError("shock variance must be >= 0")
-    collapse = scenario["collapse"]
-    unknown = sorted(set(collapse["metrics"]) - set(METRICS))
+    collapse = _require_mapping(scenario["collapse"], "collapse")
+    collapse_metrics = _require_string_list(collapse.get("metrics"), "collapse.metrics")
+    unknown = sorted(set(collapse_metrics) - set(METRICS))
     if unknown:
         raise ContractError(f"collapse has unknown metrics: {unknown}")
-    if not 0 <= float(collapse["threshold"]) <= 100:
+    threshold = _require_number(collapse.get("threshold"), "collapse.threshold")
+    if not 0 <= threshold <= 100:
         raise ContractError("collapse threshold must be between 0 and 100")
-    minimum_breaches = int(collapse["minimum_breaches"])
-    if not 1 <= minimum_breaches <= len(collapse["metrics"]):
+    minimum_breaches = _require_int(
+        collapse.get("minimum_breaches"), "collapse.minimum_breaches"
+    )
+    if not 1 <= minimum_breaches <= len(collapse_metrics):
         raise ContractError("minimum_breaches must fit collapse.metrics")
-    if int(collapse["consecutive_turns"]) < 1:
+    consecutive_turns = _require_int(
+        collapse.get("consecutive_turns"), "collapse.consecutive_turns"
+    )
+    if consecutive_turns < 1:
         raise ContractError("consecutive_turns must be >= 1")
 
 
 def validate_intervention(
     intervention: Mapping[str, Any], scenario: Mapping[str, Any]
 ) -> None:
+    intervention = _require_mapping(intervention, "intervention")
     required = {
         "schema_version",
         "id",
@@ -121,37 +202,45 @@ def validate_intervention(
     missing = sorted(required - set(intervention))
     if missing:
         raise ContractError(f"intervention missing fields: {missing}")
+    for field in ("schema_version", "id", "fiction_reference", "extracted_function"):
+        if not isinstance(intervention[field], str) or not intervention[field].strip():
+            raise ContractError(f"intervention.{field} must be a non-empty string")
     allowed_modes = {"literal", "functional_equivalent", "institutional_equivalent"}
     if intervention["realization_mode"] not in allowed_modes:
         raise ContractError("unknown realization_mode")
-    unavailable = sorted(
-        set(intervention["prerequisites"]) - set(scenario["capability_availability"])
+    prerequisites = _require_string_list(
+        intervention["prerequisites"], "prerequisites", non_empty=False
     )
+    capabilities = _require_mapping(
+        scenario["capability_availability"], "capability_availability"
+    )
+    unavailable = sorted(set(prerequisites) - set(capabilities))
     if unavailable:
         raise ContractError(f"unknown prerequisites: {unavailable}")
     _validate_effects(intervention["activation_effects"], "activation_effects")
     _validate_effects(intervention["annual_effects"], "annual_effects")
+    for field in ("costs", "side_effects", "failure_modes"):
+        _require_string_list(intervention[field], field)
 
-    tree = intervention["technology_tree"]
-    if not isinstance(tree, Mapping):
-        raise ContractError("technology_tree must be an object")
+    tree = _require_mapping(intervention["technology_tree"], "technology_tree")
     nodes = tree.get("nodes")
     activation_requires = tree.get("activation_requires")
     if not isinstance(nodes, list) or not nodes:
         raise ContractError("technology_tree.nodes must be a non-empty list")
-    if not isinstance(activation_requires, list) or not activation_requires:
-        raise ContractError(
-            "technology_tree.activation_requires must be a non-empty list"
-        )
+    activation_requires = _require_string_list(
+        activation_requires, "technology_tree.activation_requires"
+    )
 
     node_ids = [node.get("id") for node in nodes if isinstance(node, Mapping)]
-    if len(node_ids) != len(nodes) or any(not value for value in node_ids):
+    if len(node_ids) != len(nodes) or any(
+        not isinstance(value, str) or not value.strip() for value in node_ids
+    ):
         raise ContractError("every technology_tree node must have an id")
     if len(set(node_ids)) != len(node_ids):
         raise ContractError("technology_tree node ids must be unique")
 
     node_id_set = set(node_ids)
-    external_capabilities = set(scenario["capability_availability"])
+    external_capabilities = set(capabilities)
     referenced_external: set[str] = set()
     allowed_kinds = {"technology", "institution", "operations"}
     for node in nodes:
@@ -159,14 +248,19 @@ def validate_intervention(
             raise ContractError(f"technology_tree:{node['id']} has unknown kind")
         if not isinstance(node.get("label"), str) or not node["label"].strip():
             raise ContractError(f"technology_tree:{node['id']} must have a label")
-        if not isinstance(node.get("completion_evidence"), str) or not node[
-            "completion_evidence"
-        ].strip():
+        if (
+            not isinstance(node.get("completion_evidence"), str)
+            or not node["completion_evidence"].strip()
+        ):
             raise ContractError(
                 f"technology_tree:{node['id']} must have completion_evidence"
             )
         lead_time = node.get("lead_time_years")
-        if not isinstance(lead_time, int) or lead_time < 0:
+        if (
+            isinstance(lead_time, bool)
+            or not isinstance(lead_time, int)
+            or lead_time < 0
+        ):
             raise ContractError(
                 f"technology_tree:{node['id']}.lead_time_years must be a non-negative integer"
             )
@@ -174,6 +268,10 @@ def validate_intervention(
         if not isinstance(dependencies, list):
             raise ContractError(
                 f"technology_tree:{node['id']}.depends_on must be a list"
+            )
+        if not all(isinstance(dependency, str) for dependency in dependencies):
+            raise ContractError(
+                f"technology_tree:{node['id']}.depends_on must contain strings"
             )
         unknown_dependencies = sorted(
             set(dependencies) - node_id_set - external_capabilities
@@ -191,7 +289,7 @@ def validate_intervention(
             "technology_tree.activation_requires has unknown nodes: "
             f"{unknown_activation_nodes}"
         )
-    if set(intervention["prerequisites"]) != referenced_external:
+    if set(prerequisites) != referenced_external:
         raise ContractError(
             "prerequisites must exactly match external capabilities used by technology_tree"
         )
@@ -210,9 +308,7 @@ def _apply_effects(
     return applied
 
 
-def _shock_effects(
-    shock: Mapping[str, Any], rng: random.Random
-) -> dict[str, float]:
+def _shock_effects(shock: Mapping[str, Any], rng: random.Random) -> dict[str, float]:
     variance = int(shock.get("variance", 0))
     return {
         metric: float(delta + (rng.randint(-variance, variance) if variance else 0))
@@ -233,13 +329,12 @@ def _technology_schedule(
     if unknown_delays:
         raise ContractError(f"technology delay has unknown nodes: {unknown_delays}")
     for node_id, delay in applied_delays.items():
-        if not isinstance(delay, int) or delay < 0:
+        if isinstance(delay, bool) or not isinstance(delay, int) or delay < 0:
             raise ContractError(
                 f"technology delay for {node_id} must be a non-negative integer"
             )
     external = {
-        name: int(year)
-        for name, year in scenario["capability_availability"].items()
+        name: int(year) for name, year in scenario["capability_availability"].items()
     }
     schedule: dict[str, int] = {}
     visiting: set[str] = set()
@@ -332,7 +427,11 @@ def simulate(
                 }
             )
 
-        if intervention is not None and activation_year is not None and year >= activation_year:
+        if (
+            intervention is not None
+            and activation_year is not None
+            and year >= activation_year
+        ):
             if year == activation_year:
                 effects = _apply_effects(state, intervention["activation_effects"])
                 events.append(
@@ -413,7 +512,9 @@ def compare_worlds(
         baseline["timeline"][-1]["year"], fork["timeline"][-1]["year"]
     )
     baseline_state = next(
-        turn["state"] for turn in baseline["timeline"] if turn["year"] == comparison_year
+        turn["state"]
+        for turn in baseline["timeline"]
+        if turn["year"] == comparison_year
     )
     fork_state = next(
         turn["state"] for turn in fork["timeline"] if turn["year"] == comparison_year

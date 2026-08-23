@@ -121,12 +121,31 @@ class SimulationContractTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             simulate(broken)
 
+    def test_boolean_effect_is_not_accepted_as_a_number(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["baseline_annual_effects"]["living_systems"] = True
+        with self.assertRaisesRegex(ContractError, "must be numeric"):
+            simulate(broken)
+
+    def test_malformed_nested_shock_fails_with_contract_error(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["shocks"][0] = {"id": "broken", "effects": []}
+        with self.assertRaisesRegex(ContractError, "shock:broken"):
+            simulate(broken)
+
     def test_public_files_do_not_contain_windows_home_path(self) -> None:
         forbidden = "C:" + os.sep + "Users" + os.sep
         for path in ROOT.rglob("*"):
             if not path.is_file() or ".git" in path.parts:
                 continue
-            if path.suffix.lower() not in {".md", ".py", ".json", ".toml", ".txt", ".yml"}:
+            if path.suffix.lower() not in {
+                ".md",
+                ".py",
+                ".json",
+                ".toml",
+                ".txt",
+                ".yml",
+            }:
                 continue
             text = path.read_text(encoding="utf-8")
             self.assertNotIn(forbidden, text, str(path))
