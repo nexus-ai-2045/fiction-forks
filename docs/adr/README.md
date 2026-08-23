@@ -19,6 +19,7 @@ ADRは、現在の設計が「何を選んだか」だけでなく、「なぜ�
 | [0004](0004-technology-tree-includes-institutions-and-operations.md) | Accepted | 技術ツリーに制度と運用を含める |
 | [0005](0005-collapse-means-loss-of-repairability.md) | Accepted | 破滅を修復可能性の喪失として明示判定する |
 | [0006](0006-web-and-ai-are-projections.md) | Accepted | WebとAIをengine結果の投影層にする |
+| [0007](0007-readme-is-the-first-play-surface.md) | Accepted | READMEを最初のプレイ画面として設計する |
 
 ## 追加方法
 

@@ -7,6 +7,7 @@
 | プロダクトコード | このリポジトリの `src/` |
 | プロダクト体験とロードマップ | `docs/product-design.md` |
 | Web UXと画面引継ぎ | `docs/ux-flow.md` |
+| ビジュアル文法とtoken | `docs/visual-system.md` |
 | アーキテクチャと設計判断 | `docs/architecture.md` と `docs/adr/` |
 | シナリオ契約 | `scenarios/` と `docs/simulation-contract.md` |
 | シナリオの公開根拠と反証条件 | `docs/scenario-rationale.md` |

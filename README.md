@@ -6,27 +6,13 @@
 
 **アニメ・漫画・小説・ゲーム** × **技術ツリー** × **日本 2026→2036**
 
-`決定的シミュレーション`　`Pull Request = 新しい世界線`　`オープン参加`
+[![CI](https://github.com/nexus-ai-2045/fiction-forks/actions/workflows/ci.yml/badge.svg)](https://github.com/nexus-ai-2045/fiction-forks/actions/workflows/ci.yml)　`決定的シミュレーション`　`Pull Request = 新しい世界線`　`オープン参加`
 
 </div>
 
-```mermaid
-flowchart LR
-    now["🇯🇵 2026<br/>いまの日本"] -->|"何もしない"| collapse["⚠️ 2036<br/>修復不能へ"]
-    fiction["📚 FICTION<br/>未来を変える部品"] --> translate["🧩 TRANSLATE<br/>技術・制度・運用"]
-    translate --> tree["🌳 BUILD<br/>実装可能な技術ツリー"]
-    tree --> fork["⑂ FORK<br/>PRで世界線を追加"]
-    now --> fork
-    fork --> compare["⚖️ COMPARE<br/>同じ危機・同じseed"]
-    compare --> future["🌱 2036<br/>別の未来は可能か"]
-
-    classDef danger fill:#4b161b,stroke:#ff6b6b,color:#ffffff,stroke-width:2px;
-    classDef action fill:#112d4e,stroke:#54a0ff,color:#ffffff,stroke-width:2px;
-    classDef hope fill:#12372a,stroke:#5ee49b,color:#ffffff,stroke-width:2px;
-    class collapse danger;
-    class fiction,translate,tree,fork,compare action;
-    class future hope;
-```
+<p align="center">
+  <img src="assets/readme/hero.svg" width="100%" alt="2026年の日本から、無介入なら2036年の修復不能へ進む世界線と、フィクションの機能を技術・制度・運用へ翻訳して別の2036年へ分岐する世界線">
+</p>
 
 | 何もしない世界 | あなたが加える部品 | 比較できる未来 |
 |:---:|:---:|:---:|
@@ -37,6 +23,13 @@ flowchart LR
 > **一つのPull Requestが、一つの未来分岐になります。** 作品の強さを競うのではなく、その発想を現実に実装する条件と代償を競うゲームです。
 
 **[▶ 3分で試す](#クイックスタート)**　·　**[⑂ 未来をforkする](#未来をforkする)**　·　**[◎ 現在の世界を見る](#現在遊べる世界)**　·　**[◇ 設計を読む](#設計を読む)**
+
+### 30秒で分かること
+
+| 01 — READ | 02 — RUN | 03 — FORK |
+|:---|:---|:---|
+| 放置すると、いつ何を失うかを読む | 同じ危機・同じseedで介入前後を比べる | 技術・制度・運用をPRとして追加する |
+| **2036年、修復不能へ** | **費用・遅延・副作用も表示** | **一つのPRが一つの世界線** |
 
 アニメ、漫画、小説、ゲームは、未来技術のカタログであると同時に、専門や国籍が違う人どうしでも「この構造のこと」と短く指せる共通言語です。Fiction Forksでは、その共通言語を作品鑑賞で終わらせず、技術・制度・運用・完成証拠を持つ介入へ変換します。
 
@@ -188,6 +181,7 @@ flowchart LR
 |---|---|
 | [プロダクト設計](docs/product-design.md) | 誰が何をして、何を面白いと感じるのか |
 | [UXフロー](docs/ux-flow.md) | Web版ではどの画面をどの順で使うのか |
+| [ビジュアルシステム](docs/visual-system.md) | 世界線、破滅、介入、技術ツリーをどう見分けるか |
 | [アーキテクチャ](docs/architecture.md) | ルールエンジン、UI、AI、GitHubをどう分離するか |
 | [ADR](docs/adr/README.md) | なぜ現在の設計判断を選んだのか |
 | [セキュリティモデル](docs/security-model.md) | 公開参加型repoで何を守り、何を入力させないか |

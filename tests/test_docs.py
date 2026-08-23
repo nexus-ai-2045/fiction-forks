@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 import unittest
 from pathlib import Path
+from xml.etree import ElementTree
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,6 +14,7 @@ class DocumentationContractTests(unittest.TestCase):
         required = (
             "docs/product-design.md",
             "docs/ux-flow.md",
+            "docs/visual-system.md",
             "docs/architecture.md",
             "docs/security-model.md",
             "docs/adr/README.md",
@@ -42,6 +44,18 @@ class DocumentationContractTests(unittest.TestCase):
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, readme)
+
+    def test_readme_hero_is_safe_self_contained_svg(self) -> None:
+        hero = ROOT / "assets/readme/hero.svg"
+        self.assertTrue(hero.is_file())
+        root = ElementTree.parse(hero).getroot()
+        self.assertTrue(root.tag.endswith("svg"))
+
+        content = hero.read_text(encoding="utf-8")
+        self.assertNotRegex(content, r"(?i)<script\b")
+        self.assertNotRegex(content, r"(?i)(?:href|src)=[\"']https?://")
+        self.assertIn("<title", content)
+        self.assertIn("<desc", content)
 
     def test_relative_markdown_links_resolve(self) -> None:
         for markdown in ROOT.rglob("*.md"):
