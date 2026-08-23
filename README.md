@@ -1,12 +1,44 @@
-# Fiction Forks
+<div align="center">
 
-> 好きなフィクションの「未来を変える部品」を、実装可能な技術ツリーへ翻訳し、日本の未来を分岐させるオープン社会シミュレーション。
+# FICTION FORKS
+
+### フィクションの部品で、日本の未来をforkする。
+
+**アニメ・漫画・小説・ゲーム** × **技術ツリー** × **日本 2026→2036**
+
+`決定的シミュレーション`　`Pull Request = 新しい世界線`　`オープン参加`
+
+</div>
+
+```mermaid
+flowchart LR
+    now["🇯🇵 2026<br/>いまの日本"] -->|"何もしない"| collapse["⚠️ 2036<br/>修復不能へ"]
+    fiction["📚 FICTION<br/>未来を変える部品"] --> translate["🧩 TRANSLATE<br/>技術・制度・運用"]
+    translate --> tree["🌳 BUILD<br/>実装可能な技術ツリー"]
+    tree --> fork["⑂ FORK<br/>PRで世界線を追加"]
+    now --> fork
+    fork --> compare["⚖️ COMPARE<br/>同じ危機・同じseed"]
+    compare --> future["🌱 2036<br/>別の未来は可能か"]
+
+    classDef danger fill:#4b161b,stroke:#ff6b6b,color:#ffffff,stroke-width:2px;
+    classDef action fill:#112d4e,stroke:#54a0ff,color:#ffffff,stroke-width:2px;
+    classDef hope fill:#12372a,stroke:#5ee49b,color:#ffffff,stroke-width:2px;
+    class collapse danger;
+    class fiction,translate,tree,fork,compare action;
+    class future hope;
+```
+
+| 何もしない世界 | あなたが加える部品 | 比較できる未来 |
+|:---:|:---:|:---:|
+| **2036年に破滅** | 作品の機能を現実へ翻訳 | 発動・遅延・副作用を同条件で検証 |
+| 修復能力を失う | 技術＋制度＋運用をつなぐ | PRごとに新しい世界線が増える |
+
+> [!IMPORTANT]
+> **一つのPull Requestが、一つの未来分岐になります。** 作品の強さを競うのではなく、その発想を現実に実装する条件と代償を競うゲームです。
+
+**[▶ 3分で試す](#クイックスタート)**　·　**[⑂ 未来をforkする](#未来をforkする)**　·　**[◎ 現在の世界を見る](#現在遊べる世界)**　·　**[◇ 設計を読む](#設計を読む)**
 
 アニメ、漫画、小説、ゲームは、未来技術のカタログであると同時に、専門や国籍が違う人どうしでも「この構造のこと」と短く指せる共通言語です。Fiction Forksでは、その共通言語を作品鑑賞で終わらせず、技術・制度・運用・完成証拠を持つ介入へ変換します。
-
-一つのPull Requestが、一つの未来分岐になります。
-
-[3分で試す](#クイックスタート) · [未来をforkする](#未来をforkする) · [設計を読む](#設計を読む) · [公式根拠](#公式根拠)
 
 ## 目的
 
@@ -23,15 +55,16 @@
 
 を宣言し、無介入世界と同じショック・同じ乱数seedで比較します。人気投票ではなく、反証可能な未来実装ゲームです。
 
+### ゲームループ
+
 ```mermaid
 flowchart LR
-    fiction["知っている作品"] --> lens["未来を変える機能を抽出"]
-    lens --> translate["技術・制度の問いへ翻訳"]
-    translate --> tree["技術ツリーと完成証拠を組む"]
-    tree --> simulate["同じ条件で世界線を比較"]
-    simulate --> stress["遅延・費用・副作用を試す"]
-    stress --> pullRequest["Pull Requestにする"]
-    pullRequest --> newWorld["比較できる未来が一つ増える"]
+    pick["① 選ぶ<br/>作品の機能"] --> question["② 問う<br/>社会の論点"]
+    question --> build["③ 組む<br/>技術ツリー"]
+    build --> run["④ 比べる<br/>同じseed"]
+    run --> break["⑤ 壊す<br/>遅延・費用・副作用"]
+    break --> pr["⑥ 提案する<br/>Pull Request"]
+    pr -. "次の参加者" .-> pick
 ```
 
 ## できること
