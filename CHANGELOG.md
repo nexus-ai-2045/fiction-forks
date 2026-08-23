@@ -6,7 +6,15 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 次の互換変更をここへ追記し、release時に版番号と日付を確定します。
 
+### Added
+
+- READMEを「30秒で世界観、3分で比較、PRで未来をfork」の参加導線へ再設計
+- プロダクト設計、UXフロー、アーキテクチャ、セキュリティモデル
+- 決定的engine、フィクション・レンズ、PR単位、技術ツリー、破滅条件、Web/AI境界を固定するADR
+
 ## [0.1.0] - 2026-08-24
+
+コード上の初期version。Git tagとGitHub Releaseは未作成であり、作成時はexact main commitを別承認で固定する。
 
 ### Added
 
@@ -15,6 +23,3 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 - 技術・制度・運用ツリーの完了年計算、循環検出、ノード遅延による感度分析
 - Python 3.11〜3.13対応のCLI、unit test、GitHub Actions
 - repo-preflight、ai-ratchet-gate v0.1.1、SSOT・公開・第三者IP境界
-
-[Unreleased]: https://github.com/nexus-ai-2045/fiction-forks/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/nexus-ai-2045/fiction-forks/releases/tag/v0.1.0

@@ -16,6 +16,8 @@ Fiction ForksはSemantic Versioningを小刻みに運用します。
 - 変更履歴: `CHANGELOG.md`
 - Git tag: release時にだけ `v<version>` をexact main commitへ付ける
 
+repositoryのpublic/privateは配布versionとは別の状態である。public化にtagやGitHub Releaseは必須ではなく、visibility変更とrelease作成はそれぞれ別のpreflight・人間承認として扱う。
+
 unit testが三つのversion不一致を検知する。ずれた場合は個別に数字を合わせるだけでなく、同じversion変更PRで正本、同期対象、CHANGELOGを更新してから再検証する。
 
 ## 更新手順
