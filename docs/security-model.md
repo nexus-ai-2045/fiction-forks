@@ -2,7 +2,7 @@
 
 ## Overview
 
-Fiction Forksは、ローカルCLIと公開GitHub repoを主な面に持つ社会シミュレーションMVPである。認証、常駐サーバー、データベースは持たない。任意のlive AI providerだけが明示確認後に外部APIを呼ぶ。主な保護対象は、決定的なシミュレーション結果、部分観測、公開根拠の境界、参加者の安全、第三者IP、credential、CIと依存関係の完全性である。
+Fiction Forksは、ローカルCLI、静的GitHub Pages Idea Builder、公開GitHub repoを主な面に持つ社会シミュレーションMVPである。認証、常駐サーバー、データベースは持たない。Idea Builderは公開Issue一覧をGitHub APIからread-onlyで取得し、投稿時はGitHubの確認画面を開く。任意のlive AI providerだけが明示確認後に外部APIを呼ぶ。主な保護対象は、決定的なシミュレーション結果、部分観測、公開根拠の境界、参加者の安全、第三者IP、credential、CIと依存関係の完全性である。
 
 ## Threat Model, Trust Boundaries, and Assumptions
 
@@ -11,6 +11,8 @@ Fiction Forksは、ローカルCLIと公開GitHub repoを主な面に持つ社�
 | 境界 | 未信頼側 | 信頼側へ入れる条件 |
 |---|---|---|
 | PR入力 | scenario、intervention、文書、作者の主張 | schema、test、review、権利・安全確認 |
+| Idea Builder入力 | 作品名、登場人物名、自由記述 | 文字数上限、ブラウザ内処理、GitHub投稿前の本人確認 |
+| GitHub公開API | Issue title、author、URL | HTTPS、read-only、`textContent`描画、取得失敗時fallback |
 | JSON実行 | ローカルまたは取得したJSON | size制限予定、型・依存・循環検証 |
 | 根拠 | 外部URL、統計、作品解釈 | 公式性と参照根拠を分離し、確認日を記録 |
 | AI出力 | action、説明、target、evidence ID | strict schema、固定catalog、engine非変更 |
@@ -48,7 +50,11 @@ Fiction Forksは、ローカルCLIと公開GitHub repoを主な面に持つ社�
 
 ### Web・AI
 
-Web版を公開する場合はXSS、依存供給網、DoS、外部リンク、保存データ、rate limitが新しい面になる。AI層ではprompt injection、根拠捏造、role-scoped observationの越境、secret送信を想定する。役ごとの観測を最小化し、出力をstrict schemaで検査し、未知fieldと観測外evidenceを拒否する。公開artifactはallowlist projectionとして自由記述、条件本文、role-scoped evidence IDを除外する。設定全体、文字列、roles、turns、1 runのprovider call数を上限化する。live OpenAI providerは公式SDK、`store=false`、明示model、API key、`--confirm-live`を必須にし、CIから呼ばない。
+Idea Builderはdependency-freeな静的HTML/CSS/JavaScriptとし、入力を独自serverへ送信、保存しない。GitHub tokenを要求せず、Issue作成URLへtitle/bodyをprefillしてGitHub側の確認画面を開く。自由入力と公開API由来のtitle/authorは`innerHTML`へ渡さず`textContent`で描画する。CSPはself-originのscript/styleと`api.github.com`へのread-only接続だけを許可する。公開APIのrate limit、障害、応答形式不正はidea一覧だけをfallback表示にし、入力導線を停止させない。
+
+Issue URLは入力をquery stringへ含むため、共有端末のhistoryや外部画面共有に残る可能性がある。UIは個人情報、秘密情報、攻撃手順の入力を禁止し、GitHub遷移前に権利・安全checkboxと内容previewを必須にする。GitHubへ遷移した後の保存、公開、削除はGitHubと投稿者の責任境界になる。
+
+AI層ではprompt injection、根拠捏造、role-scoped observationの越境、secret送信を想定する。役ごとの観測を最小化し、出力をstrict schemaで検査し、未知fieldと観測外evidenceを拒否する。公開artifactはallowlist projectionとして自由記述、条件本文、role-scoped evidence IDを除外する。設定全体、文字列、roles、turns、1 runのprovider call数を上限化する。live OpenAI providerは公式SDK、`store=false`、明示model、API key、`--confirm-live`を必須にし、CIから呼ばない。
 
 現在はサーバー、認証、秘密データ保存がないため、SQL injection、CSRF、tenant越境、session theftは直接のruntime面ではない。将来それらを導入した時点で再評価する。
 

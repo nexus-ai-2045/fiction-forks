@@ -20,6 +20,10 @@ class DocumentationContractTests(unittest.TestCase):
             "docs/social-simulation.md",
             "docs/adr/README.md",
             "RESULTS.md",
+            "web/index.html",
+            "web/styles.css",
+            "web/app.js",
+            "notebooks/validate-worldline.ipynb",
         )
         for relative_path in required:
             with self.subTest(path=relative_path):
@@ -44,6 +48,9 @@ class DocumentationContractTests(unittest.TestCase):
             "PR作成はmergeや公開完了ではない",
             "反映確認済み",
             "決定論エンジン",
+            "Idea = Issue",
+            "Worldline = PR",
+            "https://nexus-ai-2045.github.io/fiction-forks/",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, readme)
@@ -105,6 +112,36 @@ class DocumentationContractTests(unittest.TestCase):
                     continue
                 with self.subTest(document=markdown.relative_to(ROOT), link=raw_target):
                     self.assertTrue((markdown.parent / target).resolve().exists())
+
+    def test_idea_builder_keeps_static_safety_boundary(self) -> None:
+        html = (ROOT / "web/index.html").read_text(encoding="utf-8")
+        script = (ROOT / "web/app.js").read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/pages.yml").read_text(encoding="utf-8")
+        for phrase in (
+            "GitHubでIssueを確認",
+            "作品・登場人物",
+            "借りたい機能",
+            "変えたい未来",
+            "実現条件と副作用",
+            "Content-Security-Policy",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, html)
+        self.assertNotIn("innerHTML", script)
+        self.assertNotIn("localStorage", script)
+        self.assertIn("textContent", script)
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertNotRegex(workflow, r"(?m)^\s+push:\s*$")
+
+    def test_colab_notebook_is_valid_json_without_embedded_credentials(self) -> None:
+        import json
+
+        notebook_path = ROOT / "notebooks/validate-worldline.ipynb"
+        content = notebook_path.read_text(encoding="utf-8")
+        notebook = json.loads(content)
+        self.assertEqual(notebook["nbformat"], 4)
+        self.assertNotIn("OPENAI_API_KEY", content)
+        self.assertNotRegex(content, r"gh[pousr]_[A-Za-z0-9_]{20,}")
 
 
 if __name__ == "__main__":

@@ -1,25 +1,58 @@
 # コントリビューションガイド
 
-このプロジェクトでは、一つのPull Requestを一つの未来介入として扱います。
+このプロジェクトでは、アイデアと実装を分けます。未実装の着想は一つの`idea` Issue、再現可能な介入実装は一つの`worldline` Pull Requestとして扱います。engine、workflow、文書、依存の変更は`maintenance` Pull Requestです。
 
 ## コードを書かない参加
 
-READMEの「コードを書かずに参加する」にある固定repo URL入りプロンプトへ、作品名と未来へ取り入れたい機能を一文で加えてAIへ渡してください。AIは専用branch、実装、検証、PR作成まで進めます。参加者がCLIやGitを操作する必要はありません。
+[Fiction Forks Idea Builder](https://nexus-ai-2045.github.io/fiction-forks/)へ作品名、任意の登場人物、未来へ取り入れたい機能、変えたい課題、実現条件、副作用を入力してください。入力はブラウザ内だけで処理され、最後にGitHubのIssue作成確認画面を開きます。GitHub accountを使わない場合はIssue用Markdownをコピーできます。
 
-PR作成、承認、merge、mainからの反映確認は別の状態です。AIはPR本文に目的、変更範囲、検証結果、未実装、仮定、残課題、権利・安全確認を書き、人間レビュー前で止まります。
+Idea IssueはAI-agent simulationを実行しません。効果、実現可能性、公式性を認定するものでもありません。実装したいcontributorはIssue URLをAIへ渡すか、ローカルまたはColabで検証してworldline PRへ昇格します。
 
 最初に [プロダクト設計](docs/product-design.md) と [シミュレーション契約](docs/simulation-contract.md) を読み、作品を知らない人にも通じる問いを [フィクション・レンズ](docs/fiction-lenses.md) と同じ形式で一文にしてください。
 
+## Issueからworldline PRへ
+
+### AIへ依頼する
+
+READMEの固定プロンプトへIssue URLを貼り、専用branch、実装、検証、PR作成まで依頼します。AIはPR本文に目的、変更範囲、検証結果、未実装、仮定、残課題、権利・安全確認を書き、人間レビュー前で止まります。
+
+### ローカルで動かす
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m unittest discover -s tests -v
+python -m fiction_forks compare `
+  --scenario scenarios/japan-2036/scenario.json `
+  --intervention interventions/<slug>.json `
+  --seed 2036
+python -m fiction_forks social `
+  --scenario scenarios/japan-2036/scenario.json `
+  --intervention interventions/<slug>.json `
+  --social-config scenarios/japan-2036/social-<slug>.json `
+  --provider fixture `
+  --fixture fixtures/social/<slug>.jsonl `
+  --output run.json
+```
+
+### Colabで動かす
+
+[検証用notebook](https://colab.research.google.com/github/nexus-ai-2045/fiction-forks/blob/main/notebooks/validate-worldline.ipynb)を開き、GitHub上のbranch名とslugを指定します。notebookは公開branchをcloneしてfixtureと決定論比較を実行します。credentialの入力やPR作成は行いません。
+
+PR作成、承認、merge、mainからの反映確認は別の状態です。
+
 ## 介入PRの条件
 
-1. `interventions/` に一つのJSONを追加する。
-2. 参照作品と、そこから抽出した機能を自分の言葉で書く。
-3. 実現方式、技術・制度・運用ノード、依存先、実装年数、完成証拠を書く。
-4. 既存scenarioと同じseedで基準世界・介入世界を比較する。
-5. `python -m unittest discover -s tests -v` を通す。
-6. 公式画像、台詞、音声、映像、ロゴ、特徴的な口調を収録しない。
-7. 一つ以上のノードを意図的に遅らせ、介入が間に合わない条件も確認する。
-8. `docs/adr/` のAccepted判断と矛盾する場合は、判断変更用のADRを同じPRへ追加する。
+1. 関連する`idea` Issueを一つ指定する。
+2. `interventions/<slug>.json`を一つ追加する。
+3. `scenarios/japan-2036/social-<slug>.json`を追加する。
+4. `fixtures/social/<slug>.jsonl`を追加する。
+5. 参照作品と、そこから抽出した機能を自分の言葉で書く。
+6. 実現方式、技術・制度・運用ノード、依存先、実装年数、完成証拠を書く。
+7. 既存scenarioと同じseedで基準世界・介入世界を比較する。
+8. `python -m unittest discover -s tests -v` を通す。
+9. 公式画像、台詞、音声、映像、ロゴ、特徴的な口調を収録しない。
+10. 一つ以上のノードを意図的に遅らせ、介入が間に合わない条件も確認する。
+11. `docs/adr/` のAccepted判断と矛盾する場合は、判断変更用のADRを同じPRへ追加する。
 
 ## PRに書くこと
 

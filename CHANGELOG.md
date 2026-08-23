@@ -4,11 +4,15 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 ## [Unreleased]
 
-コード上の現在versionは`0.2.0`です。Git tagとGitHub Releaseは未作成であり、
+コード上の現在versionは`0.3.0`です。Git tagとGitHub Releaseは未作成であり、
 release時にexact main commit、版番号、実日付を別承認で確定します。
 
 ### Added
 
+- 作品名・任意の登場人物名からidea Issueを組み立てる静的Idea Builderと手動GitHub Pages公開workflow
+- 一般参加者の`idea` Issue、実装者の`worldline` PR、保守用`maintenance` PRを分けるtemplateとADR 0009
+- worldline PRの投稿者、5役×3ターンfixture、2036年比較をGitHub Actions step summaryへ表示するPR contract gate
+- 公開branchをcredentialなしで検証するGoogle Colab notebook
 - 5つの社会役が3ターン対話し、制約付きactionから技術・制度・運用ノードの遅延を決めるAIエージェント層
 - fixture、replay、OpenAI Responses Structured Outputsのprovider境界とbefore/after hash chain
 - コード不要の固定repo URL入り参加プロンプト、社会シミュレーション設計、ADR 0008、RESULTS
