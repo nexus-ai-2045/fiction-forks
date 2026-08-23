@@ -10,7 +10,7 @@
 | 介入カード | `interventions/` と `CONTRIBUTING.md` |
 | フィクション参照レンズ | `docs/fiction-lenses.md` |
 | 公開方針 | `README.md`、`SECURITY.md`、`PUBLIC_READY.md` |
-| バージョン | `pyproject.toml` の `project.version` |
+| バージョン | `pyproject.toml` の `project.version`。同期規律は `VERSIONING.md`、変更履歴は `CHANGELOG.md` |
 | 元議論・非公開証拠 | このリポジトリの外。本文や参加者情報を複製しない |
 | ハッカソンの公式根拠 | `docs/official-sources.md` に固定した公式サイトと片山俊大氏 v1.0ペーパー |
 

@@ -159,7 +159,7 @@ python -m fiction_forks compare `
 
 ## バージョン方針
 
-初期版は `0.1.0` です。通常はpatchを小刻みに上げ、互換性を保った大きな機能追加でminorを上げます。シナリオ追加や文書修正だけで機械的に大きく上げず、破壊的なschema変更までmajorは使用しません。依存関係とGitHub Actionsはexact版へ固定し、一系統ずつ検証付きPRで更新します。詳細は [VERSIONING.md](VERSIONING.md) に記録します。
+初期版は `0.1.0` です。通常はpatchを小刻みに上げ、互換性を保った大きな機能追加でminorを上げます。シナリオ追加や文書修正だけで機械的に大きく上げず、破壊的なschema変更までmajorは使用しません。依存関係とGitHub Actionsはexact版へ固定し、一系統ずつ検証付きPRで更新します。規律は [VERSIONING.md](VERSIONING.md)、利用者影響は [CHANGELOG.md](CHANGELOG.md) に記録します。
 
 ## ライセンスと権利境界
 
