@@ -98,7 +98,10 @@ def _write_output(path_value: str, rendered: str, *, overwrite: bool) -> None:
     temporary = path.with_name(f".{path.name}.tmp")
     if temporary.exists():
         raise ContractError(f"temporary output already exists: {temporary}")
-    temporary.write_text(rendered + "\n", encoding="utf-8")
+    # Artifact bytes are part of the replay/provenance contract. Text-mode
+    # writes would emit CRLF on Windows and LF on Linux, producing different
+    # SHA-256 values for the same logical run.
+    temporary.write_bytes((rendered + "\n").encode("utf-8"))
     temporary.replace(path)
 
 

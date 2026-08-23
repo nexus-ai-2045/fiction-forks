@@ -341,6 +341,7 @@ class SocialSimulationTests(unittest.TestCase):
                 self.assertEqual(2, cli_main(args))
                 self.assertEqual(0, cli_main([*args, "--overwrite"]))
             self.assertTrue(output.is_file())
+            self.assertNotIn(b"\r\n", output.read_bytes())
             self.assertFalse((output.parent / ".run.json.tmp").exists())
 
 

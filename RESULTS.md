@@ -17,7 +17,7 @@
 - final event hash: `9e6aadfc484e44f966bfb8f54c004be50e3f09f4ed98241b8e250fe90c2760fe`
 - artifact: [`artifacts/runs/japan-2036-fixture.json`](artifacts/runs/japan-2036-fixture.json)
 - manifest: [`artifacts/runs/japan-2036-fixture.manifest.json`](artifacts/runs/japan-2036-fixture.manifest.json)
-- artifact SHA-256: `b0fb526a01c4a6e8c91727c8f7cf76ba625effed11b5b725cc8a9b44aa4efdb4`
+- artifact SHA-256: `445732bd1a424fbee7e70f59d1c0ccda36e636517a9c61bd9783aa4fa0dc63dd`
 - actions: 15 / invalid: 0 / abstain: 0
 - capability coverage: 6 / interaction edges: 10 / conditioned intents: 15 / reversible action ratio: 1.0
 - 公開artifact漏洩検査: role-scoped evidence ID 0件 / 自由記述 0件
