@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fiction-forks"
-version = "0.1.0"
+version = "0.2.0"
 description = "フィクション由来の介入で日本の未来分岐を比較する透明な社会シミュレーション"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
@@ -12,6 +12,9 @@ license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "nexus_ai"}]
 dependencies = []
+
+[project.optional-dependencies]
+agents = ["openai==2.37.0"]
 
 [project.scripts]
 fiction-forks = "fiction_forks.cli:main"

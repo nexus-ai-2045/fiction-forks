@@ -2,20 +2,22 @@
 
 ## 原則
 
-シミュレーション状態は決定的ルールエンジンが所有する。CLI、将来のWeb UI、可視化、AI説明は、同じ入力と結果を読み書きする境界層であり、独自に状態値や破滅判定を変更しない。
+シミュレーション状態は決定的ルールエンジンが所有する。CLI、将来のWeb UI、可視化、AIエージェントは、同じ入力と結果を読み書きする境界層であり、独自に状態値や破滅判定を変更しない。
 
 ```mermaid
 flowchart LR
     contributor["参加者"] --> scenario["scenario JSON"]
     contributor --> intervention["intervention JSON"]
-    scenario --> engine["決定的ルールエンジン"]
-    intervention --> engine
+    scenario --> agents["5役のAIエージェント"]
+    intervention --> agents
+    agents --> catalog["制約付きaction catalog"]
+    catalog --> engine["決定的ルールエンジン"]
     seed["seed・遅延条件"] --> engine
     engine --> result["result JSON"]
     result --> cli["CLI"]
     result --> web["将来のWeb UI"]
     result --> report["比較レポート"]
-    result --> ai["将来のAI説明層"]
+    result --> replay["artifact replay"]
     cli --> checks["test・CI・repo gates"]
     web --> checks
     checks --> pullRequest["Pull Request"]
@@ -27,9 +29,10 @@ flowchart LR
 |---|---|---|---|
 | 契約データ | `scenarios/`, `interventions/` | 仮説、効果、技術ツリー、完成証拠 | 実行ロジック |
 | ルールエンジン | `src/fiction_forks/engine.py` | 検証、年次更新、遅延、破滅判定 | UI、自由記述の意味解釈 |
+| 社会エージェント | `agent_protocol.py`, `social.py` | 部分観測、行動検証、actionから遅延への変換、hash chain | 状態値、効果量、破滅判定 |
+| Provider | `providers.py` | fixture、replay、live LLMの入出力境界 | 世界状態、credential保存 |
 | CLI | `src/fiction_forks/cli.py` | 引数、JSON入出力、exit code | 状態遷移規則 |
 | 表示層 | 将来の `web/` | 比較、timeline、tree、入力支援 | 正本の数値更新 |
-| AI層 | 将来のadapter | 制約内の説明、候補、要約 | 指標、効果量、破滅判定の創作 |
 | 共同編集 | GitHub | diff、review、CI、履歴 | シミュレーションの暗黙変更 |
 
 ## 実行フロー
@@ -53,14 +56,13 @@ flowchart LR
 
 ## AI実装境界
 
-将来OpenAI APIやAgents SDKを利用する場合も、AIへ許可するのは次に限定する。
+現在のAIエージェントへ許可するのは次に限定する。
 
-- 作品機能から作品非依存の問いへの言い換え候補
-- 技術・制度・運用ノードの不足候補
-- 結果JSONの説明と比較要約
-- PRチェックリストの未記入箇所の指摘
+- 固定catalogからのaction選択
+- 観測済みevidence ID、対象役、確信度、採用条件
+- 280文字以内の説明
 
-AI出力は未信頼入力としてschema検証と人間レビューを通す。AIは効果量、外部ショック、破滅条件、根拠の公式性を自動確定しない。API keyやprompt本文をrepoへ保存しない。
+AI出力は未信頼入力としてstrict schema検証を通す。AIは効果量、外部ショック、破滅条件、根拠の公式性を自動確定しない。不正出力は`abstain`として状態不変にする。live providerは明示確認がある場合だけ起動し、API keyやprivate observationをartifactへ保存しない。
 
 ## GitHub境界
 

@@ -17,7 +17,9 @@ class DocumentationContractTests(unittest.TestCase):
             "docs/visual-system.md",
             "docs/architecture.md",
             "docs/security-model.md",
+            "docs/social-simulation.md",
             "docs/adr/README.md",
+            "RESULTS.md",
         )
         for relative_path in required:
             with self.subTest(path=relative_path):
@@ -36,11 +38,12 @@ class DocumentationContractTests(unittest.TestCase):
     def test_readme_keeps_core_participation_contract(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         for phrase in (
-            "一つのPull Requestが、一つの未来分岐",
-            "3分で試す",
-            "未来をforkする",
-            "作品を知らない人",
-            "決定的ルールエンジン",
+            "コードを書かずに参加する",
+            "https://github.com/nexus-ai-2045/fiction-forks",
+            "5人のAIエージェント",
+            "PR作成はmergeや公開完了ではない",
+            "反映確認済み",
+            "決定論エンジン",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, readme)
@@ -56,6 +59,14 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertNotRegex(content, r"(?i)(?:href|src)=[\"']https?://")
         self.assertIn("<title", content)
         self.assertIn("<desc", content)
+
+    def test_live_agent_dependencies_are_exact_and_hash_locked(self) -> None:
+        source = (ROOT / "requirements-agents.in").read_text(encoding="utf-8")
+        lock = (ROOT / "requirements-agents.txt").read_text(encoding="utf-8")
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertRegex(source, r"(?m)^openai==\d+\.\d+\.\d+$")
+        self.assertIn("--hash=sha256:", lock)
+        self.assertIn("--require-hashes -r requirements-agents.txt", readme)
 
     def test_relative_markdown_links_resolve(self) -> None:
         for markdown in ROOT.rglob("*.md"):

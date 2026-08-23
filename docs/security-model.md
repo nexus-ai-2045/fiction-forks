@@ -2,7 +2,7 @@
 
 ## Overview
 
-Fiction Forksは、ローカルCLIと公開GitHub repoを主な面に持つ社会シミュレーションMVPである。現在、認証、常駐サーバー、データベース、外部API呼び出しは持たない。主な保護対象は、決定的なシミュレーション結果、公開根拠の境界、参加者の安全、第三者IP、CIと依存関係の完全性である。
+Fiction Forksは、ローカルCLIと公開GitHub repoを主な面に持つ社会シミュレーションMVPである。認証、常駐サーバー、データベースは持たない。任意のlive AI providerだけが明示確認後に外部APIを呼ぶ。主な保護対象は、決定的なシミュレーション結果、部分観測、公開根拠の境界、参加者の安全、第三者IP、credential、CIと依存関係の完全性である。
 
 ## Threat Model, Trust Boundaries, and Assumptions
 
@@ -13,7 +13,7 @@ Fiction Forksは、ローカルCLIと公開GitHub repoを主な面に持つ社�
 | PR入力 | scenario、intervention、文書、作者の主張 | schema、test、review、権利・安全確認 |
 | JSON実行 | ローカルまたは取得したJSON | size制限予定、型・依存・循環検証 |
 | 根拠 | 外部URL、統計、作品解釈 | 公式性と参照根拠を分離し、確認日を記録 |
-| AI出力 | 将来の説明・候補 | schema検証、人間レビュー、engine非変更 |
+| AI出力 | action、説明、target、evidence ID | strict schema、固定catalog、engine非変更 |
 | CI依存 | Actions、wheel、build backend | exact SHA/version/hash固定 |
 | 公開境界 | ローカル会話、個人情報、秘密 | repo-preflight、目視、人間承認 |
 
@@ -46,9 +46,9 @@ Fiction Forksは、ローカルCLIと公開GitHub repoを主な面に持つ社�
 
 非公開Discord本文、応募者情報、メール、ローカル絶対path、API key、tokenをcommitしない。公開前にrepo-preflightのsecret scanとpersonal-path scanを実行し、目視レビューを別に行う。
 
-### 将来のWeb・AI
+### Web・AI
 
-Web版を公開する場合はXSS、依存供給網、DoS、外部リンク、保存データ、rate limitが新しい面になる。AIを追加する場合はprompt injection、根拠捏造、tool misuse、secret送信が加わる。実装前に専用ADRとthreat model更新を必須にする。
+Web版を公開する場合はXSS、依存供給網、DoS、外部リンク、保存データ、rate limitが新しい面になる。AI層ではprompt injection、根拠捏造、role-scoped observationの越境、secret送信を想定する。役ごとの観測を最小化し、出力をstrict schemaで検査し、未知fieldと観測外evidenceを拒否する。公開artifactはallowlist projectionとして自由記述、条件本文、role-scoped evidence IDを除外する。設定全体、文字列、roles、turns、1 runのprovider call数を上限化する。live OpenAI providerは公式SDK、`store=false`、明示model、API key、`--confirm-live`を必須にし、CIから呼ばない。
 
 現在はサーバー、認証、秘密データ保存がないため、SQL injection、CSRF、tenant越境、session theftは直接のruntime面ではない。将来それらを導入した時点で再評価する。
 
