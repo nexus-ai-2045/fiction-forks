@@ -6,7 +6,7 @@
 
 **アニメ・漫画・小説・ゲーム** × **5人のAIエージェント** × **日本 2026→2036**
 
-[![CI](https://github.com/nexus-ai-2045/fiction-forks/actions/workflows/ci.yml/badge.svg)](https://github.com/nexus-ai-2045/fiction-forks/actions/workflows/ci.yml)　`コード不要で参加`　`Pull Request = 新しい世界線`
+[![CI](https://github.com/nexus-ai-2045/fiction-forks/actions/workflows/ci.yml/badge.svg)](https://github.com/nexus-ai-2045/fiction-forks/actions/workflows/ci.yml)　`コード不要で参加`　`Idea = Issue`　`Worldline = PR`
 
 </div>
 
@@ -15,37 +15,48 @@
 </p>
 
 > **作品から「未来を変える機能」を一つ借りたら、日本の2036年はどう変わるか。**
-> アイデアをAIに伝えるだけで、技術・制度・運用の介入へ翻訳し、複数の社会役が議論する新しい世界線をPull Requestとして追加できます。
+> WebでアイデアをIssueへし、contributorが技術・制度・運用の介入へ翻訳します。動く世界線だけをPull Requestとして追加します。
 
 > [!NOTE]
 > 現在公開しているrunはプロトコル検証用fixtureで、LLMの実測ではありません。live AI-agent runは未実行です。実装はlive providerに対応し、実行後はartifactとreplayを分けて記録します。
 
 ## コードを書かずに参加する
 
-やることは一つです。好きな作品とアイデアを一文で書き、下をそのままAIへ渡してください。CLIやGitの知識は必要ありません。
+やることは一つです。[Fiction Forks Idea Builder](https://nexus-ai-2045.github.io/fiction-forks/)で、好きな作品、任意の登場人物、借りたい機能、変えたい未来を順番に入力してください。CLIやGitの知識は必要ありません。
+
+入力はブラウザ内だけで扱います。最後のボタンも自動投稿ではなく、内容を入れたGitHub Issue作成確認画面を開きます。GitHubで再確認してから投稿できます。GitHubを使わない場合は文章をコピーできます。
+
+作品名や登場人物名は共通言語の参照点として使えます。公式画像、台詞、音声、映像、ロゴ、外見や口調の再現は入力しません。
+
+### AIに実装を頼む
+
+作成したIssueのURLを、次の短い依頼文と一緒にAIへ渡します。
+
+外部contributorは [Fork](https://github.com/nexus-ai-2045/fiction-forks/fork) を一度押し、自分のfork内に専用branchを作ってPRします。チームのwrite権限を持つ人だけ、本repo内の専用branchを使います。
 
 ```text
-次のGitHubリポジトリで、私のアイデアを新しい世界線として実装してください。
+次のIssueを、Fiction Forksの新しいworldlineとして実装してください。
 
-リポジトリ:
-https://github.com/nexus-ai-2045/fiction-forks
+Issue URL:
+（作成したIssueのURL）
 
-アイデア:
-（作品名と、未来へ取り入れたい機能を一文で書く）
+Repository: https://github.com/nexus-ai-2045/fiction-forks
 
-専用ブランチで、介入、技術・制度・運用ツリー、AIエージェント対話、
-検証、必要なREADMEとADRを作り、結果と未確認事項を分けてPRにしてください。
-必須成果物は interventions の介入JSON、social config、同一seedの放置／介入比較、
-ノード遅延比較、全テスト結果です。CONTRIBUTING.mdの受入条件も満たしてください。
-第三者の画像、ロゴ、音声、台詞、キャラクター再現は追加しないでください。
+書込権限がなければrepoをforkし、fork内の専用branchで作業してください。
+書込権限があれば本repo内の専用branchを使えます。
+intervention JSON、同じslugのsocial configとfixture、
+同一seedの放置／介入比較、ノード遅延比較、全テストを作ってください。
+PR種別はworldlineとし、CONTRIBUTING.mdの受入条件を満たしてください。
+第三者素材や人物再現は追加しないでください。
 PR作成はmergeや公開完了ではないので、人間レビュー前で止めてください。
 ```
 
 ```mermaid
 flowchart LR
-    idea["あなたの一文"] --> ai["AIが実装案へ翻訳"]
-    ai --> pr["1介入 = 1 PR"]
-    pr --> agents["5役のAIが3ターン対話"]
+    idea["Idea Builder"] --> issue["IDEA Issue"]
+    issue --> build["AI / ローカル / Colab"]
+    build --> pr["WORLDLINE PR"]
+    pr --> agents["5役×3ターンをcheckで表示"]
     agents --> engine["決定論エンジンが世界を計算"]
     engine --> result["2036年の世界線と検証ログ"]
     result --> review{"人間レビュー"}
@@ -99,16 +110,16 @@ flowchart TB
 
 ## PRがどう反映されるか
 
-| 状態 | 意味 |
-|---|---|
-| アイデア受付 | 要望を受け取っただけ |
-| 実装中 | 専用branchで介入と対話条件を作成中 |
-| PR作成済み | 差分、結果、未確認事項をレビューできる |
-| 人間承認済み | 権利、安全、設計、検証を人が確認した |
-| merge済み | repositoryへ新しい世界線が追加された |
-| 反映確認済み | mainから再実行し、結果artifactを読み戻した |
+| 種別・状態 | 意味 | シミュレーション |
+|---|---|---|
+| `idea` Issue | 着想を受け取り、対話できる | 未実行 |
+| contributorが着手 | AI、ローカル、Colabで介入と対話条件を作る | ローカル任意 |
+| `worldline` PR | 再現可能な一つの未来分岐 | fixtureと決定論比較をCI実行 |
+| `maintenance` PR | engine、workflow、文書、依存の保守 | 新世界線として数えない |
+| 人間承認済み | 権利、安全、設計、検証を人が確認した | 結果を確認済み |
+| merge・反映確認済み | mainから再実行し、比較可能な選択肢を増やした | mainのartifactを読戻し |
 
-PRを作っただけでは完成、merge、release、公式化にはなりません。merge後も既存世界を上書きせず、比較できる選択肢が一つ増えます。
+Issueはアイデアであり、効果や実現可能性の証明ではありません。PRを作っただけでも完成、merge、release、公式化にはなりません。merge後も既存世界を上書きせず、比較できる選択肢が一つ増えます。
 
 ## 権利・安全・限界
 
@@ -164,4 +175,4 @@ python -m pip install -e . --no-deps
 - [AIエージェント社会シミュレーションハッカソン Vol.2 公式サイト](https://hackathon.automata-lab.jp/)
 - [構想ペーパー「メタ安全保障 — 概念解説とハッカソン課題の発想集」](https://prtimes.jp/a/?f=d80352-184-caedebb354dd205d5811c599da74761b.pdf)（片山俊大氏 v1.0）
 
-この2点にない数値、シナリオ、破滅条件、フィクション介入はFiction Forks独自の仮説です。現在の版は `0.2.0`。Git tagとGitHub Releaseは未作成です。
+この2点にない数値、シナリオ、破滅条件、フィクション介入はFiction Forks独自の仮説です。現在の版は `0.3.0`。Git tagとGitHub Releaseは未作成です。

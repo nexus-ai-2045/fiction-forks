@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src https://api.github.com; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"
+    >
+    <meta
+      name="description"
+      content="作品や登場人物から抽出した機能を、日本の未来を変えるアイデアIssueへ翻訳するFiction Forksの参加UI"
+    >
+    <title>Fiction Forks — Idea Builder</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#idea-builder">入力フォームへ移動</a>
+
+    <header class="site-header">
+      <a class="wordmark" href="./" aria-label="Fiction Forks Idea Builder ホーム">
+        <span class="branch-mark" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </span>
+        <span>FICTION FORKS</span>
+        <small>IDEA BUILDER</small>
+      </a>
+      <nav aria-label="補助ナビゲーション">
+        <a href="#handoff">参加の流れ</a>
+        <a href="https://github.com/nexus-ai-2045/fiction-forks" rel="noreferrer">GitHub</a>
+        <button class="text-button" type="button" data-action="open-boundary">権利・プライバシー</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="builder-shell" id="idea-builder" aria-labelledby="builder-title">
+        <div class="builder-heading">
+          <h1 id="builder-title">フィクションの力で、<br>未来の選択肢をひらく。</h1>
+          <p>
+            作品の設定を再現するのではなく、役立つ機能を一つ抽出して、
+            日本の未来課題へつなげます。
+          </p>
+        </div>
+
+        <ol class="stepper" aria-label="アイデア作成の進捗">
+          <li class="is-current" data-step-indicator="1" aria-current="step">
+            <span>1</span><b>作品・登場人物</b>
+          </li>
+          <li data-step-indicator="2"><span>2</span><b>借りたい機能</b></li>
+          <li data-step-indicator="3"><span>3</span><b>変えたい未来</b></li>
+          <li data-step-indicator="4"><span>4</span><b>Issueの内容を確認</b></li>
+        </ol>
+
+        <div class="builder-grid">
+          <form class="form-surface" id="idea-form" novalidate>
+            <section class="form-step is-active" data-step="1" aria-labelledby="step-1-title">
+              <div class="section-number" aria-hidden="true">01</div>
+              <div class="section-copy">
+                <h2 id="step-1-title" tabindex="-1">作品・登場人物</h2>
+                <p>アイデアの出発点を名前で共有します。登場人物は任意です。</p>
+              </div>
+
+              <label for="work-title">作品名 <span>必須</span></label>
+              <input
+                id="work-title"
+                name="workTitle"
+                maxlength="100"
+                autocomplete="off"
+                placeholder="例：ドラえもん、呪術廻戦、銀河鉄道の夜"
+                required
+              >
+              <p class="field-help">作品名は会話の入口としてのみ使います。</p>
+
+              <label for="character-name">登場人物名 <span class="optional">任意</span></label>
+              <input
+                id="character-name"
+                name="characterName"
+                maxlength="100"
+                autocomplete="off"
+                placeholder="例：ドラえもん、五条悟"
+              >
+              <p class="field-help">人物の口調や外見を再現せず、行動や役割から機能を抽出します。</p>
+            </section>
+
+            <section class="form-step" data-step="2" aria-labelledby="step-2-title" hidden>
+              <div class="section-number" aria-hidden="true">02</div>
+              <div class="section-copy">
+                <h2 id="step-2-title" tabindex="-1">借りたい機能</h2>
+                <p>魔法や道具をそのまま持ち込まず、現実へ翻訳できる機能として書きます。</p>
+              </div>
+
+              <label for="borrowed-function">どんな機能ですか <span>必須</span></label>
+              <textarea
+                id="borrowed-function"
+                name="borrowedFunction"
+                maxlength="400"
+                rows="5"
+                placeholder="例：高度な道具を一部の人が独占せず、誰でも試して監査できる仕組み"
+                required
+              ></textarea>
+
+              <label for="plain-language">作品を知らない人向けに言い換えると <span>必須</span></label>
+              <textarea
+                id="plain-language"
+                name="plainLanguage"
+                maxlength="300"
+                rows="4"
+                placeholder="例：公共アクセス可能で、停止や異議申立てもできる技術基盤"
+                required
+              ></textarea>
+            </section>
+
+            <section class="form-step" data-step="3" aria-labelledby="step-3-title" hidden>
+              <div class="section-number" aria-hidden="true">03</div>
+              <div class="section-copy">
+                <h2 id="step-3-title" tabindex="-1">変えたい未来</h2>
+                <p>日本のどんな困りごとを、誰にとって良くしたいかを決めます。</p>
+              </div>
+
+              <label for="future-problem">変えたい未来課題 <span>必須</span></label>
+              <textarea
+                id="future-problem"
+                name="futureProblem"
+                maxlength="400"
+                rows="5"
+                placeholder="例：災害や供給途絶の後、地域で設備を修理できず復旧が長期化する"
+                required
+              ></textarea>
+
+              <label for="affected-people">特に影響を受ける人・地域 <span>必須</span></label>
+              <input
+                id="affected-people"
+                name="affectedPeople"
+                maxlength="200"
+                placeholder="例：離島、地方自治体、物流を担う中小事業者"
+                required
+              >
+            </section>
+
+            <section class="form-step" data-step="4" aria-labelledby="step-4-title" hidden>
+              <div class="section-number" aria-hidden="true">04</div>
+              <div class="section-copy">
+                <h2 id="step-4-title" tabindex="-1">実現条件と副作用</h2>
+                <p>都合のよい力だけを取り出さず、必要な技術・制度・運用と失敗条件も残します。</p>
+              </div>
+
+              <label for="requirements">実現に必要なもの <span>必須</span></label>
+              <textarea
+                id="requirements"
+                name="requirements"
+                maxlength="500"
+                rows="4"
+                placeholder="例：監査可能な仕様、地域の運営人材、費用負担の合意、停止訓練"
+                required
+              ></textarea>
+
+              <label for="tradeoffs">費用・副作用・悪用や失敗の可能性 <span>必須</span></label>
+              <textarea
+                id="tradeoffs"
+                name="tradeoffs"
+                maxlength="500"
+                rows="4"
+                placeholder="例：維持費、利用格差、過信、単一事業者への依存"
+                required
+              ></textarea>
+
+              <fieldset class="boundary-checks">
+                <legend>権利・安全の確認</legend>
+                <label>
+                  <input type="checkbox" name="rightsConfirmed" required>
+                  <span>画像、台詞、ロゴ、音声、キャラクターの口調・外見の再現を入力していません。</span>
+                </label>
+                <label>
+                  <input type="checkbox" name="safetyConfirmed" required>
+                  <span>個人情報、秘密情報、実在システムへの攻撃手順を入力していません。</span>
+                </label>
+              </fieldset>
+            </section>
+
+            <p class="form-error" id="form-error" role="alert" aria-live="polite"></p>
+
+            <div class="form-actions">
+              <button class="button button-secondary" type="button" data-action="back" hidden>戻る</button>
+              <button class="button button-primary" type="button" data-action="next">
+                次へ
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </form>
+
+          <aside class="summary-surface" aria-labelledby="summary-title">
+            <div class="summary-header">
+              <div>
+                <p>LIVE SUMMARY</p>
+                <h2 id="summary-title">入力内容のサマリー</h2>
+              </div>
+              <span class="local-only">ブラウザ内のみ</span>
+            </div>
+
+            <ol class="summary-list">
+              <li data-summary-step="1" class="is-current">
+                <span>1</span>
+                <div><b>作品・登場人物</b><p data-summary="work">未入力</p></div>
+              </li>
+              <li data-summary-step="2">
+                <span>2</span>
+                <div><b>借りたい機能</b><p data-summary="function">未入力</p></div>
+              </li>
+              <li data-summary-step="3">
+                <span>3</span>
+                <div><b>変えたい未来</b><p data-summary="future">未入力</p></div>
+              </li>
+              <li data-summary-step="4">
+                <span>4</span>
+                <div><b>実現条件と副作用</b><p data-summary="conditions">未入力</p></div>
+              </li>
+            </ol>
+
+            <div class="boundary-note">
+              <strong>収集しないもの</strong>
+              <p>公式画像・台詞・ロゴ・音声、人物の外見や口調の再現、個人情報、秘密情報。</p>
+            </div>
+
+            <section class="issue-preview" id="issue-preview" hidden aria-labelledby="preview-title">
+              <div class="preview-heading">
+                <div><p>READY TO REVIEW</p><h3 id="preview-title">Issueの内容を確認</h3></div>
+                <button class="text-button" type="button" data-action="edit">編集する</button>
+              </div>
+              <pre tabindex="0"><code id="issue-markdown"></code></pre>
+              <p class="preview-note">この段階ではシミュレーションを実行しません。GitHubでも投稿前に編集できます。</p>
+              <div class="preview-actions">
+                <a class="button button-primary" id="github-issue-link" href="#" target="_blank" rel="noopener noreferrer">
+                  GitHubでIssueを確認 <span aria-hidden="true">↗</span>
+                </a>
+                <button class="button button-secondary" type="button" data-action="copy-issue">文章をコピー</button>
+              </div>
+              <p class="copy-status" id="copy-status" aria-live="polite"></p>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="handoff" id="handoff" aria-labelledby="handoff-title">
+        <div class="handoff-heading">
+          <p>CONTRIBUTOR HANDOFF</p>
+          <h2 id="handoff-title">Issueから、動く世界線へ。</h2>
+          <span>一般参加者の着想と、検証済み実装を混ぜません。</span>
+        </div>
+
+        <ol class="handoff-flow">
+          <li>
+            <span class="flow-number">1</span>
+            <b>IDEA</b>
+            <h3>Issueで着想を共有</h3>
+            <p>作品、抽象機能、未来課題、実現条件を公開して対話します。</p>
+          </li>
+          <li>
+            <span class="flow-number">2</span>
+            <b>BUILD</b>
+            <h3>実装方法を選ぶ</h3>
+            <div class="handoff-links">
+              <button type="button" data-action="copy-ai-prompt">AIへ依頼</button>
+              <a href="https://github.com/nexus-ai-2045/fiction-forks/fork" rel="noreferrer">Forkして実装</a>
+              <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/CONTRIBUTING.md#issueからworldline-prへ" rel="noreferrer">ローカル</a>
+              <a href="https://colab.research.google.com/github/nexus-ai-2045/fiction-forks/blob/main/notebooks/validate-worldline.ipynb" target="_blank" rel="noopener noreferrer">Colab</a>
+            </div>
+          </li>
+          <li>
+            <span class="flow-number">3</span>
+            <b>WORLDLINE PR</b>
+            <h3>再現可能な差分へ</h3>
+            <p>介入JSON、5役の対話条件、fixture、費用と副作用を一PRにします。</p>
+          </li>
+          <li>
+            <span class="flow-number">4</span>
+            <b>CHECKS</b>
+            <h3>投稿者の世界線を実行</h3>
+            <p>GitHub Actionsが投稿者名、介入、15行動、2036年比較をcheck summaryへ表示します。</p>
+          </li>
+        </ol>
+        <p class="handoff-status" id="handoff-status" aria-live="polite"></p>
+      </section>
+
+      <section class="idea-queue" aria-labelledby="queue-title">
+        <div>
+          <p>PUBLIC IDEA QUEUE</p>
+          <h2 id="queue-title">みんなのアイデア</h2>
+          <span>公開GitHub Issueから最新の着想を読み込みます。</span>
+        </div>
+        <div class="queue-list" id="idea-queue-list" aria-live="polite">
+          <p class="queue-loading">アイデアを読み込んでいます…</p>
+        </div>
+        <a class="queue-all" href="https://github.com/nexus-ai-2045/fiction-forks/issues?q=is%3Aissue+label%3Aidea" rel="noreferrer">
+          すべてのIssueを見る <span aria-hidden="true">→</span>
+        </a>
+      </section>
+    </main>
+
+    <dialog id="boundary-dialog" aria-labelledby="boundary-title">
+      <div class="dialog-content">
+        <button class="dialog-close" type="button" data-action="close-boundary" aria-label="閉じる">×</button>
+        <h2 id="boundary-title">権利・プライバシーの境界</h2>
+        <p>
+          このページは入力をサーバーへ保存しません。「GitHubでIssueを確認」を押した時だけ、
+          入力内容をGitHubのIssue作成確認画面へ渡します。
+        </p>
+        <ul>
+          <li>作品名と登場人物名は、共通言語の参照点として入力できます。</li>
+          <li>画像、台詞、音声、映像、ロゴ、人物の外見・口調の再現は入力しません。</li>
+          <li>実在人物の個人情報、秘密情報、攻撃手順は入力しません。</li>
+          <li>Issueは公開情報になります。GitHub上で内容を再確認してから投稿します。</li>
+        </ul>
+        <button class="button button-primary" type="button" data-action="close-boundary">理解しました</button>
+      </div>
+    </dialog>
+
+    <footer>
+      <span>FICTION FORKS</span>
+      <p>フィクションを、未来実装の共通言語に。</p>
+      <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/docs/security-model.md">Security &amp; Rights</a>
+    </footer>
+  </body>
+</html>

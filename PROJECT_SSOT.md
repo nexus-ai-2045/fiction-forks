@@ -10,7 +10,9 @@
 | ビジュアル文法とtoken | `docs/visual-system.md` |
 | アーキテクチャと設計判断 | `docs/architecture.md` と `docs/adr/` |
 | シナリオ契約 | `scenarios/` と `docs/simulation-contract.md` |
-| 社会エージェント契約 | `scenarios/*/social.json`、`src/fiction_forks/agent_protocol.py`、`docs/social-simulation.md` |
+| 社会エージェント契約 | `scenarios/*/social*.json`、`src/fiction_forks/agent_protocol.py`、`docs/social-simulation.md` |
+| アイデア受付UI | `web/`。入力状態はブラウザ内だけ、正本化は公開GitHub Issue |
+| Idea / Worldline境界 | `.github/ISSUE_TEMPLATE/`、`.github/PULL_REQUEST_TEMPLATE/`、`src/fiction_forks/pr_contract.py`、ADR 0009 |
 | シナリオの公開根拠と反証条件 | `docs/scenario-rationale.md` |
 | 介入カード | `interventions/` と `CONTRIBUTING.md` |
 | フィクション参照レンズ | `docs/fiction-lenses.md` |
@@ -33,6 +35,7 @@ CLIのJSON出力、可視化、比較レポートは再生成可能な派生物�
 - フィクション参照は、作品由来の機能と本プロジェクト独自の実装仮説を分離します。
 - 非公開会話、個人情報、秘密情報、実在システムの攻撃手順を取り込みません。
 - 公式サイトまたは片山俊大氏 v1.0ペーパーにない内容を「公式」と表示しません。
+- Idea Issueをシミュレーション済み世界線として数えず、PR種別markerと変更pathをCIで照合します。
 
 ## 上位台帳
 
