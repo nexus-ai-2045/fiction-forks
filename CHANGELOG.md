@@ -13,6 +13,9 @@ release時にexact main commit、版番号、実日付を別承認で確定し�
 - 一般参加者の`idea` Issue、実装者の`worldline` PR、保守用`maintenance` PRを分けるtemplateとADR 0009
 - worldline PRの投稿者、5役×3ターンfixture、2036年比較をGitHub Actions step summaryへ表示するPR contract gate
 - 公開branchをcredentialなしで検証するGoogle Colab notebook
+- 『涼宮ハルヒの憂鬱』を、分散観測、証拠来歴、異議申立て、停止訓練へ翻訳した世界観測介入
+- 世界観測介入専用の5役×3ターンsocial config、決定論fixture、同一seed比較、ノード遅延比較、ADR 0010
+- `simulate` と `compare` の機械可読結果を安全に保存する `--output` / `--overwrite` オプション
 - 5つの社会役が3ターン対話し、制約付きactionから技術・制度・運用ノードの遅延を決めるAIエージェント層
 - fixture、replay、OpenAI Responses Structured Outputsのprovider境界とbefore/after hash chain
 - コード不要の固定repo URL入り参加プロンプト、社会シミュレーション設計、ADR 0008、RESULTS

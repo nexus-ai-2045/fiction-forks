@@ -1,0 +1,22 @@
+{
+  "schema_version": "fiction_forks_run_manifest.v1",
+  "recorded_at": "2026-08-24",
+  "run_kind": "fixture",
+  "ai_measured": false,
+  "engine_commit": "ade8d3333e1505e03698391051d054869bc8050c",
+  "engine_version": "0.3.0",
+  "scenario_id": "japan-2036-centralization",
+  "intervention_id": "haruhi-world-observation",
+  "social_config_id": "japan-2036-world-observation-dialogue",
+  "seed": 2036,
+  "run_id": "ff-188b986bb1ddbb7b",
+  "input_digest": "188b986bb1ddbb7b594fbfb9b1cd3a330a418646af6f206ff1d25a2ba455438a",
+  "final_event_hash": "88d7242dad9b6e5a2f875daeda4ae5329705b3b64807bc0a1f7bdc0af2aa473f",
+  "artifact_path": "artifacts/runs/haruhi-world-observation-fixture.json",
+  "artifact_sha256": "9e4b5adb971d739d00fb6a529e0c0323aceac5c69404e429922c47e6bac7298e",
+  "comparison_artifact_path": "artifacts/runs/haruhi-world-observation-comparison.json",
+  "comparison_artifact_sha256": "8b75d3470b5ea6e6b3180231712267ce70af3fa39036bcfc9f9871ded1861d2f",
+  "delay_artifact_path": "artifacts/runs/haruhi-world-observation-contestation-delay.json",
+  "delay_artifact_sha256": "122a8fb540bc60d93dc4b7a68ff200093f65b05941a404bc5db2b8d3c635b7d5",
+  "replay_equivalent": true
+}
