@@ -6,6 +6,12 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 次のリリースに向けた変更をここへ記録します。
 
+### Changed
+
+- Idea Builderで `Issue → Build → Worldline PR → Simulation` の参加ループと `1 PR = 1 WORLDLINE` を常時確認できるようにした
+- Idea作成フォームを「作品」「アイデア」の一ページへ簡略化した
+- open/closedを含むIdea Issue履歴と実装済みworldlineをWebへ表示し、各IdeaからAI用PR依頼文を作れるようにした
+
 ## [0.3.0] - 2026-08-24
 
 ### Added

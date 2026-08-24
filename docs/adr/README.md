@@ -23,6 +23,7 @@ ADRは、現在の設計が「何を選んだか」だけでなく、「なぜ�
 | [0008](0008-ai-agents-choose-bounded-actions.md) | Accepted | AIは制約付き行動を選び、engineが世界状態を所有する |
 | [0009](0009-ideas-are-issues-worldlines-are-pull-requests.md) | Accepted | アイデアはIssue、動く世界線はPull Requestとする |
 | [0010](0010-independent-observation-requires-contestation.md) | Accepted | 世界観測は独立照合・来歴・異議申立てが揃うまで発動しない |
+| [0011](0011-participation-is-a-reviewed-control-loop.md) | Accepted | Issue、worldline PR、simulation、人間レビューを一つの参加ループにする |
 
 ## 追加方法
 
