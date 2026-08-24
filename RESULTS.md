@@ -49,7 +49,7 @@ python -m fiction_forks social `
 ## 世界観測fork：決定論fixture run
 
 - 状態: 実行済み（2026-08-24）
-- 実行実装commit: `f99e5050d504dc811cac03913011f739b3de3a54`
+- 実行実装commit: `8cb8d65332ef897472e31dfadc6daac0b87dcca8`
 - 用途: 世界観測介入のaction catalog、部分観測、技術遅延、world physicsの回帰検査
 - AI実測: いいえ。5役×3ターンのfixtureは台本であり、LLMの挙動を示さない
 - Python: bundled 3.13 compatible runtime

@@ -23,7 +23,7 @@
 
 - 検査日時: 2026-08-24（Asia/Tokyo）
 - 検査対象branch: `worldline/haruhi-world-observation`
-- 検査対象HEAD: `7f0a3828ce46a0bc35835368f7779365d587dce3`
+- 検査対象HEAD: `7bda48e3faca950b62238f379689980b672b4402`
 - 記録方法: この節を追加する文書commitは検査対象HEADの後続であり、プロダクトコード、介入JSON、social config、fixture、実測artifactを変更しない
 
 ### 確認済み

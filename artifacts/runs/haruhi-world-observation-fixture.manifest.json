@@ -3,7 +3,7 @@
   "recorded_at": "2026-08-24",
   "run_kind": "fixture",
   "ai_measured": false,
-  "engine_commit": "f99e5050d504dc811cac03913011f739b3de3a54",
+  "engine_commit": "8cb8d65332ef897472e31dfadc6daac0b87dcca8",
   "engine_version": "0.2.0",
   "scenario_id": "japan-2036-centralization",
   "intervention_id": "haruhi-world-observation",
