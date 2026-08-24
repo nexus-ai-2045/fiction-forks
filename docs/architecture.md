@@ -2,25 +2,28 @@
 
 ## 原則
 
-シミュレーション状態は決定的ルールエンジンが所有する。CLI、将来のWeb UI、可視化、AIエージェントは、同じ入力と結果を読み書きする境界層であり、独自に状態値や破滅判定を変更しない。
+シミュレーション状態は決定的ルールエンジンが所有する。CLI、Idea Builder、将来の比較Web UI、可視化、AIエージェントは、同じ入力と結果を読み書きする境界層であり、独自に状態値や破滅判定を変更しない。
 
 ```mermaid
 flowchart LR
-    contributor["参加者"] --> scenario["scenario JSON"]
+    participant["一般参加者"] --> builder["静的Idea Builder"]
+    builder --> issue["idea Issue"]
+    issue --> contributor["外部: fork + branch / チーム: branch / AI / Colab"]
     contributor --> intervention["intervention JSON"]
-    scenario --> agents["5役のAIエージェント"]
+    contributor --> socialInput["social config + fixture"]
+    scenario["scenario JSON"] --> agents["5役のAIエージェント"]
     intervention --> agents
+    socialInput --> agents
     agents --> catalog["制約付きaction catalog"]
     catalog --> engine["決定的ルールエンジン"]
     seed["seed・遅延条件"] --> engine
     engine --> result["result JSON"]
     result --> cli["CLI"]
-    result --> web["将来のWeb UI"]
+    result --> checks["PR check summary"]
     result --> report["比較レポート"]
     result --> replay["artifact replay"]
     cli --> checks["test・CI・repo gates"]
-    web --> checks
-    checks --> pullRequest["Pull Request"]
+    checks --> pullRequest["worldline Pull Request"]
 ```
 
 ## レイヤーと責務
@@ -32,7 +35,8 @@ flowchart LR
 | 社会エージェント | `agent_protocol.py`, `social.py` | 部分観測、行動検証、actionから遅延への変換、hash chain | 状態値、効果量、破滅判定 |
 | Provider | `providers.py` | fixture、replay、live LLMの入出力境界 | 世界状態、credential保存 |
 | CLI | `src/fiction_forks/cli.py` | 引数、JSON入出力、exit code | 状態遷移規則 |
-| 表示層 | 将来の `web/` | 比較、timeline、tree、入力支援 | 正本の数値更新 |
+| Idea受付UI | `web/` | 段階入力、Issue Markdown、公開idea一覧 | simulation、GitHubへの自動投稿、入力保存 |
+| PR契約 | `pr_contract.py`, `.github/` templates | idea/worldline/maintenance分離、投稿者とfixture結果のsummary | merge判断、live LLM実測 |
 | 共同編集 | GitHub | diff、review、CI、履歴 | シミュレーションの暗黙変更 |
 
 ## 実行フロー
@@ -47,7 +51,9 @@ flowchart LR
 
 ## Web実装境界
 
-最初のWeb版はReact + Viteを候補とし、Pythonエンジンと一致する読み取り専用の比較画面から始める。採用前に、次のどちらで決定性を保つかを別ADRで確定する。
+最初に公開するWeb面は、`web/`のdependency-freeな静的Idea Builderとする。simulationをブラウザへ移植せず、入力をIssue Markdownへ変換する投影層に限定する。GitHub token、独自backend、database、telemetryを持たず、IssueはGitHubの確認画面から参加者自身が投稿する。
+
+将来の比較画面はReact + Viteを候補とし、Pythonエンジンと一致する読み取り専用表示から始める。採用前に、次のどちらで決定性を保つかを別ADRで確定する。
 
 - Python APIを唯一の実行器としてWebから呼ぶ
 - 契約テストを共有し、TypeScriptへ同一ルールを移植する
@@ -66,13 +72,16 @@ AI出力は未信頼入力としてstrict schema検証を通す。AIは効果量
 
 ## GitHub境界
 
-Pull Requestは一つの世界分岐のレビュー単位である。CIは少なくとも次を検査する。
+未実装の着想は`idea` Issue、一つの世界分岐は`worldline` Pull Request、保守は`maintenance` Pull Requestとする。CIは少なくとも次を検査する。
 
 - Python 3.11と3.13でunit test
 - 基準世界と初期介入の比較smoke
 - scenario/interventionの契約違反
 - version SSOTの同期
 - trackedかつignoredの新規増加を `ai-ratchet-gate` で拒否
+- PR本文markerと変更pathによる種別分離
+- worldline PRの同一slug intervention、social config、fixture
+- 投稿者名、5役×3ターンfixture、2036年比較のstep summary
 
 `repo-preflight` はPR、push、公開、releaseの各境界でローカルとremoteのbindingを再確認する。gateのpassはmerge、release、visibility変更の承認を意味しない。
 

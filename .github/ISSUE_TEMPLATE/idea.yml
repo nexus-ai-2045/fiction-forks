@@ -1,0 +1,77 @@
+name: 未来を変えるアイデア
+description: 作品・登場人物から抽出した機能を、実装前の着想として共有します。
+title: "[idea] "
+labels:
+  - idea
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ここではアイデアだけを受け付けます。シミュレーション済みとは扱いません。
+        画像、台詞、音声、映像、ロゴ、人物の外見・口調の再現は入力しないでください。
+
+  - type: input
+    id: work
+    attributes:
+      label: 作品名
+      description: 共通言語の参照点として作品名だけを入力します。
+      placeholder: 例：ドラえもん、呪術廻戦、銀河鉄道の夜
+    validations:
+      required: true
+
+  - type: input
+    id: character
+    attributes:
+      label: 登場人物名（任意）
+      description: 口調や外見を再現せず、行動や役割から機能を抽出します。
+
+  - type: textarea
+    id: capability
+    attributes:
+      label: 借りたい機能
+      description: 魔法や道具そのものではなく、現実へ翻訳できる機能として書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: plain-language
+    attributes:
+      label: 作品を知らない人向けの同義表現
+    validations:
+      required: true
+
+  - type: textarea
+    id: future
+    attributes:
+      label: 変えたい未来課題
+      description: 日本のどんな困りごとを、誰にとって良くしたいかを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: 実現条件
+      description: 必要な技術・制度・運用を、分かる範囲で書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: tradeoffs
+    attributes:
+      label: 費用・副作用・失敗条件
+      description: 分からない点は「未確認」と書けます。万能な介入にはしません。
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: 権利・安全の確認
+      options:
+        - label: 第三者IPの画像、台詞、音声、映像、ロゴ、人物の外見・口調の再現を含めていません。
+          required: true
+        - label: 個人情報、秘密情報、実在システムへの攻撃手順を含めていません。
+          required: true
+        - label: このIssueはアイデア段階であり、効果や実現可能性を検証済みとは扱わないことを理解しました。
+          required: true

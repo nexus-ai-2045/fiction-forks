@@ -38,11 +38,6 @@ def _add_delay_option(parser: argparse.ArgumentParser) -> None:
     )
 
 
-def _add_output_options(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--output")
-    parser.add_argument("--overwrite", action="store_true")
-
-
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Fiction Forks simulation CLI")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -52,14 +47,12 @@ def build_parser() -> argparse.ArgumentParser:
     simulate_parser.add_argument("--intervention")
     simulate_parser.add_argument("--seed", type=int, default=2036)
     _add_delay_option(simulate_parser)
-    _add_output_options(simulate_parser)
 
     compare_parser = subparsers.add_parser("compare", help="基準世界と介入世界を比較する")
     compare_parser.add_argument("--scenario", required=True)
     compare_parser.add_argument("--intervention", required=True)
     compare_parser.add_argument("--seed", type=int, default=2036)
     _add_delay_option(compare_parser)
-    _add_output_options(compare_parser)
 
     social_parser = subparsers.add_parser(
         "social", help="複数の社会役が対話する世界線を実行する"
@@ -75,7 +68,8 @@ def build_parser() -> argparse.ArgumentParser:
     social_parser.add_argument("--model")
     social_parser.add_argument("--confirm-live", action="store_true")
     social_parser.add_argument("--seed", type=int, default=2036)
-    _add_output_options(social_parser)
+    social_parser.add_argument("--output")
+    social_parser.add_argument("--overwrite", action="store_true")
     return parser
 
 
@@ -151,12 +145,5 @@ def main(argv: Sequence[str] | None = None) -> int:
     except (ContractError, ProviderError, OSError, json.JSONDecodeError) as error:
         print(json.dumps({"status": "error", "message": str(error)}, ensure_ascii=False))
         return 2
-    rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)
-    try:
-        if args.output:
-            _write_output(args.output, rendered, overwrite=args.overwrite)
-    except (ContractError, OSError) as error:
-        print(json.dumps({"status": "error", "message": str(error)}, ensure_ascii=False))
-        return 2
-    print(rendered)
+    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0

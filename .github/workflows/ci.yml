@@ -2,6 +2,8 @@ name: CI
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 permissions:
@@ -22,6 +24,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -39,3 +43,82 @@ jobs:
 
       - name: Enforce ai-ratchet-gate
         run: python -m ai_ratchet_gate --repo .
+
+  pr-contract:
+    name: PR contract / ideaとworldlineを分離
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      kind: ${{ steps.contract.outputs.kind }}
+      intervention: ${{ steps.contract.outputs.intervention }}
+      slug: ${{ steps.contract.outputs.slug }}
+      social_config: ${{ steps.contract.outputs.social_config }}
+      fixture: ${{ steps.contract.outputs.fixture }}
+    env:
+      PYTHONUTF8: "1"
+      PYTHONPATH: src
+    steps:
+      - name: Checkout full PR history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Classify contribution contract
+        id: contract
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: >-
+          python -m fiction_forks.pr_contract check
+          --base "$BASE_SHA"
+          --head "$HEAD_SHA"
+          --event "$GITHUB_EVENT_PATH"
+          --github-output "$GITHUB_OUTPUT"
+          --summary "$GITHUB_STEP_SUMMARY"
+
+  worldline-simulation:
+    name: WORLDLINE / 投稿者の未来分岐を実行
+    needs: pr-contract
+    if: needs.pr-contract.outputs.kind == 'worldline'
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUTF8: "1"
+      PYTHONPATH: src
+      INTERVENTION: ${{ needs.pr-contract.outputs.intervention }}
+      WORLDLINE_SLUG: ${{ needs.pr-contract.outputs.slug }}
+      SOCIAL_CONFIG: ${{ needs.pr-contract.outputs.social_config }}
+      FIXTURE: ${{ needs.pr-contract.outputs.fixture }}
+    steps:
+      - name: Checkout contributor branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Run five roles and three turns with fixture
+        run: >-
+          python -m fiction_forks social
+          --scenario scenarios/japan-2036/scenario.json
+          --intervention "$INTERVENTION"
+          --social-config "$SOCIAL_CONFIG"
+          --provider fixture
+          --fixture "$FIXTURE"
+          --output worldline-run.json
+
+      - name: Show contributor and worldline result
+        run: >-
+          python -m fiction_forks.pr_contract worldline-summary
+          --event "$GITHUB_EVENT_PATH"
+          --artifact worldline-run.json
+          --slug "$WORLDLINE_SLUG"
+          --summary "$GITHUB_STEP_SUMMARY"
