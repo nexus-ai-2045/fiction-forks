@@ -5,19 +5,19 @@
 ## 決定論fixture run
 
 - 状態: 実行済み（2026-08-24）
-- 実行実装commit: `5edebf7f0f7141d887281ea23a8b6b6e028959b3`
+- 実行実装commit: `5f3f88f0908b77962b02e19417a76f95b1ee73ea`
 - 用途: protocol、部分観測、fail-closed、hash chain、world physicsの回帰検査
 - AI実測: いいえ。fixtureは台本であり、LLMの挙動を示さない
 - Python: 3.13
 - scenario: `japan-2036`
 - intervention: `doraemon-public-tools`
 - seed: `2036`
-- run ID: `ff-d3674fbb82db8614`
-- input digest: `d3674fbb82db861487318ff61a864f82dcb1c5fc1b6393591e0fc0292f683a3e`
-- final event hash: `9e6aadfc484e44f966bfb8f54c004be50e3f09f4ed98241b8e250fe90c2760fe`
+- run ID: `ff-b74f4c768380c732`
+- input digest: `b74f4c768380c73271f2563f712617d3082924e2a40b81605bf2c509b53f6206`
+- final event hash: `2cf8bd0fd46f8d9581234f233c09672f1b951641b253ca8d562920ddb8b1f1f7`
 - artifact: [`artifacts/runs/japan-2036-fixture.json`](artifacts/runs/japan-2036-fixture.json)
 - manifest: [`artifacts/runs/japan-2036-fixture.manifest.json`](artifacts/runs/japan-2036-fixture.manifest.json)
-- artifact SHA-256: `445732bd1a424fbee7e70f59d1c0ccda36e636517a9c61bd9783aa4fa0dc63dd`
+- artifact SHA-256: `a062aba6011163a609b0ecc01dccbe094d10827ea6f50c7fd1d106ee09ccf485`
 - actions: 15 / invalid: 0 / abstain: 0
 - capability coverage: 6 / interaction edges: 10 / conditioned intents: 15 / reversible action ratio: 1.0
 - 公開artifact漏洩検査: role-scoped evidence ID 0件 / 自由記述 0件
@@ -49,7 +49,7 @@ python -m fiction_forks social `
 ## 世界観測fork：決定論fixture run
 
 - 状態: 実行済み（2026-08-24）
-- engine基点commit: `ade8d3333e1505e03698391051d054869bc8050c`（worldline PR #6 merge commit）
+- 実行実装commit: `5f3f88f0908b77962b02e19417a76f95b1ee73ea`
 - 用途: 世界観測介入のaction catalog、部分観測、技術遅延、world physicsの回帰検査
 - AI実測: いいえ。5役×3ターンのfixtureは台本であり、LLMの挙動を示さない
 - Python: bundled 3.13 compatible runtime
@@ -57,12 +57,12 @@ python -m fiction_forks social `
 - intervention: `haruhi-world-observation`
 - social config: `japan-2036-world-observation-dialogue`
 - seed: `2036`
-- run ID: `ff-188b986bb1ddbb7b`
-- input digest: `188b986bb1ddbb7b594fbfb9b1cd3a330a418646af6f206ff1d25a2ba455438a`
-- final event hash: `88d7242dad9b6e5a2f875daeda4ae5329705b3b64807bc0a1f7bdc0af2aa473f`
+- run ID: `ff-c705e4136e2fce00`
+- input digest: `c705e4136e2fce0059f1d711deac8575fc69a880f85141af1d19db717e302317`
+- final event hash: `420bb03c9656c32e57372489efea48eb14fd70ac1ff518d0a186d47192010824`
 - fixture artifact: [`artifacts/runs/haruhi-world-observation-fixture.json`](artifacts/runs/haruhi-world-observation-fixture.json)
 - manifest: [`artifacts/runs/haruhi-world-observation-fixture.manifest.json`](artifacts/runs/haruhi-world-observation-fixture.manifest.json)
-- fixture SHA-256: `9e4b5adb971d739d00fb6a529e0c0323aceac5c69404e429922c47e6bac7298e`
+- fixture SHA-256: `12b1a98cbd0d5df0fe3235b54b67e37b69f6abae0a5feb6b900171d9cc34c670`
 - actions: 15 / invalid: 0 / abstain: 0
 - capability coverage: 7 / interaction edges: 10 / conditioned intents: 15 / reversible action ratio: 1.0
 - 技術ノード遅延: 全5ノード 0年

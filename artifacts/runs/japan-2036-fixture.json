@@ -10,7 +10,7 @@
           "public-collapse-gate"
         ],
         "responds_to": [],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -19,10 +19,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "7bde3b4ecd22c3b24c74d1beb49d7422fad229870a559ec5abccfbda35fa4e9f",
+      "event_hash": "f961333f7541d7056db4a525427e260654d518e35a43836a321ca320c561ecdc",
       "intent_id": "t1:civic_auditor",
       "invalid_reason": null,
-      "previous_event_hash": "8c6187f287fd03f5544aa4e9224d2200720820745eb02dfca952b44c93e3ddd1",
+      "previous_event_hash": "3b57c1f9895095e7cc288864336bb396f17d11498bcc1e244803b090f83f6eb4",
       "state_after_hash": "f4099e07871342d91eabdc3f6dea284448f3a501b05b1f077dc5034877ecc616",
       "state_before_hash": "28d40af01a1b415988ee4a454c46a70447155ceaa4d689957761d9f6797482d0",
       "valid": true
@@ -37,7 +37,7 @@
           "public-ip-boundary"
         ],
         "responds_to": [],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -46,10 +46,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "34861d4295e5a9b4032d23b02f10cd9b9b395a59028b132cec694dc042b672a4",
+      "event_hash": "c735aa3355c1e665c4bccfa39957010638ce0697ab8e69cb76c3c7c108ed5968",
       "intent_id": "t1:community_interpreter",
       "invalid_reason": null,
-      "previous_event_hash": "7bde3b4ecd22c3b24c74d1beb49d7422fad229870a559ec5abccfbda35fa4e9f",
+      "previous_event_hash": "f961333f7541d7056db4a525427e260654d518e35a43836a321ca320c561ecdc",
       "state_after_hash": "8b3cbfaf83266c41ffae915dd1026101666a079886fa35f66ad71f24a23216f5",
       "state_before_hash": "f4099e07871342d91eabdc3f6dea284448f3a501b05b1f077dc5034877ecc616",
       "valid": true
@@ -64,7 +64,7 @@
           "public-technology-tree"
         ],
         "responds_to": [],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -73,10 +73,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "fd9fed3f4609423a68ced1dedb9cea4ff5eb2239bd62010d509bec5dc82014e9",
+      "event_hash": "0153826bf791c3c9bb5d56c155939e92865f0c6258da67dd403de8106183fac1",
       "intent_id": "t1:infra_engineer",
       "invalid_reason": null,
-      "previous_event_hash": "34861d4295e5a9b4032d23b02f10cd9b9b395a59028b132cec694dc042b672a4",
+      "previous_event_hash": "c735aa3355c1e665c4bccfa39957010638ce0697ab8e69cb76c3c7c108ed5968",
       "state_after_hash": "0e62f3e0325276bfc2448f74974a3f63467dc815fe1b455ccc0ad8fbd3506382",
       "state_before_hash": "8b3cbfaf83266c41ffae915dd1026101666a079886fa35f66ad71f24a23216f5",
       "valid": true
@@ -91,7 +91,7 @@
           "public-technology-tree"
         ],
         "responds_to": [],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -100,10 +100,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "4d84a549078883bef5bc667016c2bdd81749e5f4a81e3653e45c33abd1481a4e",
+      "event_hash": "443ad3ecdb41e627a3ca054c03bc3bc8b006b991d445f5cb7764c1801ccb1714",
       "intent_id": "t1:logistics_operator",
       "invalid_reason": null,
-      "previous_event_hash": "fd9fed3f4609423a68ced1dedb9cea4ff5eb2239bd62010d509bec5dc82014e9",
+      "previous_event_hash": "0153826bf791c3c9bb5d56c155939e92865f0c6258da67dd403de8106183fac1",
       "state_after_hash": "ab1b8f68458c362e831a7ec120aae9df4ad5840aea9ba171b7b7cc58517c8dd5",
       "state_before_hash": "0e62f3e0325276bfc2448f74974a3f63467dc815fe1b455ccc0ad8fbd3506382",
       "valid": true
@@ -118,7 +118,7 @@
           "public-technology-tree"
         ],
         "responds_to": [],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -127,10 +127,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "cc76be2a157019e5c02c5703d7e2203aa107fe59c5545a615cde4ee8bac77769",
+      "event_hash": "dfc02fc0f6d157464d8b4b76cb5b1f7f58af03aebefbeea0ea6cf75a7bb3b6fb",
       "intent_id": "t1:threat_analyst",
       "invalid_reason": null,
-      "previous_event_hash": "4d84a549078883bef5bc667016c2bdd81749e5f4a81e3653e45c33abd1481a4e",
+      "previous_event_hash": "443ad3ecdb41e627a3ca054c03bc3bc8b006b991d445f5cb7764c1801ccb1714",
       "state_after_hash": "f96dc9ba3a19e5f365cb2bb619a7244bafb97844350eb9a0321a8827b704c7ab",
       "state_before_hash": "ab1b8f68458c362e831a7ec120aae9df4ad5840aea9ba171b7b7cc58517c8dd5",
       "valid": true
@@ -147,7 +147,7 @@
         "responds_to": [
           "t1:logistics_operator"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -156,10 +156,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "1d050122cb4a9a31d760607716f742627e03a6a4c4ff5e4ffbaeca8e63cbebb5",
+      "event_hash": "a935c274b9c2ba6e530d7c375d00ba1fd87898bc197e6c0e7a220013f0d9407b",
       "intent_id": "t2:civic_auditor",
       "invalid_reason": null,
-      "previous_event_hash": "cc76be2a157019e5c02c5703d7e2203aa107fe59c5545a615cde4ee8bac77769",
+      "previous_event_hash": "dfc02fc0f6d157464d8b4b76cb5b1f7f58af03aebefbeea0ea6cf75a7bb3b6fb",
       "state_after_hash": "d33ae8fd3bc787efed69378dbd68ca89759da338e7484388ceccbeba55d01da0",
       "state_before_hash": "f96dc9ba3a19e5f365cb2bb619a7244bafb97844350eb9a0321a8827b704c7ab",
       "valid": true
@@ -176,7 +176,7 @@
         "responds_to": [
           "t1:civic_auditor"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -185,10 +185,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "533d803ec7db21f2a16993cba655396f358f03c851c7fb90bd214ff4dc069264",
+      "event_hash": "197e8162357e0fa5e12a07d79143a9036f269a0b1fb223b7cb13f57f974c3fe9",
       "intent_id": "t2:community_interpreter",
       "invalid_reason": null,
-      "previous_event_hash": "1d050122cb4a9a31d760607716f742627e03a6a4c4ff5e4ffbaeca8e63cbebb5",
+      "previous_event_hash": "a935c274b9c2ba6e530d7c375d00ba1fd87898bc197e6c0e7a220013f0d9407b",
       "state_after_hash": "041f648f824df43b708cad996c5666ddc0837d0f06c20e095f46e8fbaa4ba6bb",
       "state_before_hash": "d33ae8fd3bc787efed69378dbd68ca89759da338e7484388ceccbeba55d01da0",
       "valid": true
@@ -205,7 +205,7 @@
         "responds_to": [
           "t1:threat_analyst"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -214,10 +214,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "efaf5b15c7b76f08fbd86f953e8695cfb98cb626a54350ed2f3a018bf3691b86",
+      "event_hash": "8f7c0fe0e002748b99481a8506d5225b9051d2a820b235569e6f4b586ee28746",
       "intent_id": "t2:infra_engineer",
       "invalid_reason": null,
-      "previous_event_hash": "533d803ec7db21f2a16993cba655396f358f03c851c7fb90bd214ff4dc069264",
+      "previous_event_hash": "197e8162357e0fa5e12a07d79143a9036f269a0b1fb223b7cb13f57f974c3fe9",
       "state_after_hash": "e4c20e13cd1cf11ce6729f50846000857f44bd11bd7403d8a11dacc389210ed2",
       "state_before_hash": "041f648f824df43b708cad996c5666ddc0837d0f06c20e095f46e8fbaa4ba6bb",
       "valid": true
@@ -234,7 +234,7 @@
         "responds_to": [
           "t1:community_interpreter"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -244,10 +244,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "16a368f6ceb9a940737ddf19318285baeb63ca31d1ff4a5e8be8c5969d01d551",
+      "event_hash": "d4880f9b283feb4adfb29ba20c474d1e72292a4df2d94bea9d1611233396f407",
       "intent_id": "t2:logistics_operator",
       "invalid_reason": null,
-      "previous_event_hash": "efaf5b15c7b76f08fbd86f953e8695cfb98cb626a54350ed2f3a018bf3691b86",
+      "previous_event_hash": "8f7c0fe0e002748b99481a8506d5225b9051d2a820b235569e6f4b586ee28746",
       "state_after_hash": "3f20c1c7ca5648863e0790254769229210219affc5ad098048c77e51adbaaad8",
       "state_before_hash": "e4c20e13cd1cf11ce6729f50846000857f44bd11bd7403d8a11dacc389210ed2",
       "valid": true
@@ -264,7 +264,7 @@
         "responds_to": [
           "t1:civic_auditor"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -273,10 +273,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "805a6c21affc2a451b4d732abf2341aeaa39fa0de19b273c2081df575b0294e2",
+      "event_hash": "1a500041e204bff263ab423ef77bd8bd7e07f705a9e04ae5803746e7cdd7fb2c",
       "intent_id": "t2:threat_analyst",
       "invalid_reason": null,
-      "previous_event_hash": "16a368f6ceb9a940737ddf19318285baeb63ca31d1ff4a5e8be8c5969d01d551",
+      "previous_event_hash": "d4880f9b283feb4adfb29ba20c474d1e72292a4df2d94bea9d1611233396f407",
       "state_after_hash": "7df5f9c8aec6cb6026dfc6f77a636108dd0b317630dd089bc7358997b4866292",
       "state_before_hash": "3f20c1c7ca5648863e0790254769229210219affc5ad098048c77e51adbaaad8",
       "valid": true
@@ -293,7 +293,7 @@
         "responds_to": [
           "t2:logistics_operator"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -302,10 +302,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "01fd564ad1ad52c3283db02f4d64974c7d488747ff182f67194086abad2c9da7",
+      "event_hash": "e50fc78d34beede518cb4440a086daf021c8ee2b352d8695af5032fa83aecd44",
       "intent_id": "t3:civic_auditor",
       "invalid_reason": null,
-      "previous_event_hash": "805a6c21affc2a451b4d732abf2341aeaa39fa0de19b273c2081df575b0294e2",
+      "previous_event_hash": "1a500041e204bff263ab423ef77bd8bd7e07f705a9e04ae5803746e7cdd7fb2c",
       "state_after_hash": "6ca14e8ca4cb55c70c5ec9dc0d811c3b39f45afb0f7ed663f143d2342aaefe12",
       "state_before_hash": "7df5f9c8aec6cb6026dfc6f77a636108dd0b317630dd089bc7358997b4866292",
       "valid": true
@@ -322,7 +322,7 @@
         "responds_to": [
           "t2:civic_auditor"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -331,10 +331,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "f0c017ac6fcbfd53f8422c0961abb2fc12004e69366a6e020a00ecd5e579b455",
+      "event_hash": "a9c2a09263190fcc8e356585f2cbfaa0e78f85ed497d9c4aa1c5856daaf4aa8f",
       "intent_id": "t3:community_interpreter",
       "invalid_reason": null,
-      "previous_event_hash": "01fd564ad1ad52c3283db02f4d64974c7d488747ff182f67194086abad2c9da7",
+      "previous_event_hash": "e50fc78d34beede518cb4440a086daf021c8ee2b352d8695af5032fa83aecd44",
       "state_after_hash": "9f132e5fe31d8f5a02b54faf0eed2515070a88e4252041648eb7a5c08083fbe6",
       "state_before_hash": "6ca14e8ca4cb55c70c5ec9dc0d811c3b39f45afb0f7ed663f143d2342aaefe12",
       "valid": true
@@ -351,7 +351,7 @@
         "responds_to": [
           "t2:community_interpreter"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -360,10 +360,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "d11a6c5bba74384f66a7533b1711041a6567c6839e72f3512c4727ee8c7ba132",
+      "event_hash": "e42c747e677dc2bb8c2719175478dff306efed6850db0ba06f173192da6faa67",
       "intent_id": "t3:infra_engineer",
       "invalid_reason": null,
-      "previous_event_hash": "f0c017ac6fcbfd53f8422c0961abb2fc12004e69366a6e020a00ecd5e579b455",
+      "previous_event_hash": "a9c2a09263190fcc8e356585f2cbfaa0e78f85ed497d9c4aa1c5856daaf4aa8f",
       "state_after_hash": "41412c0f2b040a7d72100cec458d9cacb22914a418d942441da406bcb06066db",
       "state_before_hash": "9f132e5fe31d8f5a02b54faf0eed2515070a88e4252041648eb7a5c08083fbe6",
       "valid": true
@@ -380,7 +380,7 @@
         "responds_to": [
           "t2:threat_analyst"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -389,10 +389,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "3d0212dace8e691b9bf3d3d45f97bbe5dd5ba402c6747a5ffec1de6e4e2bcdf5",
+      "event_hash": "f4a03588dea73882304e4cd54f33b73d1a5ffad3f503756c78357207bdb76ee3",
       "intent_id": "t3:logistics_operator",
       "invalid_reason": null,
-      "previous_event_hash": "d11a6c5bba74384f66a7533b1711041a6567c6839e72f3512c4727ee8c7ba132",
+      "previous_event_hash": "e42c747e677dc2bb8c2719175478dff306efed6850db0ba06f173192da6faa67",
       "state_after_hash": "49f10142160b665f78e035e23fa15edc4f8b77426542a43ee52b015082d32a86",
       "state_before_hash": "41412c0f2b040a7d72100cec458d9cacb22914a418d942441da406bcb06066db",
       "valid": true
@@ -409,7 +409,7 @@
         "responds_to": [
           "t2:infra_engineer"
         ],
-        "run_id": "ff-d3674fbb82db8614",
+        "run_id": "ff-b74f4c768380c732",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -418,19 +418,19 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "9e6aadfc484e44f966bfb8f54c004be50e3f09f4ed98241b8e250fe90c2760fe",
+      "event_hash": "2cf8bd0fd46f8d9581234f233c09672f1b951641b253ca8d562920ddb8b1f1f7",
       "intent_id": "t3:threat_analyst",
       "invalid_reason": null,
-      "previous_event_hash": "3d0212dace8e691b9bf3d3d45f97bbe5dd5ba402c6747a5ffec1de6e4e2bcdf5",
+      "previous_event_hash": "f4a03588dea73882304e4cd54f33b73d1a5ffad3f503756c78357207bdb76ee3",
       "state_after_hash": "2bd874451e8cbd16f247f30450d68cdb3a1402e025d40182956f41db4d48d633",
       "state_before_hash": "49f10142160b665f78e035e23fa15edc4f8b77426542a43ee52b015082d32a86",
       "valid": true
     }
   ],
   "assumption_notice": "これは意思決定条件の観察用シミュレーションであり、未来予測、政策助言、実在組織の評価ではない。",
-  "engine_version": "0.2.0",
-  "final_event_hash": "9e6aadfc484e44f966bfb8f54c004be50e3f09f4ed98241b8e250fe90c2760fe",
-  "input_digest": "d3674fbb82db861487318ff61a864f82dcb1c5fc1b6393591e0fc0292f683a3e",
+  "engine_version": "0.3.0",
+  "final_event_hash": "2cf8bd0fd46f8d9581234f233c09672f1b951641b253ca8d562920ddb8b1f1f7",
+  "input_digest": "b74f4c768380c73271f2563f712617d3082924e2a40b81605bf2c509b53f6206",
   "interaction_edges": [
     {
       "from_intent_id": "t2:civic_auditor",
@@ -502,7 +502,7 @@
     "public-ai-reference-stack": [],
     "regional-fabrication-cells": []
   },
-  "protocol_version": "1.0.0",
+  "protocol_version": "1.1.0",
   "provider": {
     "model": null,
     "name": "fixture"
@@ -514,7 +514,7 @@
     "community_interpreter",
     "threat_analyst"
   ],
-  "run_id": "ff-d3674fbb82db8614",
+  "run_id": "ff-b74f4c768380c732",
   "scenario_id": "japan-2036-centralization",
   "schema_version": "fiction_forks_social_result.v1",
   "seed": 2036,
@@ -567,7 +567,7 @@
       "悪用や過信による局地的被害",
       "維持費が短期の生活基盤投資を圧迫する"
     ],
-    "engine_version": "0.2.0",
+    "engine_version": "0.3.0",
     "fork": {
       "activation_year": 2032,
       "collapse_year": null,
