@@ -6,6 +6,11 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 次のリリースに向けた変更をここへ記録します。
 
+### Changed
+
+- Idea Builderで `Issue → Build → Worldline PR → Simulation` の参加ループと `1 PR = 1 WORLDLINE` を常時確認できるようにした
+- 入力stepと表示labelのずれを修正し、4段階目を実際の入力内容である「条件・副作用」に統一した
+
 ## [0.3.0] - 2026-08-24
 
 ### Added

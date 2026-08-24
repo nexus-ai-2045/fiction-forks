@@ -125,6 +125,9 @@ class DocumentationContractTests(unittest.TestCase):
             "借りたい機能",
             "変えたい未来",
             "実現条件と副作用",
+            "条件・副作用",
+            "1 PR = 1 WORLDLINE",
+            "Issueを作っただけではシミュレーションは走りません",
             "Content-Security-Policy",
         ):
             with self.subTest(phrase=phrase):
@@ -134,6 +137,8 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertIn("textContent", script)
         self.assertIn("field.value.trim().length === 0", script)
         self.assertIn('issueLink.href = "#"', script)
+        self.assertIn("あとはIssue URLを貼るだけです", script)
+        self.assertIn("https://github.com/${REPOSITORY}", script)
         self.assertIn("workflow_dispatch:", workflow)
         self.assertNotRegex(workflow, r"(?m)^\s+push:\s*$")
 

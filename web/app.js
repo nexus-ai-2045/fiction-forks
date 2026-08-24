@@ -203,8 +203,8 @@ document.querySelector('[data-action="copy-issue"]').addEventListener("click", (
 });
 
 document.querySelector('[data-action="copy-ai-prompt"]').addEventListener("click", () => {
-  const prompt = `次の公開Issueから、Fiction Forksの新しいworldlineを実装してください。\n\nIssue URL: （ここにIssue URLを貼る）\nRepository: https://github.com/${REPOSITORY}\n\n書込権限がなければrepositoryをforkし、fork内の専用branchで作業してください。書込権限があれば本repository内の専用branchを使えます。intervention JSON、同じslugのsocial configとfixture、通常比較と遅延比較、テストを作ってください。PR種別はworldlineとし、人間レビュー前で止めてください。`;
-  copyText(prompt, handoffStatus, "AIへ渡す依頼文をコピーしました。Issue URLを追加してください。");
+  const prompt = `このIdea Issueを、Fiction Forksの新しいworldline PRにしてください。\n\nIssue URL: （ここにIssue URLを貼る）\nRepository: https://github.com/${REPOSITORY}\n\n書込権限がなければrepoをforkし、fork内の専用branchで作業してください。書込権限があれば本repo内の専用branchを使ってください。介入JSON、同じslugのsocial configとfixture、同一seedの通常比較と遅延比較、テストを作り、PR種別をworldlineにしてください。fixtureをlive LLM実測と表現せず、権利・安全境界を保ち、人間レビュー前で止めてください。`;
+  copyText(prompt, handoffStatus, "AI用の依頼文をコピーしました。あとはIssue URLを貼るだけです。");
 });
 
 document.querySelectorAll('[data-action="open-boundary"]').forEach((button) => {

@@ -50,7 +50,7 @@
           </li>
           <li data-step-indicator="2"><span>2</span><b>借りたい機能</b></li>
           <li data-step-indicator="3"><span>3</span><b>変えたい未来</b></li>
-          <li data-step-indicator="4"><span>4</span><b>Issueの内容を確認</b></li>
+          <li data-step-indicator="4"><span>4</span><b>条件・副作用</b></li>
         </ol>
 
         <div class="builder-grid">
@@ -246,40 +246,57 @@
         <div class="handoff-heading">
           <p>CONTRIBUTOR HANDOFF</p>
           <h2 id="handoff-title">Issueから、動く世界線へ。</h2>
-          <span>一般参加者の着想と、検証済み実装を混ぜません。</span>
+          <span>アイデアはIssue、シミュレーション可能な実装はworldline PRに分けます。</span>
         </div>
 
-        <ol class="handoff-flow">
-          <li>
-            <span class="flow-number">1</span>
-            <b>IDEA</b>
-            <h3>Issueで着想を共有</h3>
-            <p>作品、抽象機能、未来課題、実現条件を公開して対話します。</p>
-          </li>
-          <li>
-            <span class="flow-number">2</span>
-            <b>BUILD</b>
-            <h3>実装方法を選ぶ</h3>
-            <div class="handoff-links">
-              <button type="button" data-action="copy-ai-prompt">AIへ依頼</button>
-              <a href="https://github.com/nexus-ai-2045/fiction-forks/fork" rel="noreferrer">Forkして実装</a>
-              <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/CONTRIBUTING.md#issueからworldline-prへ" rel="noreferrer">ローカル</a>
-              <a href="https://colab.research.google.com/github/nexus-ai-2045/fiction-forks/blob/main/notebooks/validate-worldline.ipynb" target="_blank" rel="noopener noreferrer">Colab</a>
-            </div>
-          </li>
-          <li>
-            <span class="flow-number">3</span>
-            <b>WORLDLINE PR</b>
-            <h3>再現可能な差分へ</h3>
-            <p>介入JSON、5役の対話条件、fixture、費用と副作用を一PRにします。</p>
-          </li>
-          <li>
-            <span class="flow-number">4</span>
-            <b>CHECKS</b>
-            <h3>投稿者の世界線を実行</h3>
-            <p>GitHub Actionsが投稿者名、介入、15行動、2036年比較をcheck summaryへ表示します。</p>
-          </li>
-        </ol>
+        <div class="handoff-stage">
+          <ol class="handoff-flow">
+            <li>
+              <span class="flow-number">1</span>
+              <b>IDEA</b>
+              <h3>Issueで着想を共有</h3>
+              <p>作品、抽象機能、未来課題、実現条件を公開して対話します。</p>
+            </li>
+            <li>
+              <span class="flow-number">2</span>
+              <b>BUILD</b>
+              <h3>実装方法を選ぶ</h3>
+              <div class="handoff-links">
+                <button type="button" data-action="copy-ai-prompt">AIにPR化を頼む</button>
+                <a href="https://github.com/nexus-ai-2045/fiction-forks/fork" rel="noreferrer">Forkして実装</a>
+                <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/CONTRIBUTING.md#issueからworldline-prへ" rel="noreferrer">ローカルで実装</a>
+                <a href="https://colab.research.google.com/github/nexus-ai-2045/fiction-forks/blob/main/notebooks/validate-worldline.ipynb" target="_blank" rel="noopener noreferrer">Colabで検証</a>
+              </div>
+            </li>
+            <li>
+              <span class="flow-number">3</span>
+              <b>WORLDLINE PR</b>
+              <h3>再現可能な差分へ</h3>
+              <p>介入JSON、5役の対話条件、fixture、費用と副作用を一PRにします。</p>
+            </li>
+            <li>
+              <span class="flow-number">4</span>
+              <b>SIMULATION</b>
+              <h3>同じ条件で世界線を比較</h3>
+              <p>Checksが投稿者名、介入、15行動、2036年比較を表示し、人間がレビューします。</p>
+            </li>
+          </ol>
+
+          <aside class="worldline-card" aria-labelledby="worldline-card-title">
+            <p>WORLDLINEとは？</p>
+            <h3 id="worldline-card-title">1 PR = 1 WORLDLINE</h3>
+            <div class="worldline-branch" aria-hidden="true"><i></i><i></i><i></i></div>
+            <p>
+              一つの介入と技術ツリーを、一つのPull Requestとして追加します。
+              Issueを作っただけではシミュレーションは走りません。
+            </p>
+            <dl>
+              <div><dt>Issue</dt><dd>まだ未実装のアイデア</dd></div>
+              <div><dt>PR</dt><dd>再現できる世界線</dd></div>
+              <div><dt>Merge</dt><dd>レビュー済みの共有世界</dd></div>
+            </dl>
+          </aside>
+        </div>
         <p class="handoff-status" id="handoff-status" aria-live="polite"></p>
       </section>
 

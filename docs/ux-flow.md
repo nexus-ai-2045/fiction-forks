@@ -8,15 +8,21 @@
 
 ```mermaid
 flowchart TD
-    landing["世界の入口"] --> compare["世界比較"]
+    idea["Idea Builder"] --> issue["idea Issue / 未実装"]
+    issue --> build["forkまたは専用branchで実装"]
+    build --> worldline["worldline PR / 1 PR = 1世界線"]
+    worldline --> checks["同じ条件でsimulation"]
+    checks --> review["人間レビュー"]
+    review --> landing["レビュー済み世界の入口"]
+    landing --> compare["世界比較"]
     compare --> tree["技術ツリー"]
     tree --> delay["遅延実験"]
-    delay --> builder["Fork Builder"]
-    builder --> preview["PR Preview"]
-    preview --> github["GitHub Pull Request"]
+    delay --> preview["次のPR Preview"]
     compare --> evidence["根拠と仮説"]
-    builder --> rights["権利・安全確認"]
+    idea --> rights["権利・安全確認"]
 ```
+
+Idea BuilderはIssue文を作るだけで、engineまたはLLMを実行しない。simulationは、contributorが介入・social config・fixtureをworldline PRへ揃え、PR checksが同じseedで実行した時に初めて発生する。結果はPRへ戻り、人間レビュー後にだけ共有世界へ入る。
 
 ## 主要画面
 
