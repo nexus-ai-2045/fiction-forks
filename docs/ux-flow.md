@@ -22,7 +22,9 @@ flowchart TD
     idea --> rights["権利・安全確認"]
 ```
 
-Idea BuilderはIssue文を作るだけで、engineまたはLLMを実行しない。simulationは、contributorが介入・social config・fixtureをworldline PRへ揃え、PR checksが同じseedで実行した時に初めて発生する。結果はPRへ戻り、人間レビュー後にだけ共有世界へ入る。
+Idea BuilderはIssue文を作るだけで、engineまたはLLMを実行しない。contributorはlocalまたはColabで介入・social config・fixtureを事前検証できる。worldline PRでは、checksが同じseedによる最初の公式CI runを実行する。結果はPRへ戻り、人間レビュー後にだけ共有世界へ入る。
+
+Webは「作品」と「アイデア」だけを一ページで受け付け、open/closedを含む公開Idea IssueをGitHubからread-only取得する。取得不能時はHTMLに保存した直近一覧を表示する。repoへmergeされた介入は、公式repo内の実装JSONまたはPRへリンクする。Ideaカードの「AIにworldline PR化を頼む」はIssue URL入りの依頼文をコピーするだけで、branch作成、push、PR作成、simulationは自動実行しない。
 
 ## 主要画面
 

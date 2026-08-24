@@ -15,7 +15,7 @@ Idea作成時にLLMまたはengineを自動実行すると、費用、未信頼�
 
 1. `idea Issue`: Idea Builderがブラウザ内の入力をMarkdownへ変換し、GitHubの確認画面を開く。未実装・simulation未実行と明記する。
 2. `Build`: 外部contributorは公開forkの専用branch、write権限者は本repoの専用branchで、一つの介入、技術ツリー、social config、fixtureを作る。AIへ依頼する場合も同じ公式repo URLとIssue URLを渡す。
-3. `worldline PR`: 一つのPRを一つの世界線とし、同一seedの基準世界・介入世界・ノード遅延をchecksで実行する。fixtureとlive LLM実測を混同しない。
+3. `worldline PR`: 一つのPRを一つの世界線とし、checksは同一seedのfixture社会runと、行動不足から生じた技術遅延を含む基準世界・介入世界の比較を実行する。任意ノードを明示的に遅らせる追加実験はlocalまたはColabで行い、結果をPRへ記録する。fixtureとlive LLM実測を混同しない。
 4. `Human review`: 結果、費用、副作用、権利、安全、再現性を人間が確認した後にだけmergeし、共有世界へ反映する。
 
 Web UIはこのループを可視化するprojectionであり、engine状態、GitHub credential、独自databaseを所有しない。Issue作成時にはsimulationを実行しない。

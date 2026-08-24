@@ -121,13 +121,14 @@ class DocumentationContractTests(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/pages.yml").read_text(encoding="utf-8")
         for phrase in (
             "GitHubでIssueを確認",
-            "作品・登場人物",
-            "借りたい機能",
-            "変えたい未来",
-            "実現条件と副作用",
-            "条件・副作用",
+            "作品とアイデア",
+            "作品名",
+            "アイデア",
             "1 PR = 1 WORLDLINE",
             "Issueを作っただけではシミュレーションは走りません",
+            "PRを追加したい人へ",
+            "これまでのアイデア",
+            "AIにworldline PR化を頼む",
             "Content-Security-Policy",
         ):
             with self.subTest(phrase=phrase):
@@ -136,9 +137,21 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertNotIn("localStorage", script)
         self.assertIn("textContent", script)
         self.assertIn("field.value.trim().length === 0", script)
+        self.assertNotIn("data-step-indicator", html)
+        self.assertNotIn("借りたい機能</b>", html)
+        self.assertNotIn("変えたい未来</b>", html)
+        self.assertNotIn("条件・副作用</b>", html)
         self.assertIn('issueLink.href = "#"', script)
         self.assertIn("あとはIssue URLを貼るだけです", script)
         self.assertIn("https://github.com/${REPOSITORY}", script)
+        self.assertIn("state=all", script)
+        self.assertNotIn("state=open&labels=idea", script)
+        import json
+
+        for intervention_path in (ROOT / "interventions").glob("*.json"):
+            intervention = json.loads(intervention_path.read_text(encoding="utf-8"))
+            with self.subTest(intervention=intervention["id"]):
+                self.assertIn(f'data-worldline-id="{intervention["id"]}"', html)
         self.assertIn("workflow_dispatch:", workflow)
         self.assertNotRegex(workflow, r"(?m)^\s+push:\s*$")
 

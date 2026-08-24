@@ -2,24 +2,19 @@
 
 const REPOSITORY = "nexus-ai-2045/fiction-forks";
 const ISSUE_URL = `https://github.com/${REPOSITORY}/issues/new`;
-const API_URL = `https://api.github.com/repos/${REPOSITORY}/issues?state=open&labels=idea&per_page=6`;
+const API_URL = `https://api.github.com/repos/${REPOSITORY}/issues?state=all&labels=idea&sort=created&direction=desc&per_page=100`;
 const ISSUE_PATH_PREFIX = `/${REPOSITORY}/issues/`;
 
 const form = document.querySelector("#idea-form");
-const steps = [...document.querySelectorAll("[data-step]")];
-const indicators = [...document.querySelectorAll("[data-step-indicator]")];
-const summarySteps = [...document.querySelectorAll("[data-summary-step]")];
 const nextButton = document.querySelector('[data-action="next"]');
-const backButton = document.querySelector('[data-action="back"]');
 const formError = document.querySelector("#form-error");
 const issuePreview = document.querySelector("#issue-preview");
 const issueMarkdown = document.querySelector("#issue-markdown");
 const issueLink = document.querySelector("#github-issue-link");
 const copyStatus = document.querySelector("#copy-status");
 const handoffStatus = document.querySelector("#handoff-status");
+const ideaQueueStatus = document.querySelector("#idea-queue-status");
 const boundaryDialog = document.querySelector("#boundary-dialog");
-
-let currentStep = 1;
 
 function value(name) {
   return form.elements[name]?.value.trim() ?? "";
@@ -42,45 +37,23 @@ function trustedIssueUrl(candidate) {
   }
 }
 
+function worldlinePrompt(issueUrl = "（ここにIssue URLを貼る）") {
+  return `このIdea Issueを、Fiction Forksの新しいworldline PRにしてください。\n\nIssue URL: ${issueUrl}\nRepository: https://github.com/${REPOSITORY}\n\n書込権限がなければrepoをforkし、fork内の専用branchで作業してください。書込権限があれば本repo内の専用branchを使ってください。介入JSON、同じslugのsocial configとfixture、同一seedの通常比較と遅延比較、テストを作り、PR種別をworldlineにしてください。fixtureをlive LLM実測と表現せず、権利・安全境界を保ち、人間レビュー前で止めてください。`;
+}
+
+function issueExcerpt(body) {
+  const source = String(body ?? "");
+  const match = source.match(/## (?:アイデア|借りたい機能)\s+([\s\S]*?)(?=\n## |\n### |$)/);
+  return compact(match?.[1] ?? "", "詳しい内容はIssueで確認できます。").slice(0, 150);
+}
+
 function updateSummary() {
-  const work = [value("workTitle"), value("characterName")].filter(Boolean).join(" / ");
-  document.querySelector('[data-summary="work"]').textContent = compact(work);
-  document.querySelector('[data-summary="function"]').textContent = compact(value("borrowedFunction"));
-  document.querySelector('[data-summary="future"]').textContent = compact(value("futureProblem"));
-  document.querySelector('[data-summary="conditions"]').textContent = compact(
-    [value("requirements"), value("tradeoffs")].filter(Boolean).join(" / "),
-  );
+  document.querySelector('[data-summary="work"]').textContent = compact(value("workTitle"));
+  document.querySelector('[data-summary="idea"]').textContent = compact(value("ideaText"));
 }
 
-function setStep(step) {
-  currentStep = Math.max(1, Math.min(4, step));
-  steps.forEach((section) => {
-    const active = Number(section.dataset.step) === currentStep;
-    section.hidden = !active;
-    section.classList.toggle("is-active", active);
-  });
-  indicators.forEach((indicator) => {
-    const index = Number(indicator.dataset.stepIndicator);
-    indicator.classList.toggle("is-current", index === currentStep);
-    indicator.classList.toggle("is-complete", index < currentStep);
-    if (index === currentStep) indicator.setAttribute("aria-current", "step");
-    else indicator.removeAttribute("aria-current");
-  });
-  summarySteps.forEach((item) => {
-    item.classList.toggle("is-current", Number(item.dataset.summaryStep) === currentStep);
-  });
-  backButton.hidden = currentStep === 1;
-  nextButton.firstChild.textContent = currentStep === 4 ? "Issueを確認 " : "次へ ";
-  issuePreview.hidden = true;
-  formError.textContent = "";
-  updateSummary();
-  const heading = steps[currentStep - 1].querySelector("h2");
-  heading?.focus({ preventScroll: true });
-}
-
-function validateCurrentStep() {
-  const active = steps[currentStep - 1];
-  const required = [...active.querySelectorAll("[required]")];
+function validateForm() {
+  const required = [...form.querySelectorAll("[required]")];
   let firstInvalid = null;
 
   required.forEach((field) => {
@@ -94,9 +67,7 @@ function validateCurrentStep() {
   });
 
   if (firstInvalid) {
-    formError.textContent = currentStep === 4
-      ? "必須項目と権利・安全の確認を完了してください。"
-      : "このステップの必須項目を入力してください。";
+    formError.textContent = "作品、アイデア、権利・安全の確認を完了してください。";
     firstInvalid.focus();
     return false;
   }
@@ -106,39 +77,19 @@ function validateCurrentStep() {
 
 function issueTitle() {
   const work = value("workTitle");
-  const capability = compact(value("plainLanguage")).slice(0, 56);
-  return `[idea] ${work}から考える：${capability}`;
+  const idea = compact(value("ideaText")).slice(0, 56);
+  return `[idea] ${work}から考える：${idea}`;
 }
 
 function buildIssueBody() {
-  const character = value("characterName") || "（指定なし）";
   return `<!-- fiction-forks-kind: idea -->
-## 作品・登場人物
+## 作品
 
-- 作品: ${value("workTitle")}
-- 登場人物: ${character}
+${value("workTitle")}
 
-## 借りたい機能
+## アイデア
 
-${value("borrowedFunction")}
-
-### 作品を知らない人向けの同義表現
-
-${value("plainLanguage")}
-
-## 変えたい未来
-
-${value("futureProblem")}
-
-- 特に影響を受ける人・地域: ${value("affectedPeople")}
-
-## 実現条件
-
-${value("requirements")}
-
-## 費用・副作用・失敗条件
-
-${value("tradeoffs")}
+${value("ideaText")}
 
 ## 現在の状態
 
@@ -146,9 +97,16 @@ ${value("tradeoffs")}
 - [ ] contributorがworldline PRとして実装
 - [ ] 5役のfixture / live runで検証
 
+## worldline PRで検討すること
+
+- [ ] 作品を知らない人向けの同義表現
+- [ ] 変えたい未来課題と影響を受ける人・地域
+- [ ] 実現に必要な技術・制度・運用
+- [ ] 費用・副作用・悪用や失敗の可能性
+
 ## 権利・安全
 
-- [x] 作品名・登場人物名と、独自に抽出した抽象機能だけを記載した
+- [x] 作品名と、独自に考えたアイデアだけを記載した
 - [x] 画像、台詞、音声、映像、ロゴ、外見・口調の再現を含めていない
 - [x] 個人情報、秘密情報、実在システムへの攻撃手順を含めていない
 
@@ -178,12 +136,9 @@ async function copyText(text, statusElement, message) {
 }
 
 nextButton.addEventListener("click", () => {
-  if (!validateCurrentStep()) return;
-  if (currentStep < 4) setStep(currentStep + 1);
-  else renderPreview();
+  if (!validateForm()) return;
+  renderPreview();
 });
-
-backButton.addEventListener("click", () => setStep(currentStep - 1));
 
 form.addEventListener("input", (event) => {
   if (event.target.matches("[aria-invalid]")) event.target.setAttribute("aria-invalid", "false");
@@ -195,7 +150,7 @@ form.addEventListener("input", (event) => {
 
 document.querySelector('[data-action="edit"]').addEventListener("click", () => {
   issuePreview.hidden = true;
-  steps[currentStep - 1].querySelector("textarea, input")?.focus();
+  form.querySelector("textarea, input")?.focus();
 });
 
 document.querySelector('[data-action="copy-issue"]').addEventListener("click", () => {
@@ -203,8 +158,7 @@ document.querySelector('[data-action="copy-issue"]').addEventListener("click", (
 });
 
 document.querySelector('[data-action="copy-ai-prompt"]').addEventListener("click", () => {
-  const prompt = `このIdea Issueを、Fiction Forksの新しいworldline PRにしてください。\n\nIssue URL: （ここにIssue URLを貼る）\nRepository: https://github.com/${REPOSITORY}\n\n書込権限がなければrepoをforkし、fork内の専用branchで作業してください。書込権限があれば本repo内の専用branchを使ってください。介入JSON、同じslugのsocial configとfixture、同一seedの通常比較と遅延比較、テストを作り、PR種別をworldlineにしてください。fixtureをlive LLM実測と表現せず、権利・安全境界を保ち、人間レビュー前で止めてください。`;
-  copyText(prompt, handoffStatus, "AI用の依頼文をコピーしました。あとはIssue URLを貼るだけです。");
+  copyText(worldlinePrompt(), handoffStatus, "AI用の依頼文をコピーしました。あとはIssue URLを貼るだけです。");
 });
 
 document.querySelectorAll('[data-action="open-boundary"]').forEach((button) => {
@@ -237,30 +191,65 @@ async function loadIdeaQueue() {
     issues.forEach((issue) => {
       const href = trustedIssueUrl(issue.html_url);
       if (!href) return;
-      const link = document.createElement("a");
-      link.className = "queue-item";
-      link.href = href;
-      link.rel = "noreferrer";
+      const article = document.createElement("article");
+      article.className = "queue-item";
+
+      const meta = document.createElement("div");
+      meta.className = "queue-item-meta";
 
       const number = document.createElement("strong");
       number.textContent = `#${String(issue.number ?? "?")}`;
-      const title = document.createElement("b");
+      const state = document.createElement("span");
+      const isOpen = issue.state === "open";
+      state.className = `idea-state${isOpen ? "" : " is-closed"}`;
+      state.textContent = isOpen ? "OPEN" : "CLOSED";
+      meta.append(number, state);
+
+      const title = document.createElement("h4");
       title.textContent = String(issue.title ?? "無題のアイデア");
+      const excerpt = document.createElement("p");
+      excerpt.textContent = issueExcerpt(issue.body);
       const author = document.createElement("span");
+      author.className = "queue-author";
       const login = issue.user && typeof issue.user === "object" ? issue.user.login : "unknown";
       author.textContent = `提案者 @${String(login ?? "unknown")}`;
 
-      link.append(number, title, author);
-      container.append(link);
+      const actions = document.createElement("div");
+      actions.className = "queue-actions";
+      const issueAnchor = document.createElement("a");
+      issueAnchor.href = href;
+      issueAnchor.rel = "noreferrer";
+      issueAnchor.textContent = "Issueを見る";
+      const copyButton = document.createElement("button");
+      copyButton.type = "button";
+      copyButton.dataset.action = "copy-idea-prompt";
+      copyButton.dataset.issueUrl = href;
+      copyButton.textContent = "AIにworldline PR化を頼む";
+      actions.append(issueAnchor, copyButton);
+
+      article.append(meta, title, excerpt, author, actions);
+      container.append(article);
     });
+    ideaQueueStatus.textContent = "公開GitHubのIdea Issueから最新状態を表示しています。";
   } catch {
-    container.replaceChildren();
-    const fallback = document.createElement("p");
-    fallback.className = "queue-empty";
-    fallback.textContent = "現在一覧を取得できません。GitHubのIssue一覧から確認できます。";
-    container.append(fallback);
+    ideaQueueStatus.textContent = "GitHubから更新できないため、HTMLに保存した一覧を表示しています。";
   }
 }
 
-setStep(1);
+document.querySelector("#idea-queue-list").addEventListener("click", (event) => {
+  const button = event.target.closest('[data-action="copy-idea-prompt"]');
+  if (!button) return;
+  const href = trustedIssueUrl(button.dataset.issueUrl);
+  if (!href) {
+    ideaQueueStatus.textContent = "Issue URLを確認できませんでした。GitHubでIssueを開いてください。";
+    return;
+  }
+  copyText(
+    worldlinePrompt(href),
+    ideaQueueStatus,
+    "Issue URL入りのAI用依頼文をコピーしました。そのままAIへ渡せます。",
+  );
+});
+
+updateSummary();
 loadIdeaQueue();

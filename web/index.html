@@ -44,22 +44,13 @@
           </p>
         </div>
 
-        <ol class="stepper" aria-label="アイデア作成の進捗">
-          <li class="is-current" data-step-indicator="1" aria-current="step">
-            <span>1</span><b>作品・登場人物</b>
-          </li>
-          <li data-step-indicator="2"><span>2</span><b>借りたい機能</b></li>
-          <li data-step-indicator="3"><span>3</span><b>変えたい未来</b></li>
-          <li data-step-indicator="4"><span>4</span><b>条件・副作用</b></li>
-        </ol>
-
         <div class="builder-grid">
           <form class="form-surface" id="idea-form" novalidate>
-            <section class="form-step is-active" data-step="1" aria-labelledby="step-1-title">
-              <div class="section-number" aria-hidden="true">01</div>
+            <section class="form-step is-active" aria-labelledby="idea-form-title">
+              <div class="section-number" aria-hidden="true">IDEA</div>
               <div class="section-copy">
-                <h2 id="step-1-title" tabindex="-1">作品・登場人物</h2>
-                <p>アイデアの出発点を名前で共有します。登場人物は任意です。</p>
+                <h2 id="idea-form-title">作品とアイデア</h2>
+                <p>知っている作品と、「この力を未来に取り入れたい」を一つ書くだけです。</p>
               </div>
 
               <label for="work-title">作品名 <span>必須</span></label>
@@ -73,98 +64,16 @@
               >
               <p class="field-help">作品名は会話の入口としてのみ使います。</p>
 
-              <label for="character-name">登場人物名 <span class="optional">任意</span></label>
-              <input
-                id="character-name"
-                name="characterName"
-                maxlength="100"
-                autocomplete="off"
-                placeholder="例：ドラえもん、五条悟"
-              >
-              <p class="field-help">人物の口調や外見を再現せず、行動や役割から機能を抽出します。</p>
-            </section>
-
-            <section class="form-step" data-step="2" aria-labelledby="step-2-title" hidden>
-              <div class="section-number" aria-hidden="true">02</div>
-              <div class="section-copy">
-                <h2 id="step-2-title" tabindex="-1">借りたい機能</h2>
-                <p>魔法や道具をそのまま持ち込まず、現実へ翻訳できる機能として書きます。</p>
-              </div>
-
-              <label for="borrowed-function">どんな機能ですか <span>必須</span></label>
+              <label for="idea-text">アイデア <span>必須</span></label>
               <textarea
-                id="borrowed-function"
-                name="borrowedFunction"
-                maxlength="400"
-                rows="5"
-                placeholder="例：高度な道具を一部の人が独占せず、誰でも試して監査できる仕組み"
+                id="idea-text"
+                name="ideaText"
+                maxlength="800"
+                rows="8"
+                placeholder="例：どこでもドアのように、災害時でも離れた地域へ医療や物資を届けられる仕組みがあれば未来が良くなる"
                 required
               ></textarea>
-
-              <label for="plain-language">作品を知らない人向けに言い換えると <span>必須</span></label>
-              <textarea
-                id="plain-language"
-                name="plainLanguage"
-                maxlength="300"
-                rows="4"
-                placeholder="例：公共アクセス可能で、停止や異議申立てもできる技術基盤"
-                required
-              ></textarea>
-            </section>
-
-            <section class="form-step" data-step="3" aria-labelledby="step-3-title" hidden>
-              <div class="section-number" aria-hidden="true">03</div>
-              <div class="section-copy">
-                <h2 id="step-3-title" tabindex="-1">変えたい未来</h2>
-                <p>日本のどんな困りごとを、誰にとって良くしたいかを決めます。</p>
-              </div>
-
-              <label for="future-problem">変えたい未来課題 <span>必須</span></label>
-              <textarea
-                id="future-problem"
-                name="futureProblem"
-                maxlength="400"
-                rows="5"
-                placeholder="例：災害や供給途絶の後、地域で設備を修理できず復旧が長期化する"
-                required
-              ></textarea>
-
-              <label for="affected-people">特に影響を受ける人・地域 <span>必須</span></label>
-              <input
-                id="affected-people"
-                name="affectedPeople"
-                maxlength="200"
-                placeholder="例：離島、地方自治体、物流を担う中小事業者"
-                required
-              >
-            </section>
-
-            <section class="form-step" data-step="4" aria-labelledby="step-4-title" hidden>
-              <div class="section-number" aria-hidden="true">04</div>
-              <div class="section-copy">
-                <h2 id="step-4-title" tabindex="-1">実現条件と副作用</h2>
-                <p>都合のよい力だけを取り出さず、必要な技術・制度・運用と失敗条件も残します。</p>
-              </div>
-
-              <label for="requirements">実現に必要なもの <span>必須</span></label>
-              <textarea
-                id="requirements"
-                name="requirements"
-                maxlength="500"
-                rows="4"
-                placeholder="例：監査可能な仕様、地域の運営人材、費用負担の合意、停止訓練"
-                required
-              ></textarea>
-
-              <label for="tradeoffs">費用・副作用・悪用や失敗の可能性 <span>必須</span></label>
-              <textarea
-                id="tradeoffs"
-                name="tradeoffs"
-                maxlength="500"
-                rows="4"
-                placeholder="例：維持費、利用格差、過信、単一事業者への依存"
-                required
-              ></textarea>
+              <p class="field-help">技術、制度、費用、副作用は、worldline PRを作るcontributorが一緒に詰めます。</p>
 
               <fieldset class="boundary-checks">
                 <legend>権利・安全の確認</legend>
@@ -182,9 +91,8 @@
             <p class="form-error" id="form-error" role="alert" aria-live="polite"></p>
 
             <div class="form-actions">
-              <button class="button button-secondary" type="button" data-action="back" hidden>戻る</button>
               <button class="button button-primary" type="button" data-action="next">
-                次へ
+                Issueを確認
                 <span aria-hidden="true">→</span>
               </button>
             </div>
@@ -199,24 +107,10 @@
               <span class="local-only">ブラウザ内のみ</span>
             </div>
 
-            <ol class="summary-list">
-              <li data-summary-step="1" class="is-current">
-                <span>1</span>
-                <div><b>作品・登場人物</b><p data-summary="work">未入力</p></div>
-              </li>
-              <li data-summary-step="2">
-                <span>2</span>
-                <div><b>借りたい機能</b><p data-summary="function">未入力</p></div>
-              </li>
-              <li data-summary-step="3">
-                <span>3</span>
-                <div><b>変えたい未来</b><p data-summary="future">未入力</p></div>
-              </li>
-              <li data-summary-step="4">
-                <span>4</span>
-                <div><b>実現条件と副作用</b><p data-summary="conditions">未入力</p></div>
-              </li>
-            </ol>
+            <div class="idea-summary">
+              <div><span>作品</span><p data-summary="work">未入力</p></div>
+              <div><span>アイデア</span><p data-summary="idea">未入力</p></div>
+            </div>
 
             <div class="boundary-note">
               <strong>収集しないもの</strong>
@@ -247,6 +141,22 @@
           <p>CONTRIBUTOR HANDOFF</p>
           <h2 id="handoff-title">Issueから、動く世界線へ。</h2>
           <span>アイデアはIssue、シミュレーション可能な実装はworldline PRに分けます。</span>
+        </div>
+
+        <div class="contributor-shortcut">
+          <div>
+            <strong>PRを追加したい人へ</strong>
+            <p>
+              下の一覧からIdeaを一つ選び、「AIにworldline PR化を頼む」を押してください。
+              Issue URL入りの依頼文を、そのままAIへ渡せます。
+            </p>
+          </div>
+          <ol>
+            <li><span>1</span>Ideaを選ぶ</li>
+            <li><span>2</span>AI・fork・ローカルのどれかで実装</li>
+            <li><span>3</span>worldline PRを出す</li>
+          </ol>
+          <a href="#idea-library">実装するIdeaを選ぶ <span aria-hidden="true">↓</span></a>
         </div>
 
         <div class="handoff-stage">
@@ -300,18 +210,91 @@
         <p class="handoff-status" id="handoff-status" aria-live="polite"></p>
       </section>
 
-      <section class="idea-queue" aria-labelledby="queue-title">
-        <div>
+      <section class="idea-queue" id="idea-library" aria-labelledby="queue-title">
+        <div class="idea-queue-heading">
+          <div>
           <p>PUBLIC IDEA QUEUE</p>
-          <h2 id="queue-title">みんなのアイデア</h2>
-          <span>公開GitHub Issueから最新の着想を読み込みます。</span>
+            <h2 id="queue-title">これまでのアイデア</h2>
+            <span>Idea Issueの履歴と、repoへ実装されたworldlineを同じ場所で見られます。</span>
+          </div>
+          <a class="queue-all" href="https://github.com/nexus-ai-2045/fiction-forks/issues?q=is%3Aissue+label%3Aidea" rel="noreferrer">
+            GitHubですべて見る <span aria-hidden="true">→</span>
+          </a>
         </div>
-        <div class="queue-list" id="idea-queue-list" aria-live="polite">
-          <p class="queue-loading">アイデアを読み込んでいます…</p>
+
+        <div class="idea-library-grid">
+          <section class="idea-issue-panel" aria-labelledby="idea-issue-title">
+            <div class="library-panel-heading">
+              <div>
+                <p>IDEA ISSUES</p>
+                <h3 id="idea-issue-title">提案された着想</h3>
+              </div>
+              <span>OPEN / CLOSED</span>
+            </div>
+            <div class="queue-list" id="idea-queue-list" aria-live="polite">
+              <article class="queue-item" data-fallback-idea="12">
+                <div class="queue-item-meta">
+                  <strong>#12</strong>
+                  <span class="idea-state">OPEN</span>
+                </div>
+                <h4>[idea] ドラえもんから考える：夢のロボット</h4>
+                <p>タケコプター</p>
+                <span class="queue-author">提案者 @nexus-ai-2045</span>
+                <div class="queue-actions">
+                  <a href="https://github.com/nexus-ai-2045/fiction-forks/issues/12" rel="noreferrer">Issueを見る</a>
+                  <button type="button" data-action="copy-idea-prompt" data-issue-url="https://github.com/nexus-ai-2045/fiction-forks/issues/12">
+                    AIにworldline PR化を頼む
+                  </button>
+                </div>
+              </article>
+              <article class="queue-item" data-fallback-idea="7">
+                <div class="queue-item-meta">
+                  <strong>#7</strong>
+                  <span class="idea-state is-closed">CLOSED</span>
+                </div>
+                <h4>[idea] 複数系統で世界の変化を観測する力</h4>
+                <p>複数の独立した観測者が社会状態を測り、不一致や少数意見を消さずに訂正・停止判断へつなげる。</p>
+                <span class="queue-author">提案者 @D-Hibiki</span>
+                <div class="queue-actions">
+                  <a href="https://github.com/nexus-ai-2045/fiction-forks/issues/7" rel="noreferrer">Issueを見る</a>
+                  <button type="button" data-action="copy-idea-prompt" data-issue-url="https://github.com/nexus-ai-2045/fiction-forks/issues/7">
+                    AIにworldline PR化を頼む
+                  </button>
+                </div>
+              </article>
+            </div>
+            <p class="queue-status" id="idea-queue-status" aria-live="polite">
+              HTMLに保存した一覧を表示中。GitHubから最新状態を確認します。
+            </p>
+          </section>
+
+          <section class="implemented-panel" aria-labelledby="implemented-title">
+            <div class="library-panel-heading">
+              <div>
+                <p>MERGED WORLDLINES</p>
+                <h3 id="implemented-title">実装された世界線</h3>
+              </div>
+              <span>REVIEWED</span>
+            </div>
+            <div class="implemented-list">
+              <article class="implemented-item" data-worldline-id="doraemon-public-tools">
+                <span>『ドラえもん』から借りる</span>
+                <h4>未来の道具を、監査可能な公共インフラへ</h4>
+                <p>公共AI、地域データ信託、分散工作拠点を住民が使える制度として実装。</p>
+                <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/interventions/doraemon-public-tools.json" rel="noreferrer">実装JSONを見る →</a>
+              </article>
+              <article class="implemented-item" data-worldline-id="haruhi-world-observation">
+                <span>『涼宮ハルヒの憂鬱』から借りる</span>
+                <h4>複数系統で世界の変化を観測する</h4>
+                <p>観測の不一致、欠測、少数意見を残し、人間の停止判断へつなぐ仕組みを実装。</p>
+                <div>
+                  <a href="https://github.com/nexus-ai-2045/fiction-forks/pull/6" rel="noreferrer">PR #6を見る →</a>
+                  <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/interventions/haruhi-world-observation.json" rel="noreferrer">実装JSONを見る →</a>
+                </div>
+              </article>
+            </div>
+          </section>
         </div>
-        <a class="queue-all" href="https://github.com/nexus-ai-2045/fiction-forks/issues?q=is%3Aissue+label%3Aidea" rel="noreferrer">
-          すべてのIssueを見る <span aria-hidden="true">→</span>
-        </a>
       </section>
     </main>
 
