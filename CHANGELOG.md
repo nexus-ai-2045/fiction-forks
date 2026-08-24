@@ -4,8 +4,9 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 ## [Unreleased]
 
-コード上の現在versionは`0.3.0`です。Git tagとGitHub Releaseは未作成であり、
-release時にexact main commit、版番号、実日付を別承認で確定します。
+次のリリースに向けた変更をここへ記録します。
+
+## [0.3.0] - 2026-08-24
 
 ### Added
 
@@ -29,3 +30,9 @@ release時にexact main commit、版番号、実日付を別承認で確定し�
 - Python 3.11〜3.13対応のCLI、unit test、GitHub Actions
 - repo-preflight、ai-ratchet-gate v0.1.1、SSOT・公開・第三者IP境界
 - build backendを脆弱性修正版`setuptools==83.0.0`へ固定
+
+### Fixed
+
+- role-scoped evidenceやprivate contextがモデルの自由記述を介して別の役へ越境しないよう、役間共有を公開allowlistへ限定
+- replay artifactのhash chainと再計算結果を照合し、改ざんまたは不一致をfail closedで拒否
+- malformedなfixture/replay入力をサニタイズ済みcontract errorとして処理

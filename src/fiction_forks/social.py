@@ -214,14 +214,12 @@ def run_social_simulation(
             }
             chain_hash = event_hash
             receipts.append(receipt)
-            public_action = deepcopy(action)
-            public_action["evidence_ids"] = [
-                evidence_id
-                for evidence_id in public_action["evidence_ids"]
-                if evidence_id in public_evidence_ids
-            ]
+            # Other roles receive the same allowlisted projection that can be
+            # published in the artifact.  In particular, model-authored prose
+            # and conditions must not become a side channel for role-scoped
+            # evidence or private_context.
             committed_this_turn.append(
-                {"intent_id": intent_id, **public_action}
+                {"intent_id": intent_id, **receipt_action}
             )
         prior_public_actions.extend(committed_this_turn)
 

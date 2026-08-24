@@ -221,6 +221,9 @@ class SocialSimulationTests(unittest.TestCase):
                 self.assertNotIn(
                     "private-audit-note", prior_action["evidence_ids"]
                 )
+                self.assertNotIn("text", prior_action)
+                self.assertNotIn("conditions", prior_action)
+                self.assertTrue(prior_action["text_redacted"])
 
         result = self.run_fixture()
         for receipt in result["actions"]:
