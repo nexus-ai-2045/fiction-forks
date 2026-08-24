@@ -1,0 +1,75 @@
+{
+  "baseline": {
+    "collapse_year": 2036,
+    "collapsed": true,
+    "final_state": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    },
+    "state_at_comparison_year": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    }
+  },
+  "comparison_year": 2036,
+  "declared_costs": [
+    "複数系統の観測設備、校正、人材、公開監査を平時から維持する費用",
+    "単一の即断よりも不一致の検証と異議処理に時間がかかる"
+  ],
+  "declared_failure_modes": [
+    "独立系に見える観測網が同じデータ供給者やモデルへ集中する",
+    "少数意見を残す制度がなく、異常を多数決で消してしまう",
+    "観測精度の高さを政策判断の正しさと取り違える",
+    "緊急時を理由に停止権、訂正、撤回の手続を無効化する"
+  ],
+  "declared_side_effects": [
+    "観測対象の拡大が監視社会化や目的外利用につながる危険",
+    "誤警報や対立仮説の並存が意思決定を遅らせる",
+    "維持費が短期の生活基盤投資を圧迫する"
+  ],
+  "engine_version": "0.2.0",
+  "fork": {
+    "activation_year": 2032,
+    "collapse_year": null,
+    "collapsed": false,
+    "final_state": {
+      "cognitive_sovereignty": 35.0,
+      "legitimacy": 45.0,
+      "living_systems": 38.0,
+      "repair_capacity": 56.0,
+      "strategic_autonomy": 22.0
+    },
+    "state_at_comparison_year": {
+      "cognitive_sovereignty": 35.0,
+      "legitimacy": 45.0,
+      "living_systems": 38.0,
+      "repair_capacity": 56.0,
+      "strategic_autonomy": 22.0
+    },
+    "technology_delays": {},
+    "technology_schedule": {
+      "contested-evidence-protocol": 2031,
+      "cross-observer-anomaly-drills": 2032,
+      "federated-observation-probes": 2029,
+      "local-verification-labs": 2030,
+      "observation-data-charter": 2030
+    }
+  },
+  "intervention_id": "haruhi-world-observation",
+  "scenario_id": "japan-2036-centralization",
+  "schema_version": "fiction_forks_comparison.v1",
+  "seed": 2036,
+  "state_delta_at_comparison_year": {
+    "cognitive_sovereignty": 29.0,
+    "legitimacy": 7.0,
+    "living_systems": -5.0,
+    "repair_capacity": 23.0,
+    "strategic_autonomy": 5.0
+  }
+}
