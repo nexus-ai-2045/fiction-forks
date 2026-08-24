@@ -97,6 +97,7 @@ python -m fiction_forks social `
 - JSON契約: 介入、social config、fixture、通常比較、遅延比較をテストでread-back
 - 権利境界: 新規画像、ロゴ、音声、映像、台詞、キャラクター表現なし
 - worldline PR #6: Linux / Windows、Python 3.11 / 3.13、PR contract、WORLDLINE実行、CodeQLが全件pass
+- maintenance PR #8: 人間レビュー後にsquash merge。PR上の11 checksと、merge commit `21fd9af780ac4783ce1d20b5402fb4f6cb6196e7` に対するLinux / Windows、Python 3.11 / 3.13、CodeQLが全件pass
 
 ## 世界観測fork：未確認事項
 
@@ -104,7 +105,7 @@ python -m fiction_forks social `
 - 観測系が異なるデータ供給者・モデル・運営者へ十分分散しているかを測る現実の独立性指標は未設計
 - 誤警報率、異議処理時間、運用費、維持人員、法制度適合性、プライバシー影響は現実データで未校正
 - 状態値への効果量と2032年発動はMVP用の因果仮説であり、予測または政策助言として未確認
-- このmaintenance差分のGitHub ActionsはPR作成後に確認する
+- dependency vulnerability auditはecosystem固有の現在監査が必要なため未確認
 
 ## 解釈上の制約
 

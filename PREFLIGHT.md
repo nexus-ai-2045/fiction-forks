@@ -39,10 +39,37 @@
 - 追加ファイル検査: 画像、ロゴ、音声、映像なし。作品名と独自に抽象化した機能以外の第三者素材なし
 - worldline PR #6: squash merge済み。main反映、remote branch自動削除、post-merge CI / CodeQL successを確認
 
-### 未確認・人間レビュー待ち
+### PR作成時点の未確認事項
 
 - dependency vulnerability auditはecosystem固有の現在監査が必要なため`unknown`
-- このmaintenance branchのGitHub Actionsはpush後のremote CI待ち
-- README、ADR 0010、因果仮説、効果量、artifact、第三者権利境界の現在HEADに対する人間目視は未完了
+- このmaintenance branchのGitHub Actionsと人間目視は、PR作成時点では未完了だった
 - live OpenAI providerは未実行。fixtureをLLMエージェント実測として扱わない
 - push、maintenance PR作成、merge、release、公開告知は独立した操作であり、この記録は承認しない
+
+## 世界観測成果物 merge後記録
+
+- 人間レビュー対象HEAD: `07875ee090a743ade4a61e7f00fc089db2632221`
+- maintenance PR: `#8`
+- squash merge commit: `21fd9af780ac4783ce1d20b5402fb4f6cb6196e7`
+- merge日時: 2026-08-24（Asia/Tokyo）
+
+### merge前に確認済み
+
+- 人間が全差分をレビューし、未解決事項なしと確認した
+- Linux / Windows、Python 3.11 / 3.13、maintenance PR contract、CodeQLが全件pass
+- Draft解除後に起動したCursor Security Agentを含む11 checksがpass
+- conflictなし、squash merge可能な状態を確認した
+
+### merge後に確認済み
+
+- GitHubの`main`先頭がmerge commit `21fd9af780ac4783ce1d20b5402fb4f6cb6196e7`であることを確認した
+- push CIはLinux / Windows、Python 3.11 / 3.13が全件pass。PR専用contractとWORLDLINEは設計どおりskip
+- CodeQLはactions、javascript-typescript、pythonが全件pass
+- remote branch `maintenance/haruhi-world-observation-evidence`は削除済み。PRのRestore branchから復元できる
+
+### 現在の未確認事項
+
+- dependency vulnerability auditはecosystem固有の現在監査が必要なため`unknown`
+- live OpenAI providerは未実行。fixtureをLLMエージェント実測として扱わない
+- 現実の独立性指標、誤警報率、異議処理時間、運用費、維持人員、法制度適合性、プライバシー影響は未校正
+- Git tagとGitHub Releaseは未作成。今回のmerge承認には含めていない
