@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import json
+import hashlib
 import io
+import json
 import sys
 import tempfile
 import unittest
@@ -116,6 +117,13 @@ class WorldObservationForkTests(unittest.TestCase):
         self.assertTrue(replay_equivalent(first, replay))
 
     def test_curated_artifacts_match_declared_inputs(self) -> None:
+        manifest = json.loads(
+            (
+                ROOT
+                / "artifacts/runs/haruhi-world-observation-fixture.manifest.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertFalse(manifest["ai_measured"])
         for name, expected_delays in (
             ("haruhi-world-observation-comparison.json", {}),
             (
@@ -130,6 +138,16 @@ class WorldObservationForkTests(unittest.TestCase):
                 self.assertEqual(2036, artifact["seed"])
                 self.assertEqual("haruhi-world-observation", artifact["intervention_id"])
                 self.assertEqual(expected_delays, artifact["fork"]["technology_delays"])
+                path = ROOT / "artifacts/runs" / name
+                manifest_hash_key = (
+                    "comparison_artifact_sha256"
+                    if not expected_delays
+                    else "delay_artifact_sha256"
+                )
+                self.assertEqual(
+                    hashlib.sha256(path.read_bytes()).hexdigest(),
+                    manifest[manifest_hash_key],
+                )
 
         social = json.loads(
             (
@@ -141,6 +159,18 @@ class WorldObservationForkTests(unittest.TestCase):
         self.assertEqual("haruhi-world-observation", social["intervention_id"])
         self.assertEqual(2036, social["seed"])
         self.assertEqual(0, social["metrics"]["invalid_action_count"])
+        self.assertEqual(social["run_id"], manifest["run_id"])
+        self.assertEqual(social["input_digest"], manifest["input_digest"])
+        self.assertEqual(social["final_event_hash"], manifest["final_event_hash"])
+        self.assertEqual(
+            hashlib.sha256(
+                (
+                    ROOT
+                    / "artifacts/runs/haruhi-world-observation-fixture.json"
+                ).read_bytes()
+            ).hexdigest(),
+            manifest["artifact_sha256"],
+        )
 
     def test_compare_output_is_atomic_and_requires_overwrite(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
