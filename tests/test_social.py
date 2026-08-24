@@ -14,7 +14,10 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from fiction_forks.agent_protocol import ACTION_SCHEMA_VERSION
+from fiction_forks.agent_protocol import (
+    ACTION_SCHEMA_VERSION,
+    OBSERVATION_SCHEMA_VERSION,
+)
 from fiction_forks.cli import main as cli_main
 from fiction_forks.engine import ContractError, load_json
 from fiction_forks.providers import FixtureProvider, OpenAIProvider, ReplayProvider
@@ -212,6 +215,10 @@ class SocialSimulationTests(unittest.TestCase):
             seed=2036,
         )
         for observation in provider.observations:
+            self.assertEqual(
+                OBSERVATION_SCHEMA_VERSION,
+                observation["schema_version"],
+            )
             evidence_ids = {item["id"] for item in observation["evidence"]}
             if observation["role"]["id"] == "civic_auditor":
                 self.assertIn("private-audit-note", evidence_ids)
@@ -224,6 +231,9 @@ class SocialSimulationTests(unittest.TestCase):
                 self.assertNotIn("text", prior_action)
                 self.assertNotIn("conditions", prior_action)
                 self.assertTrue(prior_action["text_redacted"])
+                self.assertTrue(prior_action["conditions_redacted"])
+                self.assertTrue(prior_action["action_title"])
+                self.assertTrue(prior_action["capability"])
 
         result = self.run_fixture()
         for receipt in result["actions"]:

@@ -10,7 +10,7 @@ from typing import Any
 from .engine import ContractError
 
 ACTION_SCHEMA_VERSION = "fiction_forks_action.v1"
-OBSERVATION_SCHEMA_VERSION = "fiction_forks_observation.v1"
+OBSERVATION_SCHEMA_VERSION = "fiction_forks_observation.v2"
 SOCIAL_CONFIG_SCHEMA_VERSION = "fiction_forks_social_config.v1"
 MAX_ROLES = 12
 MAX_TURNS = 12

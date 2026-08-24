@@ -34,5 +34,6 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 ### Fixed
 
 - role-scoped evidenceやprivate contextがモデルの自由記述を介して別の役へ越境しないよう、役間共有を公開allowlistへ限定
+- 役間共有を `fiction_forks_observation.v2` へ更新し、固定catalog由来の信頼済みaction semanticsを追加
 - replay artifactのhash chainと再計算結果を照合し、改ざんまたは不一致をfail closedで拒否
 - malformedなfixture/replay入力をサニタイズ済みcontract errorとして処理
