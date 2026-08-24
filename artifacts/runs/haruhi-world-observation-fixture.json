@@ -1,0 +1,620 @@
+{
+  "actions": [
+    {
+      "action": {
+        "action_id": "establish-contestation-rights",
+        "agent_id": "civic_challenger",
+        "condition_count": 1,
+        "confidence": 0.82,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "evidence_steward"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "d6647bf1e390730684307bb8a91b3c8418b1938188043ba52051a5ee984d042c",
+      "intent_id": "t1:civic_challenger",
+      "invalid_reason": null,
+      "previous_event_hash": "da37150c0d1ee4ed4f7668c4dac5f980acccb49a39d35c10259bacd0ae5c689e",
+      "state_after_hash": "4136f1b022ad934070f6ec709630613ae4fda060745b7687b391703713eda7ad",
+      "state_before_hash": "28d40af01a1b415988ee4a454c46a70447155ceaa4d689957761d9f6797482d0",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "deploy-observation-mesh",
+        "agent_id": "distributed_observer",
+        "condition_count": 1,
+        "confidence": 0.76,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "operations_coordinator"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "de6c7718b779b87f1fb3d7d29f60b92efcd72141b910c2fe067a96920327e370",
+      "intent_id": "t1:distributed_observer",
+      "invalid_reason": null,
+      "previous_event_hash": "d6647bf1e390730684307bb8a91b3c8418b1938188043ba52051a5ee984d042c",
+      "state_after_hash": "47481ed8872397f020bbd5c1fc2d0015f0a3b847128bf41be7a6bf87e5302421",
+      "state_before_hash": "4136f1b022ad934070f6ec709630613ae4fda060745b7687b391703713eda7ad",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "publish-provenance-ledger",
+        "agent_id": "evidence_steward",
+        "condition_count": 1,
+        "confidence": 0.8,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "civic_challenger"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "dec36e7f1c5a27c218de4b3f1706b2729be5132eddd75e364b351ee9c9f7edc5",
+      "intent_id": "t1:evidence_steward",
+      "invalid_reason": null,
+      "previous_event_hash": "de6c7718b779b87f1fb3d7d29f60b92efcd72141b910c2fe067a96920327e370",
+      "state_after_hash": "c53f6db0694d5f8d034a40ce57945be8c2a9751cb6c9a811e17f7496998d4dc5",
+      "state_before_hash": "47481ed8872397f020bbd5c1fc2d0015f0a3b847128bf41be7a6bf87e5302421",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "audit-common-cause-failure",
+        "agent_id": "failure_analyst",
+        "condition_count": 1,
+        "confidence": 0.71,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "distributed_observer"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "951bc883eadb7fdc3504a475fe97cc9dd9feffa379d1de8d8f7654ad126671b9",
+      "intent_id": "t1:failure_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "dec36e7f1c5a27c218de4b3f1706b2729be5132eddd75e364b351ee9c9f7edc5",
+      "state_after_hash": "69028920bb507f6508b6501779ec714aaf25afa949e916e5910bb47e86fcdd9b",
+      "state_before_hash": "c53f6db0694d5f8d034a40ce57945be8c2a9751cb6c9a811e17f7496998d4dc5",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "calibrate-local-labs",
+        "agent_id": "operations_coordinator",
+        "condition_count": 1,
+        "confidence": 0.73,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "distributed_observer"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "e11f12ad18aa1054818097f734e9d73fc17a1144a1190f827d3f341dbe3d789e",
+      "intent_id": "t1:operations_coordinator",
+      "invalid_reason": null,
+      "previous_event_hash": "951bc883eadb7fdc3504a475fe97cc9dd9feffa379d1de8d8f7654ad126671b9",
+      "state_after_hash": "c1bcaf6d15871ccbd48c0efae4228aff63bdac93d324c5bae1099da44e01df5f",
+      "state_before_hash": "69028920bb507f6508b6501779ec714aaf25afa949e916e5910bb47e86fcdd9b",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "establish-contestation-rights",
+        "agent_id": "civic_challenger",
+        "condition_count": 1,
+        "confidence": 0.79,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t1:operations_coordinator"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "operations_coordinator"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "8858a159c12cc82f9d7464c4c45e574361c749e50bfa56da2b10c3bfbe511b86",
+      "intent_id": "t2:civic_challenger",
+      "invalid_reason": null,
+      "previous_event_hash": "e11f12ad18aa1054818097f734e9d73fc17a1144a1190f827d3f341dbe3d789e",
+      "state_after_hash": "6bfd9efbbb11d9453754b149f0cb9053a02562ce8d73bbb1902f00d970cd8519",
+      "state_before_hash": "c1bcaf6d15871ccbd48c0efae4228aff63bdac93d324c5bae1099da44e01df5f",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "calibrate-local-labs",
+        "agent_id": "distributed_observer",
+        "condition_count": 1,
+        "confidence": 0.7,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [
+          "t1:failure_analyst"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "failure_analyst"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "76028cf066d84900d74a36ed91986778e6318792fae3b96535d8a1cfc88a7306",
+      "intent_id": "t2:distributed_observer",
+      "invalid_reason": null,
+      "previous_event_hash": "8858a159c12cc82f9d7464c4c45e574361c749e50bfa56da2b10c3bfbe511b86",
+      "state_after_hash": "bc464f87faf26cdf2aaddb3615b5eeb9e6da86856424af0ebe304940a6196f66",
+      "state_before_hash": "6bfd9efbbb11d9453754b149f0cb9053a02562ce8d73bbb1902f00d970cd8519",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "compare-rival-hypotheses",
+        "agent_id": "evidence_steward",
+        "condition_count": 1,
+        "confidence": 0.74,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [
+          "t1:failure_analyst"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "failure_analyst"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "d3e7359127ea1258f81f7273d4295cd902e885a86f1e9ecf3348ad5ce66fb0d9",
+      "intent_id": "t2:evidence_steward",
+      "invalid_reason": null,
+      "previous_event_hash": "76028cf066d84900d74a36ed91986778e6318792fae3b96535d8a1cfc88a7306",
+      "state_after_hash": "945f7bdcc6a6df1dc4d9bc71ad3cdddca968c7d2e7bcc2439cbda5a0348beef7",
+      "state_before_hash": "bc464f87faf26cdf2aaddb3615b5eeb9e6da86856424af0ebe304940a6196f66",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "compare-rival-hypotheses",
+        "agent_id": "failure_analyst",
+        "condition_count": 1,
+        "confidence": 0.69,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [
+          "t1:evidence_steward"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "evidence_steward"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "7123163eaa548ee1a344a8dd9bed8cf579d808ac5127f72c6382b232ea754619",
+      "intent_id": "t2:failure_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "d3e7359127ea1258f81f7273d4295cd902e885a86f1e9ecf3348ad5ce66fb0d9",
+      "state_after_hash": "b4b120c06eda374dbfc86654887d19cb78263fafcf7dd12e3f2cc89d5fb9af8b",
+      "state_before_hash": "945f7bdcc6a6df1dc4d9bc71ad3cdddca968c7d2e7bcc2439cbda5a0348beef7",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "exercise-anomaly-handoff",
+        "agent_id": "operations_coordinator",
+        "condition_count": 1,
+        "confidence": 0.77,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t1:civic_challenger"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "civic_challenger",
+          "distributed_observer"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "f429cb9cb7f284c017e123558542c840921b7f1d7d2562119ffd46324706f067",
+      "intent_id": "t2:operations_coordinator",
+      "invalid_reason": null,
+      "previous_event_hash": "7123163eaa548ee1a344a8dd9bed8cf579d808ac5127f72c6382b232ea754619",
+      "state_after_hash": "8dae4d125e9421561347ac0a267ed892c853410b9dc601f55214c3e54856376c",
+      "state_before_hash": "b4b120c06eda374dbfc86654887d19cb78263fafcf7dd12e3f2cc89d5fb9af8b",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "exercise-anomaly-handoff",
+        "agent_id": "civic_challenger",
+        "condition_count": 1,
+        "confidence": 0.8,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [
+          "t2:operations_coordinator"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "operations_coordinator"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "216cc5160a03bdf5b7d49e7b4a7a492b1f4454c298662a8198473bdd1a8621bc",
+      "intent_id": "t3:civic_challenger",
+      "invalid_reason": null,
+      "previous_event_hash": "f429cb9cb7f284c017e123558542c840921b7f1d7d2562119ffd46324706f067",
+      "state_after_hash": "19b7d62502be45abfeb4eb24dfa492eaef3733523945483c8b3daeaf636e3793",
+      "state_before_hash": "8dae4d125e9421561347ac0a267ed892c853410b9dc601f55214c3e54856376c",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "audit-common-cause-failure",
+        "agent_id": "distributed_observer",
+        "condition_count": 1,
+        "confidence": 0.72,
+        "evidence_ids": [
+          "public-observation-contract"
+        ],
+        "responds_to": [
+          "t2:evidence_steward"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "evidence_steward"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "31c70c9dda107b624b4c71483598efaf1f4310c173b370160fec4fb3dc5d72a5",
+      "intent_id": "t3:distributed_observer",
+      "invalid_reason": null,
+      "previous_event_hash": "216cc5160a03bdf5b7d49e7b4a7a492b1f4454c298662a8198473bdd1a8621bc",
+      "state_after_hash": "b11f1bd2b32993cccce9d79e5ad6a21566fb27ef47b8987fa0e7284ef0e22e17",
+      "state_before_hash": "19b7d62502be45abfeb4eb24dfa492eaef3733523945483c8b3daeaf636e3793",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "publish-provenance-ledger",
+        "agent_id": "evidence_steward",
+        "condition_count": 1,
+        "confidence": 0.78,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [
+          "t2:civic_challenger"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "civic_challenger"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "f254d55506e6333b61a06b614155ff8e8e6dc7cad940920953272005c90cd15a",
+      "intent_id": "t3:evidence_steward",
+      "invalid_reason": null,
+      "previous_event_hash": "31c70c9dda107b624b4c71483598efaf1f4310c173b370160fec4fb3dc5d72a5",
+      "state_after_hash": "dfe62dcaee89e14824304678055eb71144d9f1afe107030690e4253a34acd087",
+      "state_before_hash": "b11f1bd2b32993cccce9d79e5ad6a21566fb27ef47b8987fa0e7284ef0e22e17",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "compare-rival-hypotheses",
+        "agent_id": "failure_analyst",
+        "condition_count": 1,
+        "confidence": 0.68,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [
+          "t2:civic_challenger"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "civic_challenger"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "1431adfd38d444f70b6d817f92faec43395226e6695ce0705d40d57b2e745d13",
+      "intent_id": "t3:failure_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "f254d55506e6333b61a06b614155ff8e8e6dc7cad940920953272005c90cd15a",
+      "state_after_hash": "606ae51cb19e430c13312b86234518dbcbb43a7ece346d9444aa0e17ecc48c12",
+      "state_before_hash": "dfe62dcaee89e14824304678055eb71144d9f1afe107030690e4253a34acd087",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "deploy-observation-mesh",
+        "agent_id": "operations_coordinator",
+        "condition_count": 1,
+        "confidence": 0.7,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t2:distributed_observer"
+        ],
+        "run_id": "ff-188b986bb1ddbb7b",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "distributed_observer"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "88d7242dad9b6e5a2f875daeda4ae5329705b3b64807bc0a1f7bdc0af2aa473f",
+      "intent_id": "t3:operations_coordinator",
+      "invalid_reason": null,
+      "previous_event_hash": "1431adfd38d444f70b6d817f92faec43395226e6695ce0705d40d57b2e745d13",
+      "state_after_hash": "76320cc8e902db48f72494d540fb0cc39ea124d67b6269b08f556245e827de3a",
+      "state_before_hash": "606ae51cb19e430c13312b86234518dbcbb43a7ece346d9444aa0e17ecc48c12",
+      "valid": true
+    }
+  ],
+  "assumption_notice": "これは観測と異議申立ての成立条件を検査するfixtureであり、未来予測、政策助言、作品世界や人物の再現ではない。",
+  "engine_version": "0.3.0",
+  "final_event_hash": "88d7242dad9b6e5a2f875daeda4ae5329705b3b64807bc0a1f7bdc0af2aa473f",
+  "input_digest": "188b986bb1ddbb7b594fbfb9b1cd3a330a418646af6f206ff1d25a2ba455438a",
+  "interaction_edges": [
+    {
+      "from_intent_id": "t2:civic_challenger",
+      "stance": "condition",
+      "to_intent_id": "t1:operations_coordinator"
+    },
+    {
+      "from_intent_id": "t2:distributed_observer",
+      "stance": "condition",
+      "to_intent_id": "t1:failure_analyst"
+    },
+    {
+      "from_intent_id": "t2:evidence_steward",
+      "stance": "condition",
+      "to_intent_id": "t1:failure_analyst"
+    },
+    {
+      "from_intent_id": "t2:failure_analyst",
+      "stance": "condition",
+      "to_intent_id": "t1:evidence_steward"
+    },
+    {
+      "from_intent_id": "t2:operations_coordinator",
+      "stance": "condition",
+      "to_intent_id": "t1:civic_challenger"
+    },
+    {
+      "from_intent_id": "t3:civic_challenger",
+      "stance": "condition",
+      "to_intent_id": "t2:operations_coordinator"
+    },
+    {
+      "from_intent_id": "t3:distributed_observer",
+      "stance": "condition",
+      "to_intent_id": "t2:evidence_steward"
+    },
+    {
+      "from_intent_id": "t3:evidence_steward",
+      "stance": "condition",
+      "to_intent_id": "t2:civic_challenger"
+    },
+    {
+      "from_intent_id": "t3:failure_analyst",
+      "stance": "condition",
+      "to_intent_id": "t2:civic_challenger"
+    },
+    {
+      "from_intent_id": "t3:operations_coordinator",
+      "stance": "condition",
+      "to_intent_id": "t2:distributed_observer"
+    }
+  ],
+  "intervention_id": "haruhi-world-observation",
+  "metrics": {
+    "abstention_count": 0,
+    "action_count": 15,
+    "capability_coverage": 7,
+    "conditioned_intent_count": 15,
+    "interaction_edge_count": 10,
+    "invalid_action_count": 0,
+    "opposed_intent_count": 0,
+    "referenced_evidence_count": 3,
+    "reversible_action_ratio": 1.0,
+    "valid_action_count": 15
+  },
+  "missing_actions_by_node": {
+    "contested-evidence-protocol": [],
+    "cross-observer-anomaly-drills": [],
+    "federated-observation-probes": [],
+    "local-verification-labs": [],
+    "observation-data-charter": []
+  },
+  "protocol_version": "1.0.0",
+  "provider": {
+    "model": null,
+    "name": "fixture"
+  },
+  "roles": [
+    "distributed_observer",
+    "evidence_steward",
+    "civic_challenger",
+    "operations_coordinator",
+    "failure_analyst"
+  ],
+  "run_id": "ff-188b986bb1ddbb7b",
+  "scenario_id": "japan-2036-centralization",
+  "schema_version": "fiction_forks_social_result.v1",
+  "seed": 2036,
+  "selected_action_ids": [
+    "audit-common-cause-failure",
+    "calibrate-local-labs",
+    "compare-rival-hypotheses",
+    "deploy-observation-mesh",
+    "establish-contestation-rights",
+    "exercise-anomaly-handoff",
+    "publish-provenance-ledger"
+  ],
+  "technology_delays": {
+    "contested-evidence-protocol": 0,
+    "cross-observer-anomaly-drills": 0,
+    "federated-observation-probes": 0,
+    "local-verification-labs": 0,
+    "observation-data-charter": 0
+  },
+  "turn_count": 3,
+  "world_comparison": {
+    "baseline": {
+      "collapse_year": 2036,
+      "collapsed": true,
+      "final_state": {
+        "cognitive_sovereignty": 6.0,
+        "legitimacy": 38.0,
+        "living_systems": 43.0,
+        "repair_capacity": 33.0,
+        "strategic_autonomy": 17.0
+      },
+      "state_at_comparison_year": {
+        "cognitive_sovereignty": 6.0,
+        "legitimacy": 38.0,
+        "living_systems": 43.0,
+        "repair_capacity": 33.0,
+        "strategic_autonomy": 17.0
+      }
+    },
+    "comparison_year": 2036,
+    "declared_costs": [
+      "複数系統の観測設備、校正、人材、公開監査を平時から維持する費用",
+      "単一の即断よりも不一致の検証と異議処理に時間がかかる"
+    ],
+    "declared_failure_modes": [
+      "独立系に見える観測網が同じデータ供給者やモデルへ集中する",
+      "少数意見を残す制度がなく、異常を多数決で消してしまう",
+      "観測精度の高さを政策判断の正しさと取り違える",
+      "緊急時を理由に停止権、訂正、撤回の手続を無効化する"
+    ],
+    "declared_side_effects": [
+      "観測対象の拡大が監視社会化や目的外利用につながる危険",
+      "誤警報や対立仮説の並存が意思決定を遅らせる",
+      "維持費が短期の生活基盤投資を圧迫する"
+    ],
+    "engine_version": "0.3.0",
+    "fork": {
+      "activation_year": 2032,
+      "collapse_year": null,
+      "collapsed": false,
+      "final_state": {
+        "cognitive_sovereignty": 35.0,
+        "legitimacy": 45.0,
+        "living_systems": 38.0,
+        "repair_capacity": 56.0,
+        "strategic_autonomy": 22.0
+      },
+      "state_at_comparison_year": {
+        "cognitive_sovereignty": 35.0,
+        "legitimacy": 45.0,
+        "living_systems": 38.0,
+        "repair_capacity": 56.0,
+        "strategic_autonomy": 22.0
+      },
+      "technology_delays": {
+        "contested-evidence-protocol": 0,
+        "cross-observer-anomaly-drills": 0,
+        "federated-observation-probes": 0,
+        "local-verification-labs": 0,
+        "observation-data-charter": 0
+      },
+      "technology_schedule": {
+        "contested-evidence-protocol": 2031,
+        "cross-observer-anomaly-drills": 2032,
+        "federated-observation-probes": 2029,
+        "local-verification-labs": 2030,
+        "observation-data-charter": 2030
+      }
+    },
+    "intervention_id": "haruhi-world-observation",
+    "scenario_id": "japan-2036-centralization",
+    "schema_version": "fiction_forks_comparison.v1",
+    "seed": 2036,
+    "state_delta_at_comparison_year": {
+      "cognitive_sovereignty": 29.0,
+      "legitimacy": 7.0,
+      "living_systems": -5.0,
+      "repair_capacity": 23.0,
+      "strategic_autonomy": 5.0
+    }
+  }
+}

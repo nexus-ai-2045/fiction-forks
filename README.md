@@ -95,7 +95,9 @@ flowchart TB
 
 ## 現在の世界線
 
-最初の介入は、『ドラえもん』を「未来の道具へ公共アクセスできる社会」というレンズで読み替えます。監査可能な公共AI、地域データ信託、分散工作・修理拠点、共同運営訓練へ翻訳しており、作品素材や公式設定は収録しません。
+### 未来技術への公共アクセス
+
+『ドラえもん』を「未来の道具へ公共アクセスできる社会」というレンズで読み替えます。監査可能な公共AI、地域データ信託、分散工作・修理拠点、共同運営訓練へ翻訳しており、作品素材や公式設定は収録しません。
 
 | 2036年 | 放置世界 | 介入が間に合う世界 |
 |---|---:|---:|
@@ -107,6 +109,21 @@ flowchart TB
 | 修復能力 | 33 | 63 |
 
 最後の共同運営・訓練が5年遅れると発動は2037年になり、2036年の破滅に間に合いません。介入には費用、副作用、失敗条件があり、都合のよい力だけを取り出すことはできません。数値は未来予測ではなく、因果仮説を追跡するMVP用テスト値です。
+
+### 複数系統で世界の変化を観測する
+
+『涼宮ハルヒの憂鬱』を「一つの権威では捉えきれない世界の変化を、複数の観測者が継続的に照合する」というレンズで読み替えます。公開仕様の分散観測網、証拠来歴と対立仮説の検証、訂正・撤回・異議申立て、地域横断の停止訓練へ翻訳します。万能な観測者、人物、物語、台詞は再現しません。
+
+| 2036年（seed 2036） | 放置世界 | 観測介入が間に合う世界 |
+|---|---:|---:|
+| 破滅判定 | 破滅 | 回避 |
+| 生活基盤 | 43 | 38 |
+| 戦略的自律性 | 17 | 22 |
+| 認知主権 | 6 | 35 |
+| 正統性 | 38 | 45 |
+| 修復能力 | 33 | 56 |
+
+通常は2032年に発動しますが、証拠来歴と対立仮説の公開検証が5年遅れると発動は2037年となり、介入効果が一度も発生しないまま2036年に破滅します。維持費で生活基盤を5点悪化させるほか、監視社会化、誤警報、意思決定遅延を明示的な副作用として扱います。機械可読な通常比較、遅延比較、5役×3ターンのfixtureは [RESULTS](RESULTS.md) に記録しています。
 
 ## PRがどう反映されるか
 
@@ -167,6 +184,20 @@ python -m pip install -e . --no-deps
 そのうえで、モデル、API key、費用発生への明示確認がある場合だけ `--provider openai --model gpt-5.4-mini --confirm-live` で実行します。CIは外部APIを呼びません。生成したartifactは `--provider replay --replay run.json` で再検証できます。
 
 従来の年次比較だけを行う場合は `python -m fiction_forks compare --scenario scenarios/japan-2036/scenario.json --intervention interventions/doraemon-public-tools.json --seed 2036` です。
+
+世界観測介入は、介入・social config・fixtureを差し替えて実行できます。
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m fiction_forks social `
+  --scenario scenarios/japan-2036/scenario.json `
+  --intervention interventions/haruhi-world-observation.json `
+  --social-config scenarios/japan-2036/social-haruhi-world-observation.json `
+  --provider fixture `
+  --fixture fixtures/social/haruhi-world-observation.jsonl `
+  --seed 2036 `
+  --output run.json
+```
 
 </details>
 

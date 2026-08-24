@@ -22,6 +22,7 @@ ADRは、現在の設計が「何を選んだか」だけでなく、「なぜ�
 | [0007](0007-readme-is-the-first-play-surface.md) | Accepted | READMEを最初のプレイ画面として設計する |
 | [0008](0008-ai-agents-choose-bounded-actions.md) | Accepted | AIは制約付き行動を選び、engineが世界状態を所有する |
 | [0009](0009-ideas-are-issues-worldlines-are-pull-requests.md) | Accepted | アイデアはIssue、動く世界線はPull Requestとする |
+| [0010](0010-independent-observation-requires-contestation.md) | Accepted | 世界観測は独立照合・来歴・異議申立てが揃うまで発動しない |
 
 ## 追加方法
 
