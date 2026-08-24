@@ -12,9 +12,26 @@ Idea IssueはAI-agent simulationを実行しません。効果、実現可能性
 
 ## Issueからworldline PRへ
 
+### 作業場所を選ぶ
+
+- 外部contributor: [Fork](https://github.com/nexus-ai-2045/fiction-forks/fork) を押し、自分の`<account>/fiction-forks`に`worldline/<slug>` branchを作り、`nexus-ai-2045/fiction-forks:main`へPRします。本repoへのwrite権限は不要です。
+- チームメンバー: 本repo内に`worldline/<slug>` branchを作り、同じく`main`へPRします。`main`へ直接pushしません。
+- アイデアだけ参加する人: forkもbranchも不要です。Idea BuilderからIssueを作ります。
+
+外部contributorがローカルで始める最小手順:
+
+```powershell
+git clone https://github.com/<account>/fiction-forks.git
+cd fiction-forks
+git remote add upstream https://github.com/nexus-ai-2045/fiction-forks.git
+git switch -c worldline/<slug>
+```
+
+変更後は自分のforkへ`git push -u origin worldline/<slug>`し、GitHubの`Contribute → Open pull request`からupstreamへPRします。
+
 ### AIへ依頼する
 
-READMEの固定プロンプトへIssue URLを貼り、専用branch、実装、検証、PR作成まで依頼します。AIはPR本文に目的、変更範囲、検証結果、未実装、仮定、残課題、権利・安全確認を書き、人間レビュー前で止まります。
+READMEの固定プロンプトへIssue URLを貼り、必要ならfork、専用branch、実装、検証、PR作成まで依頼します。AIはPR本文に目的、変更範囲、検証結果、未実装、仮定、残課題、権利・安全確認を書き、人間レビュー前で止まります。
 
 ### ローカルで動かす
 
@@ -36,7 +53,7 @@ python -m fiction_forks social `
 
 ### Colabで動かす
 
-[検証用notebook](https://colab.research.google.com/github/nexus-ai-2045/fiction-forks/blob/main/notebooks/validate-worldline.ipynb)を開き、GitHub上のbranch名とslugを指定します。notebookは公開branchをcloneしてfixtureと決定論比較を実行します。credentialの入力やPR作成は行いません。
+[検証用notebook](https://colab.research.google.com/github/nexus-ai-2045/fiction-forks/blob/main/notebooks/validate-worldline.ipynb)を開き、本repoまたは公開forkのURL、GitHub上のbranch名、slugを指定します。notebookはGitHub APIで本repoからのforkであることをread-only確認してからcloneし、fixtureと決定論比較を実行します。credentialの入力やPR作成は行いません。
 
 PR作成、承認、merge、mainからの反映確認は別の状態です。
 
@@ -52,7 +69,7 @@ PR作成、承認、merge、mainからの反映確認は別の状態です。
 8. `python -m unittest discover -s tests -v` を通す。
 9. 公式画像、台詞、音声、映像、ロゴ、特徴的な口調を収録しない。
 10. 一つ以上のノードを意図的に遅らせ、介入が間に合わない条件も確認する。
-11. `docs/adr/` のAccepted判断と矛盾する場合は、判断変更用のADRを同じPRへ追加する。
+11. worldline PRへengine、workflow、version、文書等の保守変更を混在させない。判断変更が必要なら先に別のmaintenance PRを作る。
 
 ## PRに書くこと
 

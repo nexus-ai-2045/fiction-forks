@@ -3,6 +3,7 @@
 # WORLDLINE PR
 
 関連Issue: closes #
+作業repo: `fork` / `本repo内branch`
 
 ## 介入する未来問題
 

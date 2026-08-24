@@ -84,7 +84,9 @@ function validateCurrentStep() {
   let firstInvalid = null;
 
   required.forEach((field) => {
-    const invalid = !field.checkValidity();
+    const emptyAfterTrim = field.matches('input:not([type="checkbox"]), textarea')
+      && field.value.trim().length === 0;
+    const invalid = !field.checkValidity() || emptyAfterTrim;
     if (field.matches('input:not([type="checkbox"]), textarea')) {
       field.setAttribute("aria-invalid", String(invalid));
     }
@@ -185,6 +187,9 @@ backButton.addEventListener("click", () => setStep(currentStep - 1));
 
 form.addEventListener("input", (event) => {
   if (event.target.matches("[aria-invalid]")) event.target.setAttribute("aria-invalid", "false");
+  issuePreview.hidden = true;
+  issueMarkdown.textContent = "";
+  issueLink.href = "#";
   updateSummary();
 });
 
@@ -198,7 +203,7 @@ document.querySelector('[data-action="copy-issue"]').addEventListener("click", (
 });
 
 document.querySelector('[data-action="copy-ai-prompt"]').addEventListener("click", () => {
-  const prompt = `次の公開Issueから、Fiction Forksの新しいworldlineを実装してください。\n\nIssue URL: （ここにIssue URLを貼る）\nRepository: https://github.com/${REPOSITORY}\n\n専用branchで、intervention JSON、同じslugのsocial configとfixture、通常比較と遅延比較、テストを作ってください。PR種別はworldlineとし、人間レビュー前で止めてください。`;
+  const prompt = `次の公開Issueから、Fiction Forksの新しいworldlineを実装してください。\n\nIssue URL: （ここにIssue URLを貼る）\nRepository: https://github.com/${REPOSITORY}\n\n書込権限がなければrepositoryをforkし、fork内の専用branchで作業してください。書込権限があれば本repository内の専用branchを使えます。intervention JSON、同じslugのsocial configとfixture、通常比較と遅延比較、テストを作ってください。PR種別はworldlineとし、人間レビュー前で止めてください。`;
   copyText(prompt, handoffStatus, "AIへ渡す依頼文をコピーしました。Issue URLを追加してください。");
 });
 

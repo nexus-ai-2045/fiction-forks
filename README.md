@@ -32,6 +32,8 @@
 
 作成したIssueのURLを、次の短い依頼文と一緒にAIへ渡します。
 
+外部contributorは [Fork](https://github.com/nexus-ai-2045/fiction-forks/fork) を一度押し、自分のfork内に専用branchを作ってPRします。チームのwrite権限を持つ人だけ、本repo内の専用branchを使います。
+
 ```text
 次のIssueを、Fiction Forksの新しいworldlineとして実装してください。
 
@@ -40,7 +42,9 @@ Issue URL:
 
 Repository: https://github.com/nexus-ai-2045/fiction-forks
 
-専用branchで、intervention JSON、同じslugのsocial configとfixture、
+書込権限がなければrepoをforkし、fork内の専用branchで作業してください。
+書込権限があれば本repo内の専用branchを使えます。
+intervention JSON、同じslugのsocial configとfixture、
 同一seedの放置／介入比較、ノード遅延比較、全テストを作ってください。
 PR種別はworldlineとし、CONTRIBUTING.mdの受入条件を満たしてください。
 第三者素材や人物再現は追加しないでください。

@@ -51,6 +51,8 @@ class DocumentationContractTests(unittest.TestCase):
             "Idea = Issue",
             "Worldline = PR",
             "https://nexus-ai-2045.github.io/fiction-forks/",
+            "https://github.com/nexus-ai-2045/fiction-forks/fork",
+            "外部contributor",
         ):
             with self.subTest(phrase=phrase):
                 self.assertIn(phrase, readme)
@@ -130,6 +132,8 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertNotIn("innerHTML", script)
         self.assertNotIn("localStorage", script)
         self.assertIn("textContent", script)
+        self.assertIn("field.value.trim().length === 0", script)
+        self.assertIn('issueLink.href = "#"', script)
         self.assertIn("workflow_dispatch:", workflow)
         self.assertNotRegex(workflow, r"(?m)^\s+push:\s*$")
 
@@ -142,6 +146,8 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertEqual(notebook["nbformat"], 4)
         self.assertNotIn("OPENAI_API_KEY", content)
         self.assertNotRegex(content, r"gh[pousr]_[A-Za-z0-9_]{20,}")
+        self.assertIn('parent.get(\\"full_name\\")', content)
+        self.assertIn("nexus-ai-2045/fiction-forksの公開fork", content)
 
 
 if __name__ == "__main__":

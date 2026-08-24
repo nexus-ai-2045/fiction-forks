@@ -17,6 +17,9 @@ PR_MARKER = re.compile(
     re.IGNORECASE,
 )
 SLUG = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?")
+WORLDLINE_ROLE_COUNT = 5
+WORLDLINE_TURN_COUNT = 3
+WORLDLINE_ACTION_COUNT = WORLDLINE_ROLE_COUNT * WORLDLINE_TURN_COUNT
 
 
 class ContractError(ValueError):
@@ -81,6 +84,67 @@ def pr_kind(body: str) -> str:
     return markers[0].lower()
 
 
+def _load_json_object(path: Path, label: str) -> dict[str, Any]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ContractError(f"{label}をJSON objectとして読めません: {exc}") from exc
+    if not isinstance(data, dict):
+        raise ContractError(f"{label}のrootはobjectである必要があります。")
+    return data
+
+
+def _validate_worldline_protocol(config_path: Path, fixture_path: Path) -> None:
+    config = _load_json_object(config_path, "social config")
+    roles = config.get("roles")
+    turns = config.get("turns")
+    if not isinstance(roles, list) or len(roles) != WORLDLINE_ROLE_COUNT:
+        raise ContractError(
+            f"worldline social configは{WORLDLINE_ROLE_COUNT}役ちょうど必要です。"
+        )
+    if not isinstance(turns, list) or len(turns) != WORLDLINE_TURN_COUNT:
+        raise ContractError(
+            f"worldline social configは{WORLDLINE_TURN_COUNT}ターンちょうど必要です。"
+        )
+    role_ids = [role.get("id") if isinstance(role, dict) else None for role in roles]
+    if any(not isinstance(role_id, str) or not role_id for role_id in role_ids):
+        raise ContractError("worldline social configの全roleに空でないidが必要です。")
+    if len(role_ids) != len(set(role_ids)):
+        raise ContractError("worldline social configのrole idは重複できません。")
+
+    try:
+        lines = fixture_path.read_text(encoding="utf-8").splitlines()
+    except OSError as exc:
+        raise ContractError(f"fixtureを読めません: {exc}") from exc
+    observed: list[tuple[int, str]] = []
+    for line_number, line in enumerate(lines, start=1):
+        if not line.strip():
+            continue
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError as exc:
+            raise ContractError(f"fixture {line_number}行目がJSONではありません。") from exc
+        if not isinstance(item, dict):
+            raise ContractError(f"fixture {line_number}行目はobjectである必要があります。")
+        turn = item.get("turn")
+        agent_id = item.get("agent_id")
+        if type(turn) is not int or not isinstance(agent_id, str):
+            raise ContractError(
+                f"fixture {line_number}行目に整数turnと文字列agent_idが必要です。"
+            )
+        observed.append((turn, agent_id))
+
+    expected = {
+        (turn, role_id)
+        for turn in range(1, WORLDLINE_TURN_COUNT + 1)
+        for role_id in role_ids
+    }
+    if len(observed) != WORLDLINE_ACTION_COUNT or set(observed) != expected:
+        raise ContractError(
+            f"fixtureは5役×3ターンの{WORLDLINE_ACTION_COUNT}組を重複・欠落なく含めてください。"
+        )
+
+
 def validate_contract(kind: str, changes: Sequence[Change], *, root: Path) -> ContractResult:
     added_interventions = [
         change.path
@@ -128,10 +192,9 @@ def validate_contract(kind: str, changes: Sequence[Change], *, root: Path) -> Co
 
     social_config = f"scenarios/japan-2036/social-{slug}.json"
     fixture = f"fixtures/social/{slug}.jsonl"
+    required_paths = {intervention, social_config, fixture}
     changed_paths = {change.path for change in changes}
-    missing_changes = [
-        path for path in (social_config, fixture) if path not in changed_paths
-    ]
+    missing_changes = [path for path in required_paths if path not in changed_paths]
     if missing_changes:
         raise ContractError(
             "worldline PRには同じslugのsocial configとfixtureが必要です: "
@@ -142,6 +205,22 @@ def validate_contract(kind: str, changes: Sequence[Change], *, root: Path) -> Co
     ]
     if missing_files:
         raise ContractError("必須fileがcheckoutにありません: " + ", ".join(missing_files))
+    not_added = [
+        change.path
+        for change in changes
+        if change.path in required_paths and not change.added
+    ]
+    if not_added:
+        raise ContractError(
+            "worldlineの3入力は新規追加してください: " + ", ".join(not_added)
+        )
+    unexpected_changes = sorted(changed_paths - required_paths)
+    if unexpected_changes:
+        raise ContractError(
+            "worldline PRへengine、workflow、文書等の保守変更を混在できません: "
+            + ", ".join(unexpected_changes)
+        )
+    _validate_worldline_protocol(root / social_config, root / fixture)
 
     return ContractResult(
         kind=kind,
@@ -260,6 +339,16 @@ def render_worldline_summary(
     if not isinstance(actions, list):
         raise ContractError("worldline artifactにactions arrayがありません。")
     valid = sum(1 for item in actions if isinstance(item, dict) and item.get("valid") is True)
+    roles = artifact.get("roles")
+    turn_count = artifact.get("turn_count")
+    if not isinstance(roles, list) or len(roles) != WORLDLINE_ROLE_COUNT:
+        raise ContractError(f"worldline実行結果は{WORLDLINE_ROLE_COUNT}役ちょうど必要です。")
+    if turn_count != WORLDLINE_TURN_COUNT:
+        raise ContractError(f"worldline実行結果は{WORLDLINE_TURN_COUNT}ターンちょうど必要です。")
+    if len(actions) != WORLDLINE_ACTION_COUNT or valid != WORLDLINE_ACTION_COUNT:
+        raise ContractError(
+            f"worldline実行結果は{WORLDLINE_ACTION_COUNT}/{WORLDLINE_ACTION_COUNT} valid actionが必要です。"
+        )
     world = artifact.get("world_comparison")
     if not isinstance(world, dict):
         raise ContractError("worldline artifactにworld_comparisonがありません。")
@@ -285,7 +374,7 @@ def render_worldline_summary(
         f"| PR | #{_safe_cell(number)} — {_safe_cell(title)} |",
         f"| intervention | `{result.slug}` |",
         f"| provider | `{_safe_cell(provider_name)}`（live LLMではありません） |",
-        f"| AI役・ターン | {len(artifact.get('roles', []))}役 × {artifact.get('turn_count', '?')}ターン |",
+        f"| AI役・ターン | {len(roles)}役 × {turn_count}ターン |",
         f"| 行動 | {valid}/{len(actions)} valid |",
         f"| 無介入2036 | {verdict(baseline)} |",
         f"| 介入2036 | {verdict(fork)} |",

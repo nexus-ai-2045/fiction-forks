@@ -8,7 +8,7 @@
 flowchart LR
     participant["一般参加者"] --> builder["静的Idea Builder"]
     builder --> issue["idea Issue"]
-    issue --> contributor["contributor / AI / Colab"]
+    issue --> contributor["外部: fork + branch / チーム: branch / AI / Colab"]
     contributor --> intervention["intervention JSON"]
     contributor --> socialInput["social config + fixture"]
     scenario["scenario JSON"] --> agents["5役のAIエージェント"]

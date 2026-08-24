@@ -26,6 +26,7 @@ Idea BuilderはGitHub Pages上の静的UIとする。入力はブラウザ内だ
 
 - コードを書けない参加者は、Web UIとGitHub Issueだけで着想を共有できる。
 - contributorはIssueをAI、ローカル、Colabのいずれかへ渡し、実装へ昇格できる。
+- 外部contributorは公開fork内のbranch、write権限を持つチームメンバーは本repo内のbranchからworldline PRを作る。
 - Issue数は実装済み世界線数ではなくなり、PR checksが再現可能性の境界になる。
 - GitHub accountなしではIssue投稿できないが、文章をコピーして別経路で相談できる。
 - GitHubの公開APIがrate limitまたは障害で失敗するとIdea Builder上の一覧は表示できないが、入力とIssue作成導線は維持する。
