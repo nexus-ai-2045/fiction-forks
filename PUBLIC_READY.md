@@ -26,7 +26,7 @@
 - [x] personal-path scanがpassした
 - [x] ai-ratchet-gateがpassした
 - [x] unittestと比較smokeがpassした
-- [x] Git authorが `nexus_ai` 名義だけである
+- [x] Git履歴の名義を確認した（`nexus_ai` とcontributor `D-Hibiki`、GitHub merge committer）
 - [ ] 第三者IPの複製物が含まれない
 - [x] THIRD_PARTY_NOTICES.mdのURLと版を確認した
 - [x] 公式根拠が公式サイトと片山俊大氏 v1.0ペーパーの2点だけである
@@ -40,6 +40,6 @@
 - [x] secret scanningとpush protectionをenabledでread-backした
 - [x] Private vulnerability reportingをenabledでread-backした
 - [x] repositoryが人間操作で公開され、current conversationでread-backを承認した
-- [ ] CodeQL default setupの取得不能を解消した
+- [x] exact main `21fd9af` のCodeQLがpassした（2026-08-24）
 
 このrepositoryは現在公開されています。自動検査のpassは、今後のPR merge、release、tag、外部告知を承認しません。README・権利・文書の未完了目視項目はPRレビューで継続します。
