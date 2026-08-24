@@ -29,7 +29,7 @@ class DocumentationContractTests(unittest.TestCase):
             with self.subTest(path=relative_path):
                 self.assertTrue((ROOT / relative_path).is_file())
 
-    def test_adr_index_links_to_existing_accepted_records(self) -> None:
+    def test_adr_index_links_to_existing_records_with_known_status(self) -> None:
         index = (ROOT / "docs/adr/README.md").read_text(encoding="utf-8")
         links = re.findall(r"\]\((\d{4}[^)]+\.md)\)", index)
         self.assertGreaterEqual(len(links), 6)
@@ -37,7 +37,43 @@ class DocumentationContractTests(unittest.TestCase):
             with self.subTest(adr=link):
                 adr = ROOT / "docs/adr" / link
                 self.assertTrue(adr.is_file())
-                self.assertIn("- Status: Accepted", adr.read_text(encoding="utf-8"))
+                content = adr.read_text(encoding="utf-8")
+                self.assertRegex(
+                    content,
+                    r"(?m)^- Status: (Accepted|Proposed|Superseded|Deprecated)$",
+                )
+
+    def test_chat_simulation_roadmap_keeps_state_and_safety_boundaries(self) -> None:
+        adr = (
+            ROOT
+            / "docs/adr/0012-chat-first-provisional-simulation-and-local-codex-boundary.md"
+        ).read_text(encoding="utf-8")
+        product = (ROOT / "docs/product-design.md").read_text(encoding="utf-8")
+        architecture = (ROOT / "docs/architecture.md").read_text(encoding="utf-8")
+        security = (ROOT / "docs/security-model.md").read_text(encoding="utf-8")
+        ssot = (ROOT / "PROJECT_SSOT.md").read_text(encoding="utf-8")
+
+        for phrase in (
+            "chat-draft",
+            "understanding-check",
+            "provisional-preview",
+            "official-result",
+            "doom-candidate",
+            "この理解でよいか",
+            "not-simulatable",
+            "127.0.0.1",
+            "raw Codex app-server",
+        ):
+            with self.subTest(phrase=phrase):
+                self.assertIn(phrase, adr)
+
+        self.assertIn("Vite + React + TypeScript", product)
+        self.assertIn("0.4は複数PRをまとめる一つのmilestone", product)
+        self.assertIn("DialogueProvider", architecture)
+        self.assertIn("loopback-only companion", architecture)
+        self.assertIn("短命capability token", security)
+        self.assertIn("Issue open/closedだけで推定しない", ssot)
+        self.assertNotIn("公開WebへOpenAI API key", architecture)
 
     def test_readme_keeps_core_participation_contract(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")

@@ -8,6 +8,10 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 ### Changed
 
+- 0.4 milestoneを、Doom Map、参加入口、Idea Chat、暫定simulation、Result Browser、結果還流を持つVite + React + TypeScript workbenchとして設計した
+- 作品とアイデアを対話で壁打ちし、「この理解でよいか」の本人確認後だけ`IdeaDraft`、暫定preview、Issueへ進む契約を追加した
+- optional local Codex連携を、raw app-server直結ではなくloopback-only companion、短命token、origin/tool allowlist、version gate付きspikeとして境界化した
+- 破滅回避後の次の危機を`doom-candidate`として提案し、人間レビュー済みscenario PRだけがactive doomへ昇格できるロードマップを追加した
 - Idea Builderで `Issue → Build → Worldline PR → Simulation` の参加ループと `1 PR = 1 WORLDLINE` を常時確認できるようにした
 - Idea作成フォームを「作品」「アイデア」の一ページへ簡略化した
 - open/closedを含むIdea Issue履歴と実装済みworldlineをWebへ表示し、各IdeaからAI用PR依頼文を作れるようにした

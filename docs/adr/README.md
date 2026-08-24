@@ -24,6 +24,7 @@ ADRは、現在の設計が「何を選んだか」だけでなく、「なぜ�
 | [0009](0009-ideas-are-issues-worldlines-are-pull-requests.md) | Accepted | アイデアはIssue、動く世界線はPull Requestとする |
 | [0010](0010-independent-observation-requires-contestation.md) | Accepted | 世界観測は独立照合・来歴・異議申立てが揃うまで発動しない |
 | [0011](0011-participation-is-a-reviewed-control-loop.md) | Accepted | Issue、worldline PR、simulation、人間レビューを一つの参加ループにする |
+| [0012](0012-chat-first-provisional-simulation-and-local-codex-boundary.md) | Proposed | チャット壁打ち、暫定simulation、local Codex、次の破滅を公式世界線から分離する |
 
 ## 追加方法
 

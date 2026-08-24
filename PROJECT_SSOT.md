@@ -11,8 +11,12 @@
 | アーキテクチャと設計判断 | `docs/architecture.md` と `docs/adr/` |
 | シナリオ契約 | `scenarios/` と `docs/simulation-contract.md` |
 | 社会エージェント契約 | `scenarios/*/social*.json`、`src/fiction_forks/agent_protocol.py`、`docs/social-simulation.md` |
-| アイデア受付UI | `web/`。入力状態はブラウザ内だけ、正本化は公開GitHub Issue |
+| アイデア受付UI | `web/`。現在は静的Idea Builder、0.4 milestoneはDoom Map・Idea Chat・Result Browser。正本化は確認済み公開GitHub Issue |
+| 対話草案 | version付き`IdeaDraft` schema（0.4で追加予定）。会話全文ではなく本人確認済みprojectionだけを正本候補にする |
+| 暫定simulation | `ProvisionalRunRequest`とresult schema（0.4で追加予定）。既存scenario/template/engineに限定し、公式結果と分離する |
+| Local Codex連携 | optional loopback companion（spike）。公開Web、Codex credential、filesystem、GitHub writeの正本ではない |
 | Idea / Worldline境界 | `.github/ISSUE_TEMPLATE/`、`.github/PULL_REQUEST_TEMPLATE/`、`src/fiction_forks/pr_contract.py`、ADR 0009 |
+| Idea状態還流 | `listed / assigned / implemented / simulated / reported-back`のmachine-readable projection（0.4で追加予定）。Issue open/closedだけで推定しない |
 | シナリオの公開根拠と反証条件 | `docs/scenario-rationale.md` |
 | 介入カード | `interventions/` と `CONTRIBUTING.md` |
 | フィクション参照レンズ | `docs/fiction-lenses.md` |
@@ -20,6 +24,7 @@
 | セキュリティ境界 | `SECURITY.md` と `docs/security-model.md` |
 | バージョン | `pyproject.toml` の `project.version`。同期規律は `VERSIONING.md`、変更履歴は `CHANGELOG.md` |
 | 公開curated run | `RESULTS.md` のmanifest記録と `artifacts/runs/` の対応artifact |
+| 次の破滅候補 | version付き`DoomCandidate`とscenario PR（0.5 candidate）。人間レビュー前はactive doomではない |
 | 元議論・非公開証拠 | このリポジトリの外。本文や参加者情報を複製しない |
 | ハッカソンの公式根拠 | `docs/official-sources.md` に固定した公式サイトと片山俊大氏 v1.0ペーパー |
 
@@ -36,6 +41,9 @@ CLIのJSON出力、可視化、比較レポートは再生成可能な派生物�
 - 非公開会話、個人情報、秘密情報、実在システムの攻撃手順を取り込みません。
 - 公式サイトまたは片山俊大氏 v1.0ペーパーにない内容を「公式」と表示しません。
 - Idea Issueをシミュレーション済み世界線として数えず、PR種別markerと変更pathをCIで照合します。
+- 壁打ち、暫定preview、fixture、live run、公式結果を別status・別schemaで扱います。
+- local Codexとの会話全文を自動でrepoまたはIssueへ保存せず、本人確認済みprojectionだけを公開境界へ渡します。
+- 破滅回避済みworldlineを上書きせず、次の破滅はscenario PRで審査する別versionとして追加します。
 
 ## 上位台帳
 

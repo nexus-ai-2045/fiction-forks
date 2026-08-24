@@ -11,11 +11,14 @@ Fiction Forksは、ローカルCLI、静的GitHub Pages Idea Builder、公開Git
 | 境界 | 未信頼側 | 信頼側へ入れる条件 |
 |---|---|---|
 | PR入力 | scenario、intervention、文書、作者の主張 | schema、test、review、権利・安全確認 |
-| Idea Builder入力 | 作品名、登場人物名、自由記述 | 文字数上限、ブラウザ内処理、GitHub投稿前の本人確認 |
+| Idea Chat入力 | 作品名、アイデア、自由記述、会話履歴 | 文字数・turn上限、本人確認済みprojection、strict `IdeaDraft` |
 | GitHub公開API | Issue title、author、URL | HTTPS、read-only、`textContent`描画、取得失敗時fallback |
 | JSON実行 | ローカルまたは取得したJSON | size制限予定、型・依存・循環検証 |
 | 根拠 | 外部URL、統計、作品解釈 | 公式性と参照根拠を分離し、確認日を記録 |
 | AI出力 | action、説明、target、evidence ID | strict schema、固定catalog、engine非変更 |
+| Local companion | browser origin、Codex protocol、session | loopback、短命token、origin/tool allowlist、version gate |
+| 暫定preview | 確認済みIdeaDraft、template候補 | 既存scenario・既存templateへの完全写像、input digest |
+| Doom candidate | AIまたは人間が提案する次の危機 | 根拠、発生条件、観測指標、可逆性、scenario PR |
 | CI依存 | Actions、wheel、build backend | exact SHA/version/hash固定 |
 | 公開境界 | ローカル会話、個人情報、秘密 | repo-preflight、目視、人間承認 |
 
@@ -29,6 +32,9 @@ Fiction Forksは、ローカルCLI、静的GitHub Pages Idea Builder、公開Git
 - 非公開会話、個人情報、credential、攻撃手順を公開repoへ入れない
 - 第三者作品の画像、台詞、音声、映像、ロゴ、キャラクター表現を複製しない
 - gateのpassを公開・merge・release承認と扱わない
+- 暫定preview、fixture、live run、公式結果を同じ表示またはstatusで扱わない
+- public originからraw Codex app-server、shell、filesystemへ直接接続しない
+- 新しい破滅を人間レビューなしでactive scenarioへ昇格しない
 
 ## Attack Surface, Mitigations, and Attacker Stories
 
@@ -55,6 +61,14 @@ Idea Builderはdependency-freeな静的HTML/CSS/JavaScriptとし、入力を独�
 Issue URLは入力をquery stringへ含むため、共有端末のhistoryや外部画面共有に残る可能性がある。UIは個人情報、秘密情報、攻撃手順の入力を禁止し、GitHub遷移前に権利・安全checkboxと内容previewを必須にする。GitHubへ遷移した後の保存、公開、削除はGitHubと投稿者の責任境界になる。
 
 AI層ではprompt injection、根拠捏造、role-scoped observationの越境、secret送信を想定する。役ごとの観測を最小化し、出力をstrict schemaで検査し、未知fieldと観測外evidenceを拒否する。公開artifactはallowlist projectionとして自由記述、条件本文、role-scoped evidence IDを除外する。設定全体、文字列、roles、turns、1 runのprovider call数を上限化する。live OpenAI providerは公式SDK、`store=false`、明示model、API key、`--confirm-live`を必須にし、CIから呼ばない。
+
+0.4 milestoneのIdea Chatでは、会話全文、model出力、暫定previewを公式結果へ混ぜない。対話providerは理解確認と`IdeaDraft`候補だけを返し、参加者が「この理解でよい」と確認するまでIssue URL、engine request、外部保存へ渡さない。providerが利用不能でも参加できる`guided` modeを維持する。
+
+local Codex連携はpublic Pagesからraw app-serverへ直接接続せず、loopback-only companionを挟む。主要な攻撃は、悪意ある公開ページからlocalhostへの接続、DNS rebinding、origin偽装、token窃取、prompt injectionによるshell/filesystem/GitHub操作、別repoまたはprivate fileの読取、protocol version driftである。companionはsessionごとの短命capability token、厳密なorigin allowlist、対象repoのread-only projection、tool deny-by-default、turn/size/time上限、version付きschemaを必須にする。app-serverがexperimentalである間はfeature flagを既定offとし、未対応versionまたは認証不明を`guided` fallbackにする。
+
+暫定previewは既存scenarioと既存templateに完全に写像できる場合だけ決定論engineを呼ぶ。LLMに不足metric、効果量、完成年を補わせない。公式結果と異なるbadge、URL、schema fieldを使い、scenario、seed、engine version、template ID、input digest、未確定fieldを表示する。
+
+破滅回避後のdoom candidateは、ゲームを継続するための自動ペナルティではない。元介入との因果、現実リスクへの接続、発生条件、観測指標、連鎖、可逆性を必須にし、scenario PRの人間レビュー前にactive doomまたは破滅レベルへ反映しない。
 
 現在はサーバー、認証、秘密データ保存がないため、SQL injection、CSRF、tenant越境、session theftは直接のruntime面ではない。将来それらを導入した時点で再評価する。
 

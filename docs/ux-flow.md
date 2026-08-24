@@ -2,27 +2,35 @@
 
 ## 体験目標
 
-初めて訪れた人が、作品のファン向け企画ではなく「フィクションを使って実装可能な未来介入を比較する道具」だと理解し、既存世界を実行してから自分の世界線を作り始められること。
+初めて訪れた人が、作品のファン向け企画ではなく「フィクションを使って実装可能な未来介入を比較する道具」だと理解し、現在の破滅状況、参加入口、過去結果を見たうえで、チャットから自分の世界線を作り始められること。
 
 ## 情報設計
 
 ```mermaid
 flowchart TD
-    idea["Idea Builder"] --> issue["idea Issue / 未実装"]
+    doom["Doom Map / 現在の破滅"] --> entry["作品・問題・専門・結果・次の破滅"]
+    entry --> chat["Idea Chat"]
+    chat --> understanding{"この理解でよい？"}
+    understanding -->|修正| chat
+    understanding -->|確認| draft["version付きIdeaDraft"]
+    draft --> preview{"既存templateで走る？"}
+    preview -->|yes| provisional["暫定simulation"]
+    preview -->|no| missing["不足条件 / not-simulatable"]
+    provisional --> issue["idea Issue / 未実装"]
+    missing --> issue
     issue --> build["forkまたは専用branchで実装"]
     build --> worldline["worldline PR / 1 PR = 1世界線"]
-    worldline --> checks["同じ条件でsimulation"]
+    worldline --> checks["公式simulation"]
     checks --> review["人間レビュー"]
-    review --> landing["レビュー済み世界の入口"]
-    landing --> compare["世界比較"]
-    compare --> tree["技術ツリー"]
-    tree --> delay["遅延実験"]
-    delay --> preview["次のPR Preview"]
-    compare --> evidence["根拠と仮説"]
-    idea --> rights["権利・安全確認"]
+    review --> result["公式結果をWebとIssueへ返す"]
+    result --> avoided{"既存破滅を回避？"}
+    avoided -->|no| doom
+    avoided -->|yes| candidate["doom-candidate"]
+    candidate --> scenario["scenario PR / 人間レビュー"]
+    scenario --> doom
 ```
 
-Idea BuilderはIssue文を作るだけで、engineまたはLLMを実行しない。contributorはlocalまたはColabで介入・social config・fixtureを事前検証できる。worldline PRでは、checksが同じseedによる最初の公式CI runを実行する。結果はPRへ戻り、人間レビュー後にだけ共有世界へ入る。
+現在のIdea BuilderはIssue文を作るだけで、engineまたはLLMを実行しない。0.4 milestoneではIdea Chatへ置き換え、本人が確認した`IdeaDraft`だけを暫定previewまたはIssueへ渡す。暫定previewは既存scenarioと既存templateだけを使い、公式結果とは別表示にする。contributorはlocalまたはColabで介入・social config・fixtureを事前検証できる。worldline PRでは、checksが同じseedによる最初の公式CI runを実行する。結果はPRへ戻り、人間レビュー後にだけ共有世界へ入り、元Issueへ状態と結果を返す。
 
 Webは「作品」と「アイデア」だけを一ページで受け付け、open/closedを含む公開Idea IssueをGitHubからread-only取得する。取得不能時はHTMLに保存した直近一覧を表示する。repoへmergeされた介入は、公式repo内の実装JSONまたはPRへリンクする。Ideaカードの「AIにworldline PR化を頼む」はIssue URL入りの依頼文をコピーするだけで、branch作成、push、PR作成、simulationは自動実行しない。
 
@@ -30,31 +38,71 @@ Webは「作品」と「アイデア」だけを一ページで受け付け、op
 
 | 画面 | 最初に答える問い | 主操作 | 出力 |
 |---|---|---|---|
-| 世界の入口 | 放置すると、いつ、なぜ破滅するのか | 「基準世界を見る」 | 破滅条件と因果鎖 |
+| Doom Map | どの破滅が、どのレベルで、いつ迫っているか | active doomを選ぶ | レベル、因果鎖、到達年、確からしさ |
+| 参加入口 | 自分は何を持ち込めるか | 作品・問題・専門・結果・次の破滅を選ぶ | chat context |
+| Idea Chat | この作品とアイデアを、どう理解したか | 対話し「この理解でよい」を確認 | `IdeaDraft` |
+| Provisional Preview | 今あるmodelで何が試せ、何が未確定か | 暫定比較を実行 | 暫定結果または`not-simulatable` |
 | 世界比較 | 介入で何が良くなり、何が悪くなるか | 「この介入を試す」 | 同一年の差分 |
 | 技術ツリー | 何が完成すれば効果が出るか | ノードを選ぶ | 完成年、依存、完成証拠 |
 | 遅延実験 | どこが遅れると間に合わないか | 遅延年を変える | 発動年、破滅年 |
-| Fork Builder | 作品の何を現実へ翻訳するか | 段階入力 | 介入JSON草案 |
+| Result Browser | 今まで何を試し、何が問題になったか | worldline、run、争点を絞る | 公式結果、artifact、元Issue |
+| Fork Builder | IdeaDraftの何を現実へ翻訳するか | 段階入力 | 介入JSON草案 |
 | PR Preview | 提案は比較・反証・レビューできるか | 「PR用差分を確認」 | 検証結果とチェック項目 |
+| Next Doom | 回避した世界が次に何を壊し得るか | candidateを比較する | doom-candidate Issue / scenario PR草案 |
 
 ## 第一画面のワイヤー
 
 ```text
-Fiction Forks                         [GitHub] [設計を読む]
+Fiction Forks                         [過去の結果] [GitHub]
 
-フィクションの部品で、
-日本の未来をforkする。
+JAPAN 2036 / DOOM LEVEL 4 — 連鎖
 
 放置した日本は2036年に修復不能へ入る。
-作品から一つの機能を選び、技術・制度・運用へ翻訳して、
-間に合う世界と間に合わない世界を同じ条件で比べる。
+いま最も近い破滅: 修復能力の喪失 / 推定11年
 
-[基準世界を見る]  [3分でCLIを試す]
+[現在の破滅を見る]  [アイデアを話す]
 
-2036  無介入: 破滅  |  ドラえもん・レンズ: 回避
+どこから参加する？
+[作品] [問題] [専門] [過去結果] [次の破滅]
 ```
 
 常時表示する要素は、現在年、破滅判定、選択中の世界線、主操作に絞る。根拠、長い説明、設定はdrawerまたは別画面へ置き、比較対象を隠さない。
+
+## Idea Chat
+
+最初の入力は「作品」と「アイデア」だけでよい。対話providerは一度に質問を増やさず、次の順で壁打ちする。
+
+1. 理解した内容を一文で返す。
+2. 作品を知らない人向けの抽象機能へ言い換える。
+3. 作用しそうなactive doomと、そう考えた理由を示す。
+4. 実現条件、副作用、失敗条件のうち、結果を大きく変える未確定点だけを最大3件聞く。
+5. 「このアイデアでよいですか」と確認する。
+6. 本人が確認した後だけ`IdeaDraft`を作る。
+
+対話providerが使えない場合も、同じ順序を固定質問で進める`guided` modeを残す。local Codex modeはloopback companionを利用者が明示起動した場合だけ表示し、未接続、version不一致、認証失敗では`guided`へ戻す。
+
+`IdeaDraft`の最小表示:
+
+```text
+理解: どこでもドア型の移動を、災害医療の公共インフラへ翻訳する
+対象: 物流・医療アクセスの破滅連鎖
+未確定: エネルギー、本人確認、国境・悪用対策
+副作用候補: 地方空洞化、単一技術依存、軍事転用
+
+この理解でよいですか？ [修正する] [この案で試す]
+```
+
+## 暫定結果と公式結果
+
+| 区分 | 許される入力 | 表示 | 保存・共有 |
+|---|---|---|---|
+| 壁打ち | 自由記述 | 理解、質問、候補 | 自動保存しない |
+| 暫定preview | 既存scenario、既存template、確認済みIdeaDraft | 暫定、未確定field、input digest | Issueへ本人確認済みprojectionだけ渡す |
+| fixture | repo内fixture | protocol検証 | PR artifact |
+| live run | 明示model、費用確認、投影済み入力 | live、model、保持境界 | curated artifactだけ |
+| 公式結果 | worldline PR、CI、人間レビュー済み | 公式worldline結果 | Web、RESULTS、元Issueへ還流 |
+
+暫定previewが作れないことは失敗ではない。必要なmetric効果、技術ノード、完成証拠、scenario対応が足りない場合、数値を埋めず「この3点を決めれば走る」と返す。
 
 ## Fork Builder
 
@@ -75,11 +123,15 @@ Fiction Forks                         [GitHub] [設計を読む]
 | 状態 | 推奨文言 | 避ける文言 |
 |---|---|---|
 | 実行前 | 「同じ条件で2つの世界を比較します」 | 「未来を予測します」 |
+| 理解確認 | 「このアイデアとして理解しました。合っていますか？」 | 「最適な政策はこれです」 |
+| 暫定preview | 「既存templateによる暫定比較です」 | 「シミュレーションで証明されました」 |
+| 未実行 | 「この条件が未確定のため、まだ走らせられません」 | 数値を推測して表示する |
 | 破滅 | 「修復不能条件に入りました」 | 「日本は必ず崩壊します」 |
 | 回避 | 「このモデルでは破滅条件を回避しました」 | 「問題を解決しました」 |
 | 遅延 | 「発動が2037年となり、2036年に間に合いません」 | 「失敗です」だけ |
 | 入力不足 | 「完成証拠を観測可能な文にしてください」 | 「無効です」だけ |
 | PR準備完了 | 「ローカル検証が通りました。人間レビューは未完了です」 | 「公開準備完了」 |
+| 次の破滅 | 「回避済み世界から生じる次シーズン候補です」 | 「勝利は無効になりました」 |
 
 ## 視覚言語
 
