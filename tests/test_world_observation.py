@@ -15,10 +15,14 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from fiction_forks.engine import compare_worlds, load_json, simulate
+from fiction_forks.engine import ENGINE_VERSION, compare_worlds, load_json, simulate
 from fiction_forks.cli import main as cli_main
 from fiction_forks.providers import FixtureProvider, ReplayProvider
-from fiction_forks.social import replay_equivalent, run_social_simulation
+from fiction_forks.social import (
+    PROTOCOL_VERSION,
+    replay_equivalent,
+    run_social_simulation,
+)
 
 
 class WorldObservationForkTests(unittest.TestCase):
@@ -159,6 +163,9 @@ class WorldObservationForkTests(unittest.TestCase):
         self.assertEqual("haruhi-world-observation", social["intervention_id"])
         self.assertEqual(2036, social["seed"])
         self.assertEqual(0, social["metrics"]["invalid_action_count"])
+        self.assertEqual(ENGINE_VERSION, manifest["engine_version"])
+        self.assertEqual(ENGINE_VERSION, social["engine_version"])
+        self.assertEqual(PROTOCOL_VERSION, social["protocol_version"])
         self.assertEqual(social["run_id"], manifest["run_id"])
         self.assertEqual(social["input_digest"], manifest["input_digest"])
         self.assertEqual(social["final_event_hash"], manifest["final_event_hash"])

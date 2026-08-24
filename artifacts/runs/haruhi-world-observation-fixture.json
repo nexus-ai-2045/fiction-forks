@@ -10,7 +10,7 @@
           "public-ip-boundary"
         ],
         "responds_to": [],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -19,10 +19,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "d6647bf1e390730684307bb8a91b3c8418b1938188043ba52051a5ee984d042c",
+      "event_hash": "8b23bdf0a470d705a93d76eb969a8dac135e5dbea899ff4f42f2c56aff9629a9",
       "intent_id": "t1:civic_challenger",
       "invalid_reason": null,
-      "previous_event_hash": "da37150c0d1ee4ed4f7668c4dac5f980acccb49a39d35c10259bacd0ae5c689e",
+      "previous_event_hash": "c927128e19b7c6a074d49d58e5be7ada8cca25a2ce71494b87ea6db872de15fb",
       "state_after_hash": "4136f1b022ad934070f6ec709630613ae4fda060745b7687b391703713eda7ad",
       "state_before_hash": "28d40af01a1b415988ee4a454c46a70447155ceaa4d689957761d9f6797482d0",
       "valid": true
@@ -37,7 +37,7 @@
           "public-observation-contract"
         ],
         "responds_to": [],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -46,10 +46,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "de6c7718b779b87f1fb3d7d29f60b92efcd72141b910c2fe067a96920327e370",
+      "event_hash": "8d5b9343a8cc54ad175048600edb41a80fca43cd3aaac86a9ec1923c8214da89",
       "intent_id": "t1:distributed_observer",
       "invalid_reason": null,
-      "previous_event_hash": "d6647bf1e390730684307bb8a91b3c8418b1938188043ba52051a5ee984d042c",
+      "previous_event_hash": "8b23bdf0a470d705a93d76eb969a8dac135e5dbea899ff4f42f2c56aff9629a9",
       "state_after_hash": "47481ed8872397f020bbd5c1fc2d0015f0a3b847128bf41be7a6bf87e5302421",
       "state_before_hash": "4136f1b022ad934070f6ec709630613ae4fda060745b7687b391703713eda7ad",
       "valid": true
@@ -64,7 +64,7 @@
           "public-observation-contract"
         ],
         "responds_to": [],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -73,10 +73,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "dec36e7f1c5a27c218de4b3f1706b2729be5132eddd75e364b351ee9c9f7edc5",
+      "event_hash": "ab02a62a11c9ee54fcac27ac655c96b7876ca2f4d55318c3027839d1632a1a4c",
       "intent_id": "t1:evidence_steward",
       "invalid_reason": null,
-      "previous_event_hash": "de6c7718b779b87f1fb3d7d29f60b92efcd72141b910c2fe067a96920327e370",
+      "previous_event_hash": "8d5b9343a8cc54ad175048600edb41a80fca43cd3aaac86a9ec1923c8214da89",
       "state_after_hash": "c53f6db0694d5f8d034a40ce57945be8c2a9751cb6c9a811e17f7496998d4dc5",
       "state_before_hash": "47481ed8872397f020bbd5c1fc2d0015f0a3b847128bf41be7a6bf87e5302421",
       "valid": true
@@ -91,7 +91,7 @@
           "public-observation-contract"
         ],
         "responds_to": [],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -100,10 +100,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "951bc883eadb7fdc3504a475fe97cc9dd9feffa379d1de8d8f7654ad126671b9",
+      "event_hash": "791d8c3576543f963984585043419d3789707132875dd7ec7e82a1c75a578dde",
       "intent_id": "t1:failure_analyst",
       "invalid_reason": null,
-      "previous_event_hash": "dec36e7f1c5a27c218de4b3f1706b2729be5132eddd75e364b351ee9c9f7edc5",
+      "previous_event_hash": "ab02a62a11c9ee54fcac27ac655c96b7876ca2f4d55318c3027839d1632a1a4c",
       "state_after_hash": "69028920bb507f6508b6501779ec714aaf25afa949e916e5910bb47e86fcdd9b",
       "state_before_hash": "c53f6db0694d5f8d034a40ce57945be8c2a9751cb6c9a811e17f7496998d4dc5",
       "valid": true
@@ -118,7 +118,7 @@
           "public-observation-contract"
         ],
         "responds_to": [],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -127,10 +127,10 @@
         "text_redacted": true,
         "turn": 1
       },
-      "event_hash": "e11f12ad18aa1054818097f734e9d73fc17a1144a1190f827d3f341dbe3d789e",
+      "event_hash": "8409af616699cb98f1a2e2f1c8f71195f24aae8b915ff1427641553e9cc12ba9",
       "intent_id": "t1:operations_coordinator",
       "invalid_reason": null,
-      "previous_event_hash": "951bc883eadb7fdc3504a475fe97cc9dd9feffa379d1de8d8f7654ad126671b9",
+      "previous_event_hash": "791d8c3576543f963984585043419d3789707132875dd7ec7e82a1c75a578dde",
       "state_after_hash": "c1bcaf6d15871ccbd48c0efae4228aff63bdac93d324c5bae1099da44e01df5f",
       "state_before_hash": "69028920bb507f6508b6501779ec714aaf25afa949e916e5910bb47e86fcdd9b",
       "valid": true
@@ -147,7 +147,7 @@
         "responds_to": [
           "t1:operations_coordinator"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -156,10 +156,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "8858a159c12cc82f9d7464c4c45e574361c749e50bfa56da2b10c3bfbe511b86",
+      "event_hash": "c4ca10dc6e7fbd742939b35f14f46f42c6a9ecf0a41d73c7b717dc8cd4cba9b1",
       "intent_id": "t2:civic_challenger",
       "invalid_reason": null,
-      "previous_event_hash": "e11f12ad18aa1054818097f734e9d73fc17a1144a1190f827d3f341dbe3d789e",
+      "previous_event_hash": "8409af616699cb98f1a2e2f1c8f71195f24aae8b915ff1427641553e9cc12ba9",
       "state_after_hash": "6bfd9efbbb11d9453754b149f0cb9053a02562ce8d73bbb1902f00d970cd8519",
       "state_before_hash": "c1bcaf6d15871ccbd48c0efae4228aff63bdac93d324c5bae1099da44e01df5f",
       "valid": true
@@ -176,7 +176,7 @@
         "responds_to": [
           "t1:failure_analyst"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -185,10 +185,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "76028cf066d84900d74a36ed91986778e6318792fae3b96535d8a1cfc88a7306",
+      "event_hash": "077ca5340a913d9aeccdc3be5f95411e47d2235fbdb537e55a2817a8a82dcf3d",
       "intent_id": "t2:distributed_observer",
       "invalid_reason": null,
-      "previous_event_hash": "8858a159c12cc82f9d7464c4c45e574361c749e50bfa56da2b10c3bfbe511b86",
+      "previous_event_hash": "c4ca10dc6e7fbd742939b35f14f46f42c6a9ecf0a41d73c7b717dc8cd4cba9b1",
       "state_after_hash": "bc464f87faf26cdf2aaddb3615b5eeb9e6da86856424af0ebe304940a6196f66",
       "state_before_hash": "6bfd9efbbb11d9453754b149f0cb9053a02562ce8d73bbb1902f00d970cd8519",
       "valid": true
@@ -205,7 +205,7 @@
         "responds_to": [
           "t1:failure_analyst"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -214,10 +214,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "d3e7359127ea1258f81f7273d4295cd902e885a86f1e9ecf3348ad5ce66fb0d9",
+      "event_hash": "74ef5e6b8199ba23ad0a8172920162a60dfe7afa69356fadc9c90e5ff239a0ad",
       "intent_id": "t2:evidence_steward",
       "invalid_reason": null,
-      "previous_event_hash": "76028cf066d84900d74a36ed91986778e6318792fae3b96535d8a1cfc88a7306",
+      "previous_event_hash": "077ca5340a913d9aeccdc3be5f95411e47d2235fbdb537e55a2817a8a82dcf3d",
       "state_after_hash": "945f7bdcc6a6df1dc4d9bc71ad3cdddca968c7d2e7bcc2439cbda5a0348beef7",
       "state_before_hash": "bc464f87faf26cdf2aaddb3615b5eeb9e6da86856424af0ebe304940a6196f66",
       "valid": true
@@ -234,7 +234,7 @@
         "responds_to": [
           "t1:evidence_steward"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -243,10 +243,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "7123163eaa548ee1a344a8dd9bed8cf579d808ac5127f72c6382b232ea754619",
+      "event_hash": "96d3c3e4bbe7a4d4b736b366b6da4f1380de5dba4bdbcf52eaccb64cd7b39f41",
       "intent_id": "t2:failure_analyst",
       "invalid_reason": null,
-      "previous_event_hash": "d3e7359127ea1258f81f7273d4295cd902e885a86f1e9ecf3348ad5ce66fb0d9",
+      "previous_event_hash": "74ef5e6b8199ba23ad0a8172920162a60dfe7afa69356fadc9c90e5ff239a0ad",
       "state_after_hash": "b4b120c06eda374dbfc86654887d19cb78263fafcf7dd12e3f2cc89d5fb9af8b",
       "state_before_hash": "945f7bdcc6a6df1dc4d9bc71ad3cdddca968c7d2e7bcc2439cbda5a0348beef7",
       "valid": true
@@ -263,7 +263,7 @@
         "responds_to": [
           "t1:civic_challenger"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -273,10 +273,10 @@
         "text_redacted": true,
         "turn": 2
       },
-      "event_hash": "f429cb9cb7f284c017e123558542c840921b7f1d7d2562119ffd46324706f067",
+      "event_hash": "53941248cd1cd4fa23a43652666e7e14c0aed0d76b73e2e91a81c267ee598f9e",
       "intent_id": "t2:operations_coordinator",
       "invalid_reason": null,
-      "previous_event_hash": "7123163eaa548ee1a344a8dd9bed8cf579d808ac5127f72c6382b232ea754619",
+      "previous_event_hash": "96d3c3e4bbe7a4d4b736b366b6da4f1380de5dba4bdbcf52eaccb64cd7b39f41",
       "state_after_hash": "8dae4d125e9421561347ac0a267ed892c853410b9dc601f55214c3e54856376c",
       "state_before_hash": "b4b120c06eda374dbfc86654887d19cb78263fafcf7dd12e3f2cc89d5fb9af8b",
       "valid": true
@@ -293,7 +293,7 @@
         "responds_to": [
           "t2:operations_coordinator"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -302,10 +302,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "216cc5160a03bdf5b7d49e7b4a7a492b1f4454c298662a8198473bdd1a8621bc",
+      "event_hash": "6a1742f9fbdf6d4eb8acebdb9e209d329f8aa224d8e03202b30e52535d6cf2fa",
       "intent_id": "t3:civic_challenger",
       "invalid_reason": null,
-      "previous_event_hash": "f429cb9cb7f284c017e123558542c840921b7f1d7d2562119ffd46324706f067",
+      "previous_event_hash": "53941248cd1cd4fa23a43652666e7e14c0aed0d76b73e2e91a81c267ee598f9e",
       "state_after_hash": "19b7d62502be45abfeb4eb24dfa492eaef3733523945483c8b3daeaf636e3793",
       "state_before_hash": "8dae4d125e9421561347ac0a267ed892c853410b9dc601f55214c3e54856376c",
       "valid": true
@@ -322,7 +322,7 @@
         "responds_to": [
           "t2:evidence_steward"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -331,10 +331,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "31c70c9dda107b624b4c71483598efaf1f4310c173b370160fec4fb3dc5d72a5",
+      "event_hash": "6af872888da841dc17dfaf82f345d95925c98da7eefcdcfaaff2c4e1763c2601",
       "intent_id": "t3:distributed_observer",
       "invalid_reason": null,
-      "previous_event_hash": "216cc5160a03bdf5b7d49e7b4a7a492b1f4454c298662a8198473bdd1a8621bc",
+      "previous_event_hash": "6a1742f9fbdf6d4eb8acebdb9e209d329f8aa224d8e03202b30e52535d6cf2fa",
       "state_after_hash": "b11f1bd2b32993cccce9d79e5ad6a21566fb27ef47b8987fa0e7284ef0e22e17",
       "state_before_hash": "19b7d62502be45abfeb4eb24dfa492eaef3733523945483c8b3daeaf636e3793",
       "valid": true
@@ -351,7 +351,7 @@
         "responds_to": [
           "t2:civic_challenger"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -360,10 +360,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "f254d55506e6333b61a06b614155ff8e8e6dc7cad940920953272005c90cd15a",
+      "event_hash": "6b54dc78ce91fa24ffc92cdb6d40dfb663c32f054750753b8c2592f178d89c3b",
       "intent_id": "t3:evidence_steward",
       "invalid_reason": null,
-      "previous_event_hash": "31c70c9dda107b624b4c71483598efaf1f4310c173b370160fec4fb3dc5d72a5",
+      "previous_event_hash": "6af872888da841dc17dfaf82f345d95925c98da7eefcdcfaaff2c4e1763c2601",
       "state_after_hash": "dfe62dcaee89e14824304678055eb71144d9f1afe107030690e4253a34acd087",
       "state_before_hash": "b11f1bd2b32993cccce9d79e5ad6a21566fb27ef47b8987fa0e7284ef0e22e17",
       "valid": true
@@ -380,7 +380,7 @@
         "responds_to": [
           "t2:civic_challenger"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -389,10 +389,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "1431adfd38d444f70b6d817f92faec43395226e6695ce0705d40d57b2e745d13",
+      "event_hash": "7007e84c3485fd75e003c1a0179583a69d28df732dd9b075f38088a52016ff0e",
       "intent_id": "t3:failure_analyst",
       "invalid_reason": null,
-      "previous_event_hash": "f254d55506e6333b61a06b614155ff8e8e6dc7cad940920953272005c90cd15a",
+      "previous_event_hash": "6b54dc78ce91fa24ffc92cdb6d40dfb663c32f054750753b8c2592f178d89c3b",
       "state_after_hash": "606ae51cb19e430c13312b86234518dbcbb43a7ece346d9444aa0e17ecc48c12",
       "state_before_hash": "dfe62dcaee89e14824304678055eb71144d9f1afe107030690e4253a34acd087",
       "valid": true
@@ -409,7 +409,7 @@
         "responds_to": [
           "t2:distributed_observer"
         ],
-        "run_id": "ff-188b986bb1ddbb7b",
+        "run_id": "ff-c705e4136e2fce00",
         "schema_version": "fiction_forks_action.v1",
         "stance": "condition",
         "target_ids": [
@@ -418,10 +418,10 @@
         "text_redacted": true,
         "turn": 3
       },
-      "event_hash": "88d7242dad9b6e5a2f875daeda4ae5329705b3b64807bc0a1f7bdc0af2aa473f",
+      "event_hash": "420bb03c9656c32e57372489efea48eb14fd70ac1ff518d0a186d47192010824",
       "intent_id": "t3:operations_coordinator",
       "invalid_reason": null,
-      "previous_event_hash": "1431adfd38d444f70b6d817f92faec43395226e6695ce0705d40d57b2e745d13",
+      "previous_event_hash": "7007e84c3485fd75e003c1a0179583a69d28df732dd9b075f38088a52016ff0e",
       "state_after_hash": "76320cc8e902db48f72494d540fb0cc39ea124d67b6269b08f556245e827de3a",
       "state_before_hash": "606ae51cb19e430c13312b86234518dbcbb43a7ece346d9444aa0e17ecc48c12",
       "valid": true
@@ -429,8 +429,8 @@
   ],
   "assumption_notice": "これは観測と異議申立ての成立条件を検査するfixtureであり、未来予測、政策助言、作品世界や人物の再現ではない。",
   "engine_version": "0.3.0",
-  "final_event_hash": "88d7242dad9b6e5a2f875daeda4ae5329705b3b64807bc0a1f7bdc0af2aa473f",
-  "input_digest": "188b986bb1ddbb7b594fbfb9b1cd3a330a418646af6f206ff1d25a2ba455438a",
+  "final_event_hash": "420bb03c9656c32e57372489efea48eb14fd70ac1ff518d0a186d47192010824",
+  "input_digest": "c705e4136e2fce0059f1d711deac8575fc69a880f85141af1d19db717e302317",
   "interaction_edges": [
     {
       "from_intent_id": "t2:civic_challenger",
@@ -503,7 +503,7 @@
     "local-verification-labs": [],
     "observation-data-charter": []
   },
-  "protocol_version": "1.0.0",
+  "protocol_version": "1.1.0",
   "provider": {
     "model": null,
     "name": "fixture"
@@ -515,7 +515,7 @@
     "operations_coordinator",
     "failure_analyst"
   ],
-  "run_id": "ff-188b986bb1ddbb7b",
+  "run_id": "ff-c705e4136e2fce00",
   "scenario_id": "japan-2036-centralization",
   "schema_version": "fiction_forks_social_result.v1",
   "seed": 2036,

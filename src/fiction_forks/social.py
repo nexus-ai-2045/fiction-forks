@@ -24,7 +24,7 @@ from .engine import (
 from .providers import ActionProvider
 
 SOCIAL_RESULT_SCHEMA_VERSION = "fiction_forks_social_result.v1"
-PROTOCOL_VERSION = "1.0.0"
+PROTOCOL_VERSION = "1.1.0"
 
 
 def _accessible_evidence(
@@ -117,6 +117,36 @@ def _public_receipt_action(
         ],
         "confidence": action["confidence"],
         "condition_count": len(action["conditions"]),
+        "text_redacted": True,
+    }
+
+
+def _public_observation_action(
+    action: Mapping[str, Any],
+    public_evidence_ids: set[str],
+    action_catalog: Mapping[str, Mapping[str, Any]],
+) -> dict[str, Any]:
+    """Expose trusted action semantics without model-authored prose."""
+    catalog_entry = action_catalog[action["action_id"]]
+    return {
+        "schema_version": action["schema_version"],
+        "run_id": action["run_id"],
+        "turn": action["turn"],
+        "agent_id": action["agent_id"],
+        "action_id": action["action_id"],
+        "action_title": catalog_entry["title"],
+        "capability": catalog_entry["capability"],
+        "stance": action["stance"],
+        "responds_to": list(action["responds_to"]),
+        "target_ids": list(action["target_ids"]),
+        "evidence_ids": [
+            evidence_id
+            for evidence_id in action["evidence_ids"]
+            if evidence_id in public_evidence_ids
+        ],
+        "confidence": action["confidence"],
+        "condition_count": len(action["conditions"]),
+        "conditions_redacted": True,
         "text_redacted": True,
     }
 
@@ -214,14 +244,19 @@ def run_social_simulation(
             }
             chain_hash = event_hash
             receipts.append(receipt)
-            public_action = deepcopy(action)
-            public_action["evidence_ids"] = [
-                evidence_id
-                for evidence_id in public_action["evidence_ids"]
-                if evidence_id in public_evidence_ids
-            ]
+            # Other roles receive an explicit v2 projection. Trusted catalog
+            # semantics remain visible, while model-authored prose and
+            # conditions cannot become a side channel for role-scoped
+            # evidence or private_context.
             committed_this_turn.append(
-                {"intent_id": intent_id, **public_action}
+                {
+                    "intent_id": intent_id,
+                    **_public_observation_action(
+                        action,
+                        public_evidence_ids,
+                        action_catalog,
+                    ),
+                }
             )
         prior_public_actions.extend(committed_this_turn)
 

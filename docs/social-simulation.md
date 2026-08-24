@@ -43,6 +43,8 @@ AIは次を出力できない。
 
 public evidenceは全役へ、role-scoped evidenceは `audience` に列挙した役だけへ渡す。ここでのprivateはシミュレーション内の情報差を表すだけであり、実在の秘密や個人情報を入力してよいという意味ではない。公開artifactはallowlist projectionとし、role-scoped evidence ID、自由記述、条件本文、役のprivate context、API credential、provider内部情報を保存しない。
 
+`fiction_forks_observation.v2` では、前ターンの行動を `action_id`、固定catalog由来のtitleとcapability、stance、応答先、公開evidence ID、条件数へ射影して共有する。モデルが書いた説明と条件本文は他役へ渡さない。これにより、他役は提案の信頼済みな意味を読める一方、自由記述を使ったprivate contextの越境はできない。v1の前行動shapeを前提にしたcustom providerはv2対応が必要である。
+
 公開artifactには次を残す。
 
 - engine version、scenario、intervention、social config、seedから計算したinput digest

@@ -14,11 +14,18 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from fiction_forks.agent_protocol import ACTION_SCHEMA_VERSION
+from fiction_forks.agent_protocol import (
+    ACTION_SCHEMA_VERSION,
+    OBSERVATION_SCHEMA_VERSION,
+)
 from fiction_forks.cli import main as cli_main
-from fiction_forks.engine import ContractError, load_json
+from fiction_forks.engine import ENGINE_VERSION, ContractError, load_json
 from fiction_forks.providers import FixtureProvider, OpenAIProvider, ReplayProvider
-from fiction_forks.social import replay_equivalent, run_social_simulation
+from fiction_forks.social import (
+    PROTOCOL_VERSION,
+    replay_equivalent,
+    run_social_simulation,
+)
 
 
 class CaptureProvider:
@@ -177,6 +184,9 @@ class SocialSimulationTests(unittest.TestCase):
         )
         artifact = json.loads(artifact_path.read_text(encoding="utf-8"))
         self.assertFalse(manifest["ai_measured"])
+        self.assertEqual(ENGINE_VERSION, manifest["engine_version"])
+        self.assertEqual(ENGINE_VERSION, artifact["engine_version"])
+        self.assertEqual(PROTOCOL_VERSION, artifact["protocol_version"])
         self.assertEqual(artifact["run_id"], manifest["run_id"])
         self.assertEqual(artifact["input_digest"], manifest["input_digest"])
         self.assertEqual(artifact["final_event_hash"], manifest["final_event_hash"])
@@ -212,6 +222,10 @@ class SocialSimulationTests(unittest.TestCase):
             seed=2036,
         )
         for observation in provider.observations:
+            self.assertEqual(
+                OBSERVATION_SCHEMA_VERSION,
+                observation["schema_version"],
+            )
             evidence_ids = {item["id"] for item in observation["evidence"]}
             if observation["role"]["id"] == "civic_auditor":
                 self.assertIn("private-audit-note", evidence_ids)
@@ -221,6 +235,12 @@ class SocialSimulationTests(unittest.TestCase):
                 self.assertNotIn(
                     "private-audit-note", prior_action["evidence_ids"]
                 )
+                self.assertNotIn("text", prior_action)
+                self.assertNotIn("conditions", prior_action)
+                self.assertTrue(prior_action["text_redacted"])
+                self.assertTrue(prior_action["conditions_redacted"])
+                self.assertTrue(prior_action["action_title"])
+                self.assertTrue(prior_action["capability"])
 
         result = self.run_fixture()
         for receipt in result["actions"]:
