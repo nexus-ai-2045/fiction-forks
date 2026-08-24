@@ -1,8 +1,8 @@
 # ADR 0012: チャット壁打ちと暫定simulationを公式世界線から分離する
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-08-25
-- Supersedes when accepted: ADR 0006、0009、0011のうち、Idea作成時に対話・previewを行わないとしたWeb境界
+- Supersedes: ADR 0006、0009、0011のうち、Idea作成時に対話・previewを行わないとしたWeb境界
 
 ## Context
 
