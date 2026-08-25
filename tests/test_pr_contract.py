@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import tempfile
 import unittest
-import json
 from pathlib import Path
 
 from fiction_forks.pr_contract import (
@@ -16,6 +17,50 @@ from fiction_forks.pr_contract import (
 
 
 class PullRequestContractTests(unittest.TestCase):
+    def _write_preview_catalog(
+        self, root: Path, *, digest_override: str | None = None
+    ) -> str:
+        intervention_path = root / "interventions/fixed-preview.json"
+        intervention_path.parent.mkdir(parents=True, exist_ok=True)
+        intervention_path.write_text(
+            json.dumps({"id": "fixed-preview"}), encoding="utf-8"
+        )
+        digest = hashlib.sha256(
+            json.dumps(
+                {"id": "fixed-preview"},
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        catalog_path = root / "catalogs/intervention-templates.v1.json"
+        catalog_path.parent.mkdir(parents=True, exist_ok=True)
+        catalog_path.write_text(
+            json.dumps(
+                {
+                    "schema_version": "fiction_forks_preview_template_catalog.v1",
+                    "catalog_version": 1,
+                    "templates": [
+                        {
+                            "template_id": "fixed-preview.v1",
+                            "template_version": 1,
+                            "status": "preview_allowed",
+                            "scenario_id": "japan-2036-centralization",
+                            "intervention_id": "fixed-preview",
+                            "intervention_path": "interventions/fixed-preview.json",
+                            "intervention_sha256": digest_override or digest,
+                            "requires_user_confirmation": True,
+                            "idea_text_changes_engine_inputs": False,
+                            "allowed_seeds": [2036],
+                            "delay_profiles": ["none"],
+                        }
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
+        return "catalogs/intervention-templates.v1.json"
+
     def _write_worldline_inputs(
         self,
         root: Path,
@@ -133,6 +178,62 @@ class PullRequestContractTests(unittest.TestCase):
                 [Change("A", "interventions/new-world.json")],
                 root=Path("."),
             )
+
+    def test_maintenance_validates_preview_catalog_as_explicit_scope(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = self._write_preview_catalog(root)
+            result = validate_contract(
+                "maintenance",
+                [Change("A", catalog), Change("M", "docs/architecture.md")],
+                root=root,
+            )
+        self.assertEqual(result.kind, "maintenance")
+
+    def test_maintenance_rejects_preview_catalog_digest_drift(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = self._write_preview_catalog(root, digest_override="0" * 64)
+            with self.assertRaisesRegex(ContractError, "SHA-256"):
+                validate_contract(
+                    "maintenance",
+                    [Change("M", catalog)],
+                    root=root,
+                )
+
+    def test_maintenance_accepts_preview_catalog_across_line_endings(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = self._write_preview_catalog(root)
+            intervention_path = root / "interventions/fixed-preview.json"
+            intervention_path.write_bytes(b'{\r\n  "id": "fixed-preview"\r\n}\r\n')
+            result = validate_contract(
+                "maintenance",
+                [Change("M", catalog)],
+                root=root,
+            )
+        self.assertEqual(result.kind, "maintenance")
+
+    def test_maintenance_rejects_unknown_catalog_path(self) -> None:
+        with self.assertRaisesRegex(ContractError, "未登録のcatalog path"):
+            validate_contract(
+                "maintenance",
+                [Change("A", "catalogs/unreviewed.json")],
+                root=Path("."),
+            )
+
+    def test_worldline_rejects_preview_catalog_change(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            expected = self._write_worldline_inputs(root)
+            catalog = self._write_preview_catalog(root)
+            with self.assertRaisesRegex(ContractError, "maintenance PR"):
+                validate_contract(
+                    "worldline",
+                    [Change("A", path) for path in expected]
+                    + [Change("M", catalog)],
+                    root=root,
+                )
 
     def test_idea_files_are_never_pull_request_content(self) -> None:
         with self.assertRaisesRegex(ContractError, "idea Issue"):

@@ -1,0 +1,43 @@
+{
+  "schema_version": "fiction_forks_preview_template_catalog.v1",
+  "catalog_version": 1,
+  "catalog_id": "japan-2036-preview-templates",
+  "templates": [
+    {
+      "template_id": "public-tools-access.v1",
+      "template_version": 1,
+      "status": "preview_allowed",
+      "scenario_id": "japan-2036-centralization",
+      "intervention_id": "doraemon-public-tools",
+      "intervention_path": "interventions/doraemon-public-tools.json",
+      "intervention_sha256": "2e116cde3f8ad9547261cc58fd1b88c594f8bbefcc0d34961687dc47d21cf455",
+      "abstract_function": "高度な道具へのアクセスを監査可能な公共基盤として広げる",
+      "allowed_seeds": [
+        2036
+      ],
+      "delay_profiles": [
+        "none"
+      ],
+      "requires_user_confirmation": true,
+      "idea_text_changes_engine_inputs": false
+    },
+    {
+      "template_id": "contested-world-observation.v1",
+      "template_version": 1,
+      "status": "preview_allowed",
+      "scenario_id": "japan-2036-centralization",
+      "intervention_id": "haruhi-world-observation",
+      "intervention_path": "interventions/haruhi-world-observation.json",
+      "intervention_sha256": "6b9420240ae02129b4fd24f679aef0a9e79dbd53dca052f58700e1a7d5c79d70",
+      "abstract_function": "複数の独立観測と異議申立てで世界状態の変化を検証する",
+      "allowed_seeds": [
+        2036
+      ],
+      "delay_profiles": [
+        "none"
+      ],
+      "requires_user_confirmation": true,
+      "idea_text_changes_engine_inputs": false
+    }
+  ]
+}
