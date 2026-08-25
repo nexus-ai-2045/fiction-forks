@@ -17,7 +17,8 @@ Fiction Forksは、ローカルCLI、静的GitHub Pages Idea Builder、公開Git
 | 根拠 | 外部URL、統計、作品解釈 | 公式性と参照根拠を分離し、確認日を記録 |
 | AI出力 | action、説明、target、evidence ID | strict schema、固定catalog、engine非変更 |
 | Local companion | browser origin、Codex protocol、session | loopback、短命token、origin/tool allowlist、version gate |
-| 暫定preview | 確認済みIdeaDraft、template候補 | 既存scenario・既存templateへの完全写像、input digest |
+| 暫定preview | 確認済みIdeaDraft、catalog entry | `preview_allowed`固定interventionへの完全写像、利用者確認、input digest |
+| Public run request | GitHub Issue payload、catalog ID、scenario、seed | maintainer triage、strict schema、`main`固定workflow、fork/PR code不使用 |
 | Doom candidate | AIまたは人間が提案する次の危機 | 根拠、発生条件、観測指標、可逆性、scenario PR |
 | CI依存 | Actions、wheel、build backend | exact SHA/version/hash固定 |
 | 公開境界 | ローカル会話、個人情報、秘密 | repo-preflight、目視、人間承認 |
@@ -66,7 +67,13 @@ AI層ではprompt injection、根拠捏造、role-scoped observationの越境、
 
 local Codex連携はpublic Pagesからraw app-serverへ直接接続せず、loopback-only companionを挟む。主要な攻撃は、悪意ある公開ページからlocalhostへの接続、DNS rebinding、origin偽装、token窃取、prompt injectionによるshell/filesystem/GitHub操作、別repoまたはprivate fileの読取、protocol version driftである。companionはsessionごとの短命capability token、厳密なorigin allowlist、対象repoのread-only projection、tool deny-by-default、turn/size/time上限、version付きschemaを必須にする。app-serverがexperimentalである間はfeature flagを既定offとし、未対応versionまたは認証不明を`guided` fallbackにする。
 
-暫定previewは既存scenarioと既存templateに完全に写像できる場合だけ決定論engineを呼ぶ。LLMに不足metric、効果量、完成年を補わせない。公式結果と異なるbadge、URL、schema fieldを使い、scenario、seed、engine version、template ID、input digest、未確定fieldを表示する。
+暫定previewは既存scenarioと`catalogs/intervention-templates.v1.json`の`preview_allowed` templateに完全に写像でき、利用者がtemplate IDを確認した場合だけ決定論engineを呼ぶ。Idea本文で参照先interventionのmetric、効果量、技術ノード、完成年を変更せず、LLMに不足値を補わせない。公式結果と異なるbadge、URL、schema fieldを使い、scenario、seed、engine version、template ID、input digest、未確定fieldを表示する。
+
+公開PagesはPython engineへ直接接続しない。public previewは、利用者がGitHub確認画面から送信したversion付きsimulation-requestをmaintainerが`simulation-ready`へtriageした後、`main`に固定したworkflowで非同期実行する。workflowはIssue payloadをstrict schemaで検証し、forkまたはPRのcodeをcheckoutせず、secretを渡さない。Issue本文を`${{ }}`またはshell引数へ直接展開せず、`GITHUB_EVENT_PATH`をJSON parserで読む。triage時のrequest digestと実行時main SHAを記録して同じ組み合わせを冪等化し、raw自由文をartifactやcommentへ反射しない。engine実行jobは`contents: read`、検証済みsummaryをIssueへ返すjobだけを`issues: write`とし、権限を分離する。
+
+Issue送信前の同期previewは、利用者が明示起動した`127.0.0.1` local run adapterに限定する。local adapterもlocal Codex companionと同じく、sessionごとの短命capability token、exact Origin allowlist、JSON Content-Typeとcustom headerによるCORS preflightを要求し、`Origin: null`とsimple requestを拒否する。request body、同時run数、run timeoutへ上限を設け、未接続、token不一致、origin不一致、上限超過ではengineを起動せず`guided`または`not-available`へfail closedする。
+
+PR-headのCI artifactはcandidateであり、公式結果ではない。worldline PRのmerge後にexact `main` commitから再実行し、main commit、engine version、input digest、artifact digestをread-backできた結果だけをofficialへ昇格する。
 
 破滅回避後のdoom candidateは、ゲームを継続するための自動ペナルティではない。元介入との因果、現実リスクへの接続、発生条件、観測指標、連鎖、可逆性を必須にし、scenario PRの人間レビュー前にactive doomまたは破滅レベルへ反映しない。
 

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import unittest
 from pathlib import Path
@@ -19,6 +21,7 @@ class DocumentationContractTests(unittest.TestCase):
             "docs/security-model.md",
             "docs/social-simulation.md",
             "docs/adr/README.md",
+            "catalogs/intervention-templates.v1.json",
             "RESULTS.md",
             "web/index.html",
             "web/styles.css",
@@ -29,19 +32,30 @@ class DocumentationContractTests(unittest.TestCase):
             with self.subTest(path=relative_path):
                 self.assertTrue((ROOT / relative_path).is_file())
 
-    def test_adr_index_links_to_existing_records_with_known_status(self) -> None:
+    def test_adr_index_status_matches_each_record(self) -> None:
         index = (ROOT / "docs/adr/README.md").read_text(encoding="utf-8")
-        links = re.findall(r"\]\((\d{4}[^)]+\.md)\)", index)
-        self.assertGreaterEqual(len(links), 6)
-        for link in links:
-            with self.subTest(adr=link):
+        rows = re.findall(
+            r"(?m)^\| \[(\d{4})\]\((\d{4}[^)]+\.md)\) "
+            r"\| (Accepted|Proposed|Superseded|Deprecated) \|",
+            index,
+        )
+        self.assertGreaterEqual(len(rows), 6)
+        indexed_links = re.findall(
+            r"(?m)^\| \[\d{4}\]\((\d{4}[^)]+\.md)\) \|",
+            index,
+        )
+        self.assertEqual(len(rows), len(indexed_links))
+        self.assertEqual(len({adr_id for adr_id, _, _ in rows}), len(rows))
+        for adr_id, link, indexed_status in rows:
+            with self.subTest(adr=adr_id):
                 adr = ROOT / "docs/adr" / link
                 self.assertTrue(adr.is_file())
                 content = adr.read_text(encoding="utf-8")
-                self.assertRegex(
-                    content,
+                record_statuses = re.findall(
                     r"(?m)^- Status: (Accepted|Proposed|Superseded|Deprecated)$",
+                    content,
                 )
+                self.assertEqual(record_statuses, [indexed_status])
 
     def test_chat_simulation_roadmap_keeps_state_and_safety_boundaries(self) -> None:
         adr = (
@@ -69,11 +83,99 @@ class DocumentationContractTests(unittest.TestCase):
 
         self.assertIn("Vite + React + TypeScript", product)
         self.assertIn("0.4は複数PRをまとめる一つのmilestone", product)
+        self.assertIn("現行scenarioにはレベル閾値と連鎖条件", product)
         self.assertIn("DialogueProvider", architecture)
         self.assertIn("loopback-only companion", architecture)
+        self.assertIn("exact `main` commit", adr)
+        self.assertIn("worldline PRがmerge", adr)
+        self.assertIn("catalogs/intervention-templates.v1.json", architecture)
+        self.assertIn("`main`に固定されたActions workflow", architecture)
+        self.assertIn("forkまたはPRのcodeはcheckoutしない", architecture)
+        self.assertIn("path、git ref、effect、model/provider、任意CLI引数は受け付けない", architecture)
+        self.assertIn(
+            "公開WebにOpenAI API key、GitHub token、Codex credentialを置かない",
+            architecture,
+        )
         self.assertIn("短命capability token", security)
+        self.assertIn("exact Origin allowlist", security)
+        self.assertIn("Origin: null", security)
+        self.assertIn("同時run数", security)
         self.assertIn("Issue open/closedだけで推定しない", ssot)
-        self.assertNotIn("公開WebへOpenAI API key", architecture)
+
+        prohibited = adr.split("## Prohibited", 1)[1].split(
+            "## Human Review Gate", 1
+        )[0]
+        self.assertIn(
+            "公開WebへOpenAI API key、GitHub token、Codex credentialを置く",
+            prohibited,
+        )
+
+    def test_preview_template_catalog_references_fixed_interventions(self) -> None:
+        catalog = json.loads(
+            (ROOT / "catalogs/intervention-templates.v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            catalog["schema_version"],
+            "fiction_forks_preview_template_catalog.v1",
+        )
+        self.assertEqual(catalog["catalog_version"], 1)
+        scenario = json.loads(
+            (ROOT / "scenarios/japan-2036/scenario.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        templates = catalog["templates"]
+        template_ids = [entry["template_id"] for entry in templates]
+        self.assertEqual(len(template_ids), len(set(template_ids)))
+        self.assertGreaterEqual(len(templates), 1)
+        for entry in templates:
+            with self.subTest(template=entry["template_id"]):
+                self.assertIn(entry["status"], {"preview_allowed", "disabled"})
+                self.assertGreaterEqual(entry["template_version"], 1)
+                self.assertTrue(entry["requires_user_confirmation"])
+                self.assertFalse(entry["idea_text_changes_engine_inputs"])
+                self.assertEqual(entry["scenario_id"], scenario["id"])
+                self.assertEqual(entry["allowed_seeds"], [2036])
+                self.assertEqual(entry["delay_profiles"], ["none"])
+                self.assertTrue(
+                    entry["intervention_path"].startswith("interventions/")
+                )
+                self.assertNotIn("..", Path(entry["intervention_path"]).parts)
+                intervention_path = ROOT / entry["intervention_path"]
+                self.assertTrue(intervention_path.is_file())
+                self.assertEqual(
+                    hashlib.sha256(intervention_path.read_bytes()).hexdigest(),
+                    entry["intervention_sha256"],
+                )
+                intervention = json.loads(
+                    intervention_path.read_text(encoding="utf-8")
+                )
+                self.assertEqual(intervention["id"], entry["intervention_id"])
+
+    def test_participation_entries_route_to_distinct_workflows(self) -> None:
+        ux = (ROOT / "docs/ux-flow.md").read_text(encoding="utf-8")
+        for edge in (
+            'entry -->|作品| chat["Idea Chat / 作品 + アイデア"]',
+            'entry -->|問題| problemChat["Problem Chat / 問題 + アイデア"]',
+            'entry -->|専門| evidence["evidence / worldline草案"]',
+            'entry -->|結果| simulationIssue["simulation Issue"]',
+            'entry -->|次の破滅| doomIssue["doom-candidate Issue"]',
+        ):
+            with self.subTest(edge=edge):
+                self.assertIn(edge, ux)
+        self.assertNotIn('entry --> chat["Idea Chat"]', ux)
+        self.assertIn(
+            'problemChat --> problemUnderstanding{"この問題理解でよい？"}', ux
+        )
+        self.assertIn('problemUnderstanding -->|修正| problemChat', ux)
+        self.assertIn('problemUnderstanding -->|確認| draft', ux)
+        self.assertNotIn("problemChat --> understanding", ux)
+        self.assertIn("DOOM LEVEL — CONTRACT PENDING", ux)
+        self.assertIn('review --> merged["worldline PRをmerge"]', ux)
+        self.assertIn('merged --> mainRun["exact main commitで公式run"]', ux)
+        self.assertIn('mainRun --> result["公式結果をWebとIssueへ返す"]', ux)
 
     def test_readme_keeps_core_participation_contract(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -182,8 +284,6 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertIn("https://github.com/${REPOSITORY}", script)
         self.assertIn("state=all", script)
         self.assertNotIn("state=open&labels=idea", script)
-        import json
-
         for intervention_path in (ROOT / "interventions").glob("*.json"):
             intervention = json.loads(intervention_path.read_text(encoding="utf-8"))
             with self.subTest(intervention=intervention["id"]):
@@ -192,8 +292,6 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertNotRegex(workflow, r"(?m)^\s+push:\s*$")
 
     def test_colab_notebook_is_valid_json_without_embedded_credentials(self) -> None:
-        import json
-
         notebook_path = ROOT / "notebooks/validate-worldline.ipynb"
         content = notebook_path.read_text(encoding="utf-8")
         notebook = json.loads(content)

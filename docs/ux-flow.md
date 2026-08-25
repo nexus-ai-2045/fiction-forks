@@ -9,20 +9,29 @@
 ```mermaid
 flowchart TD
     doom["Doom Map / 現在の破滅"] --> entry["作品・問題・専門・結果・次の破滅"]
-    entry --> chat["Idea Chat"]
+    entry -->|作品| chat["Idea Chat / 作品 + アイデア"]
+    entry -->|問題| problemChat["Problem Chat / 問題 + アイデア"]
+    entry -->|専門| evidence["evidence / worldline草案"]
+    entry -->|結果| simulationIssue["simulation Issue"]
+    entry -->|次の破滅| doomIssue["doom-candidate Issue"]
     chat --> understanding{"この理解でよい？"}
     understanding -->|修正| chat
     understanding -->|確認| draft["version付きIdeaDraft"]
-    draft --> preview{"既存templateで走る？"}
+    problemChat --> problemUnderstanding{"この問題理解でよい？"}
+    problemUnderstanding -->|修正| problemChat
+    problemUnderstanding -->|確認| draft
+    draft --> preview{"catalogのpreview_allowed templateで走る？"}
     preview -->|yes| provisional["暫定simulation"]
     preview -->|no| missing["不足条件 / not-simulatable"]
     provisional --> issue["idea Issue / 未実装"]
     missing --> issue
     issue --> build["forkまたは専用branchで実装"]
     build --> worldline["worldline PR / 1 PR = 1世界線"]
-    worldline --> checks["公式simulation"]
+    worldline --> checks["PR-head candidate simulation"]
     checks --> review["人間レビュー"]
-    review --> result["公式結果をWebとIssueへ返す"]
+    review --> merged["worldline PRをmerge"]
+    merged --> mainRun["exact main commitで公式run"]
+    mainRun --> result["公式結果をWebとIssueへ返す"]
     result --> avoided{"既存破滅を回避？"}
     avoided -->|no| doom
     avoided -->|yes| candidate["doom-candidate"]
@@ -30,7 +39,7 @@ flowchart TD
     scenario --> doom
 ```
 
-現在のIdea BuilderはIssue文を作るだけで、engineまたはLLMを実行しない。0.4 milestoneではIdea Chatへ置き換え、本人が確認した`IdeaDraft`だけを暫定previewまたはIssueへ渡す。暫定previewは既存scenarioと既存templateだけを使い、公式結果とは別表示にする。contributorはlocalまたはColabで介入・social config・fixtureを事前検証できる。worldline PRでは、checksが同じseedによる最初の公式CI runを実行する。結果はPRへ戻り、人間レビュー後にだけ共有世界へ入り、元Issueへ状態と結果を返す。
+現在のIdea BuilderはIssue文を作るだけで、engineまたはLLMを実行しない。0.4 milestoneでは、作品入口はIdea Chat、問題入口はProblem Chatへ進め、本人が確認した`IdeaDraft`だけを暫定previewまたはIssueへ渡す。専門・過去結果・次の破滅は、それぞれevidence/worldline草案、simulation Issue、doom-candidate Issueへ分岐させ、作品fieldを強制しない。暫定previewはversion付きcatalogで許可された固定templateだけを使い、公式結果とは別表示にする。publicではtriage済みsimulation-requestを`main`固定workflowで非同期実行し、localではloopback adapterから同じPython CLIを実行する。worldline PRのchecksはcandidate runであり、merge後のexact `main` commitで再実行したrunだけを公式結果として元Issueへ返す。
 
 Webは「作品」と「アイデア」だけを一ページで受け付け、open/closedを含む公開Idea IssueをGitHubからread-only取得する。取得不能時はHTMLに保存した直近一覧を表示する。repoへmergeされた介入は、公式repo内の実装JSONまたはPRへリンクする。Ideaカードの「AIにworldline PR化を頼む」はIssue URL入りの依頼文をコピーするだけで、branch作成、push、PR作成、simulationは自動実行しない。
 
@@ -39,7 +48,7 @@ Webは「作品」と「アイデア」だけを一ページで受け付け、op
 | 画面 | 最初に答える問い | 主操作 | 出力 |
 |---|---|---|---|
 | Doom Map | どの破滅が、どのレベルで、いつ迫っているか | active doomを選ぶ | レベル、因果鎖、到達年、確からしさ |
-| 参加入口 | 自分は何を持ち込めるか | 作品・問題・専門・結果・次の破滅を選ぶ | chat context |
+| 参加入口 | 自分は何を持ち込めるか | 作品・問題・専門・結果・次の破滅を選ぶ | 入口別workflow |
 | Idea Chat | この作品とアイデアを、どう理解したか | 対話し「この理解でよい」を確認 | `IdeaDraft` |
 | Provisional Preview | 今あるmodelで何が試せ、何が未確定か | 暫定比較を実行 | 暫定結果または`not-simulatable` |
 | 世界比較 | 介入で何が良くなり、何が悪くなるか | 「この介入を試す」 | 同一年の差分 |
@@ -55,7 +64,7 @@ Webは「作品」と「アイデア」だけを一ページで受け付け、op
 ```text
 Fiction Forks                         [過去の結果] [GitHub]
 
-JAPAN 2036 / DOOM LEVEL 4 — 連鎖
+JAPAN 2036 / DOOM LEVEL — CONTRACT PENDING
 
 放置した日本は2036年に修復不能へ入る。
 いま最も近い破滅: 修復能力の喪失 / 推定11年
@@ -66,11 +75,13 @@ JAPAN 2036 / DOOM LEVEL 4 — 連鎖
 [作品] [問題] [専門] [過去結果] [次の破滅]
 ```
 
+このワイヤーの破滅レベル表示は情報階層の例であり、現在値ではない。version付き`DoomLevelContract`とPython実装がscenarioから再計算できるまで、UIは数値を表示せず、既存engineの`collapsed`、`collapse_year`、breached metricsをそのまま示す。
+
 常時表示する要素は、現在年、破滅判定、選択中の世界線、主操作に絞る。根拠、長い説明、設定はdrawerまたは別画面へ置き、比較対象を隠さない。
 
 ## Idea Chat
 
-最初の入力は「作品」と「アイデア」だけでよい。対話providerは一度に質問を増やさず、次の順で壁打ちする。
+作品入口の最初の入力は「作品」と「アイデア」だけでよい。問題入口では「active doom」と「アイデア」を使い、作品は任意にする。専門・結果・次の破滅の入口はこのchatを強制せず、情報設計で定めた成果物へ進む。対話providerは一度に質問を増やさず、次の順で壁打ちする。
 
 1. 理解した内容を一文で返す。
 2. 作品を知らない人向けの抽象機能へ言い換える。
@@ -97,10 +108,10 @@ JAPAN 2036 / DOOM LEVEL 4 — 連鎖
 | 区分 | 許される入力 | 表示 | 保存・共有 |
 |---|---|---|---|
 | 壁打ち | 自由記述 | 理解、質問、候補 | 自動保存しない |
-| 暫定preview | 既存scenario、既存template、確認済みIdeaDraft | 暫定、未確定field、input digest | Issueへ本人確認済みprojectionだけ渡す |
+| 暫定preview | 既存scenario、catalogの`preview_allowed` template、確認済みIdeaDraft | 暫定、未確定field、input digest | publicはtriage済みrequestを非同期実行、localはloopback実行 |
 | fixture | repo内fixture | protocol検証 | PR artifact |
 | live run | 明示model、費用確認、投影済み入力 | live、model、保持境界 | curated artifactだけ |
-| 公式結果 | worldline PR、CI、人間レビュー済み | 公式worldline結果 | Web、RESULTS、元Issueへ還流 |
+| 公式結果 | merge済みworldline、exact main commitのrun、artifact digest | 公式worldline結果 | Web、RESULTS、元Issueへ還流 |
 
 暫定previewが作れないことは失敗ではない。必要なmetric効果、技術ノード、完成証拠、scenario対応が足りない場合、数値を埋めず「この3点を決めれば走る」と返す。
 

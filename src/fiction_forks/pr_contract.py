@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -20,6 +21,8 @@ SLUG = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?")
 WORLDLINE_ROLE_COUNT = 5
 WORLDLINE_TURN_COUNT = 3
 WORLDLINE_ACTION_COUNT = WORLDLINE_ROLE_COUNT * WORLDLINE_TURN_COUNT
+PREVIEW_CATALOG_PATH = "catalogs/intervention-templates.v1.json"
+PREVIEW_CATALOG_SCHEMA = "fiction_forks_preview_template_catalog.v1"
 
 
 class ContractError(ValueError):
@@ -145,6 +148,82 @@ def _validate_worldline_protocol(config_path: Path, fixture_path: Path) -> None:
         )
 
 
+def _validate_preview_catalog(path: Path, *, root: Path) -> None:
+    catalog = _load_json_object(path, "preview template catalog")
+    if catalog.get("schema_version") != PREVIEW_CATALOG_SCHEMA:
+        raise ContractError("preview template catalogのschema_versionが未対応です。")
+    catalog_version = catalog.get("catalog_version")
+    if type(catalog_version) is not int or catalog_version < 1:
+        raise ContractError("preview template catalogに正のcatalog_versionが必要です。")
+    templates = catalog.get("templates")
+    if not isinstance(templates, list) or not templates:
+        raise ContractError("preview template catalogにtemplateが必要です。")
+
+    seen_template_ids: set[str] = set()
+    for index, entry in enumerate(templates):
+        label = f"preview template catalog.templates[{index}]"
+        if not isinstance(entry, dict):
+            raise ContractError(f"{label}はobjectである必要があります。")
+        template_id = entry.get("template_id")
+        if not isinstance(template_id, str) or not template_id:
+            raise ContractError(f"{label}.template_idが必要です。")
+        if template_id in seen_template_ids:
+            raise ContractError(f"preview template_idが重複しています: {template_id}")
+        seen_template_ids.add(template_id)
+        template_version = entry.get("template_version")
+        if type(template_version) is not int or template_version < 1:
+            raise ContractError(f"{label}.template_versionは正の整数が必要です。")
+        if entry.get("status") not in {"preview_allowed", "disabled"}:
+            raise ContractError(f"{label}.statusが未対応です。")
+        if entry.get("requires_user_confirmation") is not True:
+            raise ContractError(f"{label}は利用者確認を必須にしてください。")
+        if entry.get("idea_text_changes_engine_inputs") is not False:
+            raise ContractError(f"{label}で自由文からengine入力を変更できません。")
+        scenario_id = entry.get("scenario_id")
+        intervention_id = entry.get("intervention_id")
+        if not isinstance(scenario_id, str) or not scenario_id:
+            raise ContractError(f"{label}.scenario_idが必要です。")
+        if not isinstance(intervention_id, str) or not intervention_id:
+            raise ContractError(f"{label}.intervention_idが必要です。")
+
+        relative_path = entry.get("intervention_path")
+        if not isinstance(relative_path, str) or not re.fullmatch(
+            r"interventions/[a-z0-9-]+\.json", relative_path
+        ):
+            raise ContractError(f"{label}.intervention_pathが許可範囲外です。")
+        intervention_path = root / relative_path
+        if not intervention_path.is_file():
+            raise ContractError(f"{label}のinterventionが存在しません: {relative_path}")
+        intervention = _load_json_object(intervention_path, relative_path)
+        if intervention.get("id") != intervention_id:
+            raise ContractError(f"{label}のintervention IDがfileと一致しません。")
+        expected_digest = entry.get("intervention_sha256")
+        actual_digest = hashlib.sha256(intervention_path.read_bytes()).hexdigest()
+        if not isinstance(expected_digest, str) or not re.fullmatch(
+            r"[0-9a-f]{64}", expected_digest
+        ):
+            raise ContractError(f"{label}.intervention_sha256が不正です。")
+        if actual_digest != expected_digest:
+            raise ContractError(f"{label}のintervention SHA-256が一致しません。")
+
+        allowed_seeds = entry.get("allowed_seeds")
+        if (
+            not isinstance(allowed_seeds, list)
+            or not allowed_seeds
+            or any(type(seed) is not int for seed in allowed_seeds)
+            or len(allowed_seeds) != len(set(allowed_seeds))
+        ):
+            raise ContractError(f"{label}.allowed_seedsは重複のない整数listです。")
+        delay_profiles = entry.get("delay_profiles")
+        if (
+            not isinstance(delay_profiles, list)
+            or not delay_profiles
+            or any(not isinstance(profile, str) or not profile for profile in delay_profiles)
+            or len(delay_profiles) != len(set(delay_profiles))
+        ):
+            raise ContractError(f"{label}.delay_profilesが不正です。")
+
+
 def validate_contract(kind: str, changes: Sequence[Change], *, root: Path) -> ContractResult:
     added_interventions = [
         change.path
@@ -165,6 +244,9 @@ def validate_contract(kind: str, changes: Sequence[Change], *, root: Path) -> Co
             or re.fullmatch(r"fixtures/social/[a-z0-9-]+\.jsonl", change.path)
         )
     ]
+    catalog_changes = [
+        change for change in changes if change.path.startswith("catalogs/")
+    ]
 
     if added_idea_files:
         raise ContractError("アイデアはPRではなくidea Issueへ追加してください。")
@@ -174,10 +256,28 @@ def validate_contract(kind: str, changes: Sequence[Change], *, root: Path) -> Co
             raise ContractError(
                 "maintenance PRに新しいintervention、social config、fixtureを混在できません。"
             )
+        unknown_catalogs = [
+            change.path
+            for change in catalog_changes
+            if change.path != PREVIEW_CATALOG_PATH
+        ]
+        if unknown_catalogs:
+            raise ContractError(
+                "maintenance PRに未登録のcatalog pathを追加できません: "
+                + ", ".join(sorted(unknown_catalogs))
+            )
+        if catalog_changes:
+            if any(change.status.startswith("D") for change in catalog_changes):
+                raise ContractError("preview template catalogを削除できません。")
+            _validate_preview_catalog(root / PREVIEW_CATALOG_PATH, root=root)
         return ContractResult(kind=kind)
 
     if kind != "worldline":
         raise ContractError(f"未知のPR種別です: {kind}")
+    if catalog_changes:
+        raise ContractError(
+            "preview template catalogはmaintenance PRで人間レビューしてください。"
+        )
     if len(added_interventions) != 1:
         raise ContractError(
             "worldline PRはinterventions/へ新しいJSONを一件だけ追加してください。"

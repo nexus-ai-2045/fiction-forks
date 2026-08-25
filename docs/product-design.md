@@ -45,17 +45,17 @@ Fiction Forksは、知っているフィクションから未来を変える機�
 1. 日本2036のactive doomと、過去のworldline結果を見る。
 2. 作品、問題、専門、過去結果、doom candidateのどこから参加するかを選ぶ。
 3. チャットへ作品とアイデアを話し、AIまたはguided対話から「この理解でよいか」を受け取る。
-4. 本人確認後に`IdeaDraft`を作り、既存templateへ写像できる場合だけ暫定simulationを行う。走らない場合は不足条件を返す。
+4. 本人確認後に`IdeaDraft`を作り、version付きcatalogの`preview_allowed` templateへ写像できる場合だけ暫定simulationを行う。走らない場合は不足条件を返す。
 5. 確認済み草案をidea Issueにし、contributorが一つの機能を現実の介入へ翻訳する。
 6. 技術ツリー、費用、副作用、失敗条件を組み、介入あり・なしを同じ条件で実行する。
-7. 結果と限界をworldline PRにし、人間レビュー後に公式結果をIssueとWebへ返す。
+7. 結果と限界をworldline PRにし、人間レビュー後にmergeする。exact `main` commitから公式runを再実行し、artifact digestを読戻せた場合だけIssueとWebへ公式結果を返す。
 8. 既存破滅を回避した場合は、副作用と残存リスクから次の`doom-candidate`を作り、scenario PRで次シーズンを審査する。
 
-最短セッションは既存結果を見るだけの1分、作品とアイデアを壁打ちして暫定結果または不足条件を得る3分を目標とする。新規の公式世界線は、調査とレビューを含め数時間から数日を想定する。
+最短セッションは既存結果を見るだけの1分、作品または問題とアイデアを壁打ちして理解確認と次の行動を得る3分を目標とする。local adapter接続時は同じ3分内の暫定結果、publicでは非同期requestの受付までを対象にし、Issue後のrun完了時間を混ぜない。新規の公式世界線は、調査とレビューを含め数時間から数日を想定する。
 
 ## 破滅レベル
 
-破滅レベルは演出用のAI採点ではなく、scenarioが宣言した観測可能な条件から導く。
+破滅レベルは演出用のAI採点ではなく、scenarioが宣言した観測可能な条件から導く。次の表は0.4で実装する表示taxonomyであり、現行scenarioにはレベル閾値と連鎖条件のversion付き契約がまだない。`DoomLevelContract`とPython実装が揃うまで、Webはレベル数値を表示せず、engineが返すcollapse stateとbreached metricsを表示する。
 
 | レベル | 状態 | UIで示すこと |
 |---|---|---|
@@ -111,17 +111,17 @@ Webはルールエンジンの状態を所有しない。現在の参加面は�
 1. Idea Builder: 作品とアイデアだけを一ページで入力する。抽象機能、未来課題、実現条件、副作用はworldline PR化するcontributorが具体化する
 2. Issue Preview: 未実装の着想と権利境界を投稿前に確認する
 
-次のWebは「Idea投稿フォーム」ではなく、チャットを入口にしたsimulation workbenchへ進める。主要面は次の7つとする。
+次のWebは「Idea投稿フォーム」ではなく、入口別のworkflowとチャットを持つsimulation workbenchへ進める。主要面は次の7つとする。
 
 1. Doom Map: 日本2036のactive doom、レベル、連鎖、到達年を見る
-2. 参加入口: 作品、問題、専門、結果、次の破滅から一つを選ぶ
-3. Idea Chat: 作品とアイデアを話し、「この理解でよいか」を確認する
+2. 参加入口: 作品、問題、専門、結果、次の破滅から一つを選び、入口固有の成果物へ分岐する
+3. Idea / Problem Chat: 作品またはactive doomとアイデアを話し、「この理解でよいか」を確認する
 4. Provisional Preview: 走る案は暫定比較、走らない案は不足条件を見る
 5. Result Browser: 過去の公式run、世界比較、技術ツリー、agent争点を見る
 6. Issue / PR Handoff: 確認済み草案をIssueへ、再現可能な世界線をPRへ渡す
 7. Next Doom: 回避済み世界からdoom candidateを作り、scenario reviewへ送る
 
-画面状態、チャット状態、run状態、schemaを扱うため、0.4 milestoneで`web/`をVite + React + TypeScriptへ移行する。TypeScriptは破滅判定を再実装せず、Python engineが返すversion付きcontractを検証・表示する。
+画面状態、チャット状態、run状態、schemaを扱うため、0.4 milestoneで`web/`をVite + React + TypeScriptへ移行する。TypeScriptは破滅判定を再実装せず、Python engineが返すversion付きcontractを検証・表示する。公開PagesはPythonを直接実行せず、triage済みsimulation-requestを`main`固定Actionsで非同期実行する。Issue作成前の同期previewは、明示起動したloopback local run adapterだけが提供する。
 
 詳細な状態と文言は [UXフロー](ux-flow.md) に定義する。
 
@@ -148,7 +148,7 @@ Webはルールエンジンの状態を所有しない。現在の参加面は�
 - 改善指標だけでなく、悪化指標または失敗条件が記述される
 - 作品を知らないレビュアーが同義表現だけで介入を評価できる
 - 同じ入力の結果がCIとローカルで一致する
-- 参加者が3分以内に理解確認と、暫定結果または`not-simulatable`の理由を得る
+- 参加者が3分以内に理解確認と、local暫定結果、`not-simulatable`の理由、またはpublic非同期requestの受付を得る
 - Ideaの`listed / assigned / implemented / simulated / reported-back`状態がWebとGitHubで一致する
 - 破滅レベルを、scenarioの観測条件から再計算できる
 - doom candidateが根拠、発生条件、観測指標、可逆性を持ち、人間レビューなしにactive化されない
@@ -171,9 +171,11 @@ Webはルールエンジンの状態を所有しない。現在の参加面は�
 | 0.2 | 5役×3ターンの制約付きAIエージェント、fixture、replay、live provider境界 | 完了 |
 | 0.3 | 公開Idea Builder、Idea Issue、worldline/maintenance PR分離、投稿者別check summary | 2026-08-24 release済み |
 | 0.4 milestone | Vite + React + TypeScript、Doom Map、参加入口、Idea Chat、Result Browser | Python engineとのcross-language contract一致 |
+| 0.4 milestone | version付きpreview template catalog、入口別routing、`DoomLevelContract` | catalog/path/ID一致と、未実装レベルを現在値として表示しない |
 | 0.4 milestone | `guided`対話、version付き`IdeaDraft`、暫定previewまたは`not-simulatable` | LLMが効果量と破滅判定を所有しない |
+| 0.4 milestone | public非同期Actions transportとlocal loopback transport | publicはfork code/secretを使わず、両transportが同じrequest/result contractに適合 |
 | 0.4 milestone | optional local Codex companionのread-only spike | loopback、短命token、origin/tool allowlist、version gateを実機確認 |
-| 0.4 milestone | Issueから公式run、結果還流までの状態台帳 | `listed / assigned / implemented / simulated / reported-back`を読戻し可能 |
+| 0.4 milestone | Issueからmerge済みexact-main公式run、結果還流までの状態台帳 | `listed / assigned / implemented / simulated / reported-back`をread-back可能 |
 | 0.5 candidate | 回避済みworldlineからdoom candidateを作りscenario PRで審査 | 勝利を上書きせず、根拠のない破滅をactive化しない |
 | 1.0条件 | 公開運用、複数worldline、公式result browser、費用・安全・moderation runbook | 人間レビュー済みの運用証拠が揃う |
 
