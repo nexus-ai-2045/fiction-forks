@@ -10,7 +10,7 @@
       "scenario_id": "japan-2036-centralization",
       "intervention_id": "doraemon-public-tools",
       "intervention_path": "interventions/doraemon-public-tools.json",
-      "intervention_sha256": "78bd995e6ea4ea543ef8d8b3eaec422f7aed6c976202da090909c722cbf548cd",
+      "intervention_sha256": "2e116cde3f8ad9547261cc58fd1b88c594f8bbefcc0d34961687dc47d21cf455",
       "abstract_function": "高度な道具へのアクセスを監査可能な公共基盤として広げる",
       "allowed_seeds": [
         2036
@@ -28,7 +28,7 @@
       "scenario_id": "japan-2036-centralization",
       "intervention_id": "haruhi-world-observation",
       "intervention_path": "interventions/haruhi-world-observation.json",
-      "intervention_sha256": "a5a5dc41665eae3b7b3ea213a8d470206f17fa1e44dbb94f32d0a37f175ba03d",
+      "intervention_sha256": "6b9420240ae02129b4fd24f679aef0a9e79dbd53dca052f58700e1a7d5c79d70",
       "abstract_function": "複数の独立観測と異議申立てで世界状態の変化を検証する",
       "allowed_seeds": [
         2036

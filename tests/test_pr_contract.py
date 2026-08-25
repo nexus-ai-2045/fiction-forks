@@ -25,7 +25,14 @@ class PullRequestContractTests(unittest.TestCase):
         intervention_path.write_text(
             json.dumps({"id": "fixed-preview"}), encoding="utf-8"
         )
-        digest = hashlib.sha256(intervention_path.read_bytes()).hexdigest()
+        digest = hashlib.sha256(
+            json.dumps(
+                {"id": "fixed-preview"},
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
         catalog_path = root / "catalogs/intervention-templates.v1.json"
         catalog_path.parent.mkdir(parents=True, exist_ok=True)
         catalog_path.write_text(
@@ -193,6 +200,19 @@ class PullRequestContractTests(unittest.TestCase):
                     [Change("M", catalog)],
                     root=root,
                 )
+
+    def test_maintenance_accepts_preview_catalog_across_line_endings(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = self._write_preview_catalog(root)
+            intervention_path = root / "interventions/fixed-preview.json"
+            intervention_path.write_bytes(b'{\r\n  "id": "fixed-preview"\r\n}\r\n')
+            result = validate_contract(
+                "maintenance",
+                [Change("M", catalog)],
+                root=root,
+            )
+        self.assertEqual(result.kind, "maintenance")
 
     def test_maintenance_rejects_unknown_catalog_path(self) -> None:
         with self.assertRaisesRegex(ContractError, "未登録のcatalog path"):

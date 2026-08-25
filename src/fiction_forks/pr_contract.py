@@ -97,6 +97,16 @@ def _load_json_object(path: Path, label: str) -> dict[str, Any]:
     return data
 
 
+def _canonical_json_sha256(data: dict[str, Any]) -> str:
+    payload = json.dumps(
+        data,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def _validate_worldline_protocol(config_path: Path, fixture_path: Path) -> None:
     config = _load_json_object(config_path, "social config")
     roles = config.get("roles")
@@ -198,7 +208,7 @@ def _validate_preview_catalog(path: Path, *, root: Path) -> None:
         if intervention.get("id") != intervention_id:
             raise ContractError(f"{label}のintervention IDがfileと一致しません。")
         expected_digest = entry.get("intervention_sha256")
-        actual_digest = hashlib.sha256(intervention_path.read_bytes()).hexdigest()
+        actual_digest = _canonical_json_sha256(intervention)
         if not isinstance(expected_digest, str) or not re.fullmatch(
             r"[0-9a-f]{64}", expected_digest
         ):

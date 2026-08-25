@@ -145,12 +145,18 @@ class DocumentationContractTests(unittest.TestCase):
                 self.assertNotIn("..", Path(entry["intervention_path"]).parts)
                 intervention_path = ROOT / entry["intervention_path"]
                 self.assertTrue(intervention_path.is_file())
-                self.assertEqual(
-                    hashlib.sha256(intervention_path.read_bytes()).hexdigest(),
-                    entry["intervention_sha256"],
-                )
                 intervention = json.loads(
                     intervention_path.read_text(encoding="utf-8")
+                )
+                canonical = json.dumps(
+                    intervention,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                ).encode("utf-8")
+                self.assertEqual(
+                    hashlib.sha256(canonical).hexdigest(),
+                    entry["intervention_sha256"],
                 )
                 self.assertEqual(intervention["id"], entry["intervention_id"])
 
