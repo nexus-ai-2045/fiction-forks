@@ -18,7 +18,7 @@
 | Local run transport | loopback adapterからcanonical Python CLIを呼ぶ契約（0.4で追加予定）。公開listenと独自engineを持たない |
 | Local Codex連携 | optional loopback companion（spike）。公開Web、Codex credential、filesystem、GitHub writeの正本ではない |
 | Idea / Worldline境界 | `.github/ISSUE_TEMPLATE/`、`.github/PULL_REQUEST_TEMPLATE/`、`src/fiction_forks/pr_contract.py`、ADR 0009 |
-| Idea状態還流 | `listed / assigned / implemented / simulated / reported-back`のmachine-readable projection（0.4で追加予定）。Issue open/closedだけで推定しない |
+| Idea状態還流 | `catalogs/idea-status.v1.json`の`listed / assigned / implemented / simulated / reported-back` projection。Issue open/closedだけで推定しない。本文は複製しない |
 | シナリオの公開根拠と反証条件 | `docs/scenario-rationale.md` |
 | 介入カード | `interventions/` と `CONTRIBUTING.md` |
 | フィクション参照レンズ | `docs/fiction-lenses.md` |

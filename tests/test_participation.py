@@ -12,6 +12,7 @@ from fiction_forks.participation import (
     RUN_SUMMARY_SCHEMA,
     prepare_provisional_request,
     validate_idea_draft,
+    validate_idea_status_projection,
     validate_template_catalog,
 )
 
@@ -111,6 +112,33 @@ class ParticipationContractTests(unittest.TestCase):
         )
         self.assertEqual(result["status"], "not-simulatable")
         self.assertIn("seed", result["missing_conditions"][0])
+
+    def test_issue_12_is_listed_without_false_progress(self) -> None:
+        projection = json.loads(
+            (ROOT / "catalogs/idea-status.v1.json").read_text(encoding="utf-8")
+        )
+        validated = validate_idea_status_projection(projection)
+        idea = validated["ideas"][0]
+        self.assertEqual(idea["issue_number"], 12)
+        self.assertEqual(idea["simulation_status"], "not-ready")
+        self.assertEqual(
+            idea["lifecycle"],
+            {
+                "listed": True,
+                "assigned": False,
+                "implemented": False,
+                "simulated": False,
+                "reported_back": False,
+            },
+        )
+
+    def test_idea_lifecycle_cannot_skip_implementation(self) -> None:
+        projection = json.loads(
+            (ROOT / "catalogs/idea-status.v1.json").read_text(encoding="utf-8")
+        )
+        projection["ideas"][0]["lifecycle"]["simulated"] = True
+        with self.assertRaisesRegex(ContractError, "cannot skip states"):
+            validate_idea_status_projection(projection)
 
 
 if __name__ == "__main__":

@@ -15,6 +15,14 @@ IDEA_DRAFT_SCHEMA = "fiction_forks_idea_draft.v1"
 PROVISIONAL_REQUEST_SCHEMA = "fiction_forks_provisional_run_request.v1"
 RUN_SUMMARY_SCHEMA = "fiction_forks_run_summary.v1"
 CATALOG_SCHEMA = "fiction_forks_preview_template_catalog.v1"
+IDEA_STATUS_SCHEMA = "fiction_forks_idea_status_projection.v1"
+IDEA_LIFECYCLE = (
+    "listed",
+    "assigned",
+    "implemented",
+    "simulated",
+    "reported_back",
+)
 
 
 def _mapping(value: Any, label: str) -> Mapping[str, Any]:
@@ -216,6 +224,87 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
 
 def load_template_catalog(path: str | Path, *, root: str | Path) -> dict[str, Any]:
     return validate_template_catalog(load_json(path), root=root)
+
+
+def validate_idea_status_projection(value: Any) -> dict[str, Any]:
+    projection = _mapping(value, "idea status projection")
+    _exact_fields(
+        projection,
+        required={"schema_version", "observed_at", "repository", "ideas"},
+        optional=set(),
+        label="idea status projection",
+    )
+    if projection["schema_version"] != IDEA_STATUS_SCHEMA:
+        raise ContractError("unsupported idea status projection schema_version")
+    observed_at = _string(projection["observed_at"], "observed_at")
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", observed_at):
+        raise ContractError("observed_at must use YYYY-MM-DD")
+    repository = _string(projection["repository"], "repository")
+    ideas = projection["ideas"]
+    if not isinstance(ideas, list):
+        raise ContractError("ideas must be a list")
+    normalized_ideas = []
+    seen_numbers: set[int] = set()
+    for index, raw in enumerate(ideas):
+        idea = _mapping(raw, f"idea:{index}")
+        required = {
+            "issue_number",
+            "issue_url",
+            "source_updated_at",
+            "lifecycle",
+            "simulation_status",
+            "missing_conditions",
+            "next_action",
+        }
+        _exact_fields(idea, required=required, optional=set(), label=f"idea:{index}")
+        number = _integer(idea["issue_number"], f"idea:{index}.issue_number")
+        if number < 1 or number in seen_numbers:
+            raise ContractError("issue_number must be positive and unique")
+        seen_numbers.add(number)
+        expected_url = f"https://github.com/{repository}/issues/{number}"
+        if idea["issue_url"] != expected_url:
+            raise ContractError(f"idea:{number} issue_url mismatch")
+        updated_at = _string(idea["source_updated_at"], "source_updated_at")
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", updated_at):
+            raise ContractError(f"idea:{number} source_updated_at must be UTC")
+        lifecycle = _mapping(idea["lifecycle"], f"idea:{number}.lifecycle")
+        _exact_fields(
+            lifecycle,
+            required=set(IDEA_LIFECYCLE),
+            optional=set(),
+            label=f"idea:{number}.lifecycle",
+        )
+        values = []
+        for field in IDEA_LIFECYCLE:
+            state = lifecycle[field]
+            if not isinstance(state, bool):
+                raise ContractError(f"idea:{number}.lifecycle.{field} must be boolean")
+            values.append(state)
+        if not values[0]:
+            raise ContractError(f"idea:{number} must be listed")
+        if any(values[position] and not values[position - 1] for position in range(1, len(values))):
+            raise ContractError(f"idea:{number} lifecycle cannot skip states")
+        simulation_status = _string(
+            idea["simulation_status"], f"idea:{number}.simulation_status"
+        )
+        if simulation_status not in {"not-ready", "candidate", "official"}:
+            raise ContractError(f"idea:{number} has unknown simulation_status")
+        missing = _string_list(
+            idea["missing_conditions"],
+            f"idea:{number}.missing_conditions",
+            maximum=10,
+        )
+        if simulation_status == "not-ready" and not missing:
+            raise ContractError(f"idea:{number} not-ready status needs missing_conditions")
+        if simulation_status != "not-ready" and missing:
+            raise ContractError(f"idea:{number} ready status cannot keep missing_conditions")
+        normalized_ideas.append(dict(idea))
+    return {
+        "schema_version": IDEA_STATUS_SCHEMA,
+        "observed_at": observed_at,
+        "repository": repository,
+        "ideas": normalized_ideas,
+    }
 
 
 def prepare_provisional_request(
