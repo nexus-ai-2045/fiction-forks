@@ -22,6 +22,7 @@ class DocumentationContractTests(unittest.TestCase):
             "docs/social-simulation.md",
             "docs/adr/README.md",
             "catalogs/intervention-templates.v1.json",
+            "fixtures/participation/public-tools-idea-draft.v1.json",
             "RESULTS.md",
             "web/index.html",
             "web/styles.css",

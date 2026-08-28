@@ -67,7 +67,8 @@ flowchart LR
 | 対話provider | `DialogueProvider`（0.4で追加） | 理解確認、質問、`IdeaDraft`候補 | metric delta、破滅レベル、公式結果 |
 | Local companion | loopback process（spike） | Codex protocolの縮小adapter、短命session | public listen、raw tool委譲、secret保存 |
 | Preview template catalog | `catalogs/intervention-templates.v1.json` | preview可能なscenario、固定intervention ID/path、利用者確認要否 | 自由記述からの効果量生成 |
-| 暫定run adapter | 0.4で追加 | 確認済みdraftとcatalog entryを検証しengine requestへ渡す | 未知の効果量生成、official判定 |
+| 暫定run契約 | `participation.py` | 確認済みdraftとcatalog entryを検証し、version付きrequestまたは`not-simulatable`を返す | 未知の効果量生成、engine実行、official判定 |
+| 暫定run adapter | 0.4後続PRで追加 | 検証済みrequestをcanonical Python engineへ渡す | 独自schema、未知の効果量生成、official判定 |
 | Public run transport | 0.4で追加 | triage済みsimulation-requestを`main`固定workflowで非同期実行する | browser内Python、PR/fork code実行、secret利用 |
 | Local run transport | loopback process（0.4で追加） | 同じrequest schemaをcanonical Python CLIへ渡す | public listen、独自engine実装 |
 | PR契約 | `pr_contract.py`, `.github/` templates | idea/worldline/maintenance分離、投稿者とfixture結果のsummary | merge判断、live LLM実測 |

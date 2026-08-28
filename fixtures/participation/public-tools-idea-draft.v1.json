@@ -1,0 +1,16 @@
+{
+  "schema_version": "fiction_forks_idea_draft.v1",
+  "entry_kind": "work",
+  "dialogue_mode": "guided",
+  "work_reference": "ドラえもん",
+  "idea_summary": "高度な道具を公共インフラとして使う",
+  "abstract_function": "高度な道具へのアクセスを監査可能な公共基盤として広げる",
+  "target_doom": "生活基盤と戦略的自律性の破滅連鎖",
+  "unresolved_conditions": [
+    "本人確認"
+  ],
+  "side_effect_candidates": [
+    "単一技術依存"
+  ],
+  "user_confirmed": true
+}
