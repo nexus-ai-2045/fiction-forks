@@ -222,6 +222,42 @@ class PullRequestContractTests(unittest.TestCase):
                 root=Path("."),
             )
 
+    def test_maintenance_validates_idea_status_catalog_as_explicit_scope(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = root / "catalogs/idea-status.v1.json"
+            catalog.parent.mkdir(parents=True)
+            catalog.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "fiction_forks_idea_status_projection.v1",
+                        "observed_at": "2026-08-28",
+                        "repository": "nexus-ai-2045/fiction-forks",
+                        "ideas": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            result = validate_contract(
+                "maintenance",
+                [Change("A", "catalogs/idea-status.v1.json")],
+                root=root,
+            )
+        self.assertEqual(result.kind, "maintenance")
+
+    def test_maintenance_rejects_invalid_idea_status_catalog(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = root / "catalogs/idea-status.v1.json"
+            catalog.parent.mkdir(parents=True)
+            catalog.write_text("{}", encoding="utf-8")
+            with self.assertRaisesRegex(ContractError, "missing fields"):
+                validate_contract(
+                    "maintenance",
+                    [Change("A", "catalogs/idea-status.v1.json")],
+                    root=root,
+                )
+
     def test_worldline_rejects_preview_catalog_change(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

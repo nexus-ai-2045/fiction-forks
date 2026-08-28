@@ -23,6 +23,7 @@ WORLDLINE_TURN_COUNT = 3
 WORLDLINE_ACTION_COUNT = WORLDLINE_ROLE_COUNT * WORLDLINE_TURN_COUNT
 PREVIEW_CATALOG_PATH = "catalogs/intervention-templates.v1.json"
 PREVIEW_CATALOG_SCHEMA = "fiction_forks_preview_template_catalog.v1"
+IDEA_STATUS_CATALOG_PATH = "catalogs/idea-status.v1.json"
 
 
 class ContractError(ValueError):
@@ -266,10 +267,11 @@ def validate_contract(kind: str, changes: Sequence[Change], *, root: Path) -> Co
             raise ContractError(
                 "maintenance PRに新しいintervention、social config、fixtureを混在できません。"
             )
+        registered_catalogs = {PREVIEW_CATALOG_PATH, IDEA_STATUS_CATALOG_PATH}
         unknown_catalogs = [
             change.path
             for change in catalog_changes
-            if change.path != PREVIEW_CATALOG_PATH
+            if change.path not in registered_catalogs
         ]
         if unknown_catalogs:
             raise ContractError(
@@ -278,8 +280,21 @@ def validate_contract(kind: str, changes: Sequence[Change], *, root: Path) -> Co
             )
         if catalog_changes:
             if any(change.status.startswith("D") for change in catalog_changes):
-                raise ContractError("preview template catalogを削除できません。")
-            _validate_preview_catalog(root / PREVIEW_CATALOG_PATH, root=root)
+                raise ContractError("登録済みcatalogを削除できません。")
+            if any(change.path == PREVIEW_CATALOG_PATH for change in catalog_changes):
+                _validate_preview_catalog(root / PREVIEW_CATALOG_PATH, root=root)
+            if any(change.path == IDEA_STATUS_CATALOG_PATH for change in catalog_changes):
+                from fiction_forks.engine import ContractError as ParticipationContractError
+                from fiction_forks.participation import validate_idea_status_projection
+
+                try:
+                    validate_idea_status_projection(
+                        json.loads(
+                            (root / IDEA_STATUS_CATALOG_PATH).read_text(encoding="utf-8")
+                        )
+                    )
+                except (OSError, json.JSONDecodeError, ParticipationContractError) as exc:
+                    raise ContractError(f"idea status catalogが不正です: {exc}") from exc
         return ContractResult(kind=kind)
 
     if kind != "worldline":
