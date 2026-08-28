@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
@@ -64,6 +65,24 @@ def _integer(value: Any, label: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int):
         raise ContractError(f"{label} must be an integer")
     return value
+
+
+def _utc_date(value: Any, label: str) -> str:
+    text = _string(value, label)
+    try:
+        datetime.strptime(text, "%Y-%m-%d")
+    except ValueError as exc:
+        raise ContractError(f"{label} must be a real UTC date") from exc
+    return text
+
+
+def _utc_datetime(value: Any, label: str) -> str:
+    text = _string(value, label)
+    try:
+        datetime.strptime(text, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except ValueError as exc:
+        raise ContractError(f"{label} must be a real UTC datetime") from exc
+    return text
 
 
 def _canonical_digest(value: Mapping[str, Any]) -> str:
@@ -185,10 +204,16 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
         scenario_id = _string(
             template["scenario_id"], f"template:{template_id}.scenario_id"
         )
-        _string(template["intervention_id"], f"template:{template_id}.intervention_id")
-        _string(template["abstract_function"], f"template:{template_id}.abstract_function")
-        _string(template["target_doom"], f"template:{template_id}.target_doom")
-        _string_list(
+        intervention_id = _string(
+            template["intervention_id"], f"template:{template_id}.intervention_id"
+        )
+        abstract_function = _string(
+            template["abstract_function"], f"template:{template_id}.abstract_function"
+        )
+        target_doom = _string(
+            template["target_doom"], f"template:{template_id}.target_doom"
+        )
+        side_effect_candidates = _string_list(
             template["side_effect_candidates"],
             f"template:{template_id}.side_effect_candidates",
             maximum=10,
@@ -205,7 +230,7 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
         normalized_seeds = [_integer(seed, "allowed seed") for seed in seeds]
         if len(normalized_seeds) != len(set(normalized_seeds)):
             raise ContractError(f"template:{template_id} has duplicate seeds")
-        _string_list(
+        delay_profiles = _string_list(
             template["delay_profiles"],
             f"template:{template_id}.delay_profiles",
             maximum=20,
@@ -219,7 +244,7 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
         if root_path not in intervention_path.parents:
             raise ContractError(f"template:{template_id} intervention_path escapes root")
         intervention = load_json(intervention_path)
-        if intervention.get("id") != template["intervention_id"]:
+        if intervention.get("id") != intervention_id:
             raise ContractError(f"template:{template_id} intervention_id mismatch")
         actual_digest = _canonical_digest(intervention)
         if actual_digest != expected_digest:
@@ -233,7 +258,24 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
             raise ContractError(
                 f"template:{template_id} scenario_id must resolve exactly once"
             )
-        normalized_templates.append(dict(template))
+        normalized_templates.append(
+            {
+                "template_id": template_id,
+                "template_version": template_version,
+                "status": status,
+                "scenario_id": scenario_id,
+                "intervention_id": intervention_id,
+                "intervention_path": relative_path.as_posix(),
+                "intervention_sha256": expected_digest,
+                "abstract_function": abstract_function,
+                "target_doom": target_doom,
+                "side_effect_candidates": side_effect_candidates,
+                "allowed_seeds": normalized_seeds,
+                "delay_profiles": delay_profiles,
+                "requires_user_confirmation": True,
+                "idea_text_changes_engine_inputs": False,
+            }
+        )
     return {
         "schema_version": CATALOG_SCHEMA,
         "catalog_version": catalog_version,
@@ -256,9 +298,7 @@ def validate_idea_status_projection(value: Any) -> dict[str, Any]:
     )
     if projection["schema_version"] != IDEA_STATUS_SCHEMA:
         raise ContractError("unsupported idea status projection schema_version")
-    observed_at = _string(projection["observed_at"], "observed_at")
-    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", observed_at):
-        raise ContractError("observed_at must use YYYY-MM-DD")
+    observed_at = _utc_date(projection["observed_at"], "observed_at")
     repository = _string(projection["repository"], "repository")
     ideas = projection["ideas"]
     if not isinstance(ideas, list):
@@ -284,9 +324,9 @@ def validate_idea_status_projection(value: Any) -> dict[str, Any]:
         expected_url = f"https://github.com/{repository}/issues/{number}"
         if idea["issue_url"] != expected_url:
             raise ContractError(f"idea:{number} issue_url mismatch")
-        updated_at = _string(idea["source_updated_at"], "source_updated_at")
-        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", updated_at):
-            raise ContractError(f"idea:{number} source_updated_at must be UTC")
+        updated_at = _utc_datetime(
+            idea["source_updated_at"], f"idea:{number}.source_updated_at"
+        )
         lifecycle = _mapping(idea["lifecycle"], f"idea:{number}.lifecycle")
         _exact_fields(
             lifecycle,
@@ -373,10 +413,25 @@ def _validate_template_confirmation(
         "template_version": selected["template_version"],
         "intervention_sha256": selected["intervention_sha256"],
     }
+    observed = {
+        "template_id": _string(confirmation["template_id"], "template_id"),
+        "template_version": _integer(
+            confirmation["template_version"], "template_version"
+        ),
+        "intervention_sha256": _string(
+            confirmation["intervention_sha256"], "intervention_sha256"
+        ),
+    }
     for field, expected_value in expected.items():
-        if confirmation[field] != expected_value:
+        if observed[field] != expected_value:
             raise ContractError(f"template selection confirmation {field} mismatch")
-    return dict(confirmation)
+    return {
+        "schema_version": TEMPLATE_CONFIRMATION_SCHEMA,
+        "template_id": observed["template_id"],
+        "template_version": observed["template_version"],
+        "intervention_sha256": observed["intervention_sha256"],
+        "user_confirmed": True,
+    }
 
 
 def validate_provisional_request(
@@ -409,6 +464,23 @@ def validate_provisional_request(
     )
     if selected is None:
         raise ContractError("template_id is not registered")
+    if selected["status"] != "preview_allowed":
+        raise ContractError("template is not preview_allowed")
+    normalized = {
+        "schema_version": PROVISIONAL_REQUEST_SCHEMA,
+        "scenario_id": _string(request["scenario_id"], "scenario_id"),
+        "template_id": template_id,
+        "template_version": _integer(request["template_version"], "template_version"),
+        "catalog_id": _string(request["catalog_id"], "catalog_id"),
+        "catalog_version": _integer(request["catalog_version"], "catalog_version"),
+        "intervention_id": _string(request["intervention_id"], "intervention_id"),
+        "intervention_sha256": _string(
+            request["intervention_sha256"], "intervention_sha256"
+        ),
+        "seed": _integer(request["seed"], "seed"),
+        "delay_profile": _string(request["delay_profile"], "delay_profile"),
+        "user_confirmed": True,
+    }
     expected = {
         "scenario_id": selected["scenario_id"],
         "template_version": selected["template_version"],
@@ -418,15 +490,13 @@ def validate_provisional_request(
         "intervention_sha256": selected["intervention_sha256"],
     }
     for field, expected_value in expected.items():
-        if request[field] != expected_value:
+        if normalized[field] != expected_value:
             raise ContractError(f"ProvisionalRunRequest {field} mismatch")
-    seed = _integer(request["seed"], "seed")
-    if seed not in selected["allowed_seeds"]:
+    if normalized["seed"] not in selected["allowed_seeds"]:
         raise ContractError("ProvisionalRunRequest seed is not allowed")
-    delay_profile = _string(request["delay_profile"], "delay_profile")
-    if delay_profile not in selected["delay_profiles"]:
+    if normalized["delay_profile"] not in selected["delay_profiles"]:
         raise ContractError("ProvisionalRunRequest delay_profile is not allowed")
-    return dict(request)
+    return normalized
 
 
 def prepare_provisional_request(
@@ -488,7 +558,7 @@ def prepare_provisional_request(
         "delay_profile": delay_profile,
         "user_confirmed": True,
     }
-    validate_provisional_request(request, catalog, root=root)
+    request = validate_provisional_request(request, catalog, root=root)
     return {
         "schema_version": RUN_SUMMARY_SCHEMA,
         "status": "ready",

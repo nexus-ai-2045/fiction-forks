@@ -10,6 +10,7 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 - 0.4の基礎として、確認済み`IdeaDraft`、固定catalog、`ProvisionalRunRequest`、`RunSummary`のPython正本と`prepare-preview` CLIを追加した
 - template選択の明示確認、完全写像、scenario実在、request provenance、idea lifecycle整合をfail-closedで検証するようにした
+- disabled template拒否、catalog正規化、boolean version拒否、実在UTC時刻検証をtransport境界へ追加した
 - 自由記述や未知seedからengine入力を生成せず、完全写像できない案を`not-simulatable`として返す契約を追加した
 - Issue #12を本文コピーなしのIdea状態projectionへ`listed / not-ready`として取り込み、0.4の実装依存順を正本化した
 - 0.4 milestoneを、Doom Map、参加入口、Idea Chat、暫定simulation、Result Browser、結果還流を持つVite + React + TypeScript workbenchとして設計した

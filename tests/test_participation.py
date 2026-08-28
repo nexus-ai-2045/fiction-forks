@@ -226,6 +226,72 @@ class ParticipationContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractError, "next_action"):
             validate_idea_status_projection(projection)
 
+    def test_disabled_template_request_is_rejected(self) -> None:
+        catalog = copy.deepcopy(self.catalog)
+        catalog["templates"][0]["status"] = "disabled"
+        ready = prepare_provisional_request(
+            idea_draft(),
+            self.catalog,
+            template_confirmation(),
+            root=ROOT,
+            template_id="public-tools-access.v1",
+            seed=2036,
+            delay_profile="none",
+        )["request"]
+        with self.assertRaisesRegex(ContractError, "preview_allowed"):
+            validate_provisional_request(ready, catalog, root=ROOT)
+
+    def test_catalog_returns_normalized_template_ids(self) -> None:
+        catalog = copy.deepcopy(self.catalog)
+        catalog["templates"][0]["template_id"] = "public-tools-access.v1 "
+        normalized = validate_template_catalog(catalog, root=ROOT)
+        self.assertEqual(
+            normalized["templates"][0]["template_id"], "public-tools-access.v1"
+        )
+        result = prepare_provisional_request(
+            idea_draft(),
+            catalog,
+            template_confirmation(),
+            root=ROOT,
+            template_id="public-tools-access.v1",
+            seed=2036,
+            delay_profile="none",
+        )
+        self.assertEqual(result["status"], "ready")
+
+    def test_external_request_rejects_boolean_versions(self) -> None:
+        ready = prepare_provisional_request(
+            idea_draft(),
+            self.catalog,
+            template_confirmation(),
+            root=ROOT,
+            template_id="public-tools-access.v1",
+            seed=2036,
+            delay_profile="none",
+        )["request"]
+        with self.assertRaisesRegex(ContractError, "template_version"):
+            validate_provisional_request(
+                {**ready, "template_version": True}, self.catalog, root=ROOT
+            )
+        with self.assertRaisesRegex(ContractError, "catalog_version"):
+            validate_provisional_request(
+                {**ready, "catalog_version": True}, self.catalog, root=ROOT
+            )
+
+    def test_idea_status_rejects_impossible_timestamps(self) -> None:
+        projection = json.loads(
+            (ROOT / "catalogs/idea-status.v1.json").read_text(encoding="utf-8")
+        )
+        projection["observed_at"] = "2026-02-31"
+        with self.assertRaisesRegex(ContractError, "UTC date"):
+            validate_idea_status_projection(projection)
+        projection = json.loads(
+            (ROOT / "catalogs/idea-status.v1.json").read_text(encoding="utf-8")
+        )
+        projection["ideas"][0]["source_updated_at"] = "2026-02-31T99:99:99Z"
+        with self.assertRaisesRegex(ContractError, "UTC datetime"):
+            validate_idea_status_projection(projection)
+
 
 if __name__ == "__main__":
     unittest.main()
