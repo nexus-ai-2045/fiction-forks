@@ -40,6 +40,7 @@ class PullRequestContractTests(unittest.TestCase):
                 {
                     "schema_version": "fiction_forks_preview_template_catalog.v1",
                     "catalog_version": 1,
+                    "catalog_id": "test-preview-templates",
                     "templates": [
                         {
                             "template_id": "fixed-preview.v1",
@@ -49,6 +50,9 @@ class PullRequestContractTests(unittest.TestCase):
                             "intervention_id": "fixed-preview",
                             "intervention_path": "interventions/fixed-preview.json",
                             "intervention_sha256": digest_override or digest,
+                            "abstract_function": "fixed preview",
+                            "target_doom": "fixed doom",
+                            "side_effect_candidates": ["fixed side effect"],
                             "requires_user_confirmation": True,
                             "idea_text_changes_engine_inputs": False,
                             "allowed_seeds": [2036],
@@ -58,6 +62,11 @@ class PullRequestContractTests(unittest.TestCase):
                 }
             ),
             encoding="utf-8",
+        )
+        scenario_path = root / "scenarios/test/scenario.json"
+        scenario_path.parent.mkdir(parents=True, exist_ok=True)
+        scenario_path.write_text(
+            json.dumps({"id": "japan-2036-centralization"}), encoding="utf-8"
         )
         return "catalogs/intervention-templates.v1.json"
 
@@ -194,7 +203,7 @@ class PullRequestContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             catalog = self._write_preview_catalog(root, digest_override="0" * 64)
-            with self.assertRaisesRegex(ContractError, "SHA-256"):
+            with self.assertRaisesRegex(ContractError, "sha256"):
                 validate_contract(
                     "maintenance",
                     [Change("M", catalog)],

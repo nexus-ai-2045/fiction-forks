@@ -82,6 +82,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     preview_parser.add_argument("--idea-draft", required=True)
     preview_parser.add_argument("--catalog", required=True)
+    preview_parser.add_argument("--template-confirmation", required=True)
     preview_parser.add_argument("--template-id", required=True)
     preview_parser.add_argument("--seed", type=int, required=True)
     preview_parser.add_argument("--delay-profile", required=True)
@@ -128,6 +129,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             result = prepare_provisional_request(
                 load_json(args.idea_draft),
                 load_template_catalog(args.catalog, root=args.repo_root),
+                load_json(args.template_confirmation),
                 root=args.repo_root,
                 template_id=args.template_id,
                 seed=args.seed,

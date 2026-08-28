@@ -123,7 +123,7 @@ class DocumentationContractTests(unittest.TestCase):
             catalog["schema_version"],
             "fiction_forks_preview_template_catalog.v1",
         )
-        self.assertEqual(catalog["catalog_version"], 1)
+        self.assertEqual(catalog["catalog_version"], 2)
         scenario = json.loads(
             (ROOT / "scenarios/japan-2036/scenario.json").read_text(
                 encoding="utf-8"

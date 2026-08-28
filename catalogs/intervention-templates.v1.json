@@ -1,17 +1,21 @@
 {
   "schema_version": "fiction_forks_preview_template_catalog.v1",
-  "catalog_version": 1,
+  "catalog_version": 2,
   "catalog_id": "japan-2036-preview-templates",
   "templates": [
     {
       "template_id": "public-tools-access.v1",
-      "template_version": 1,
+      "template_version": 2,
       "status": "preview_allowed",
       "scenario_id": "japan-2036-centralization",
       "intervention_id": "doraemon-public-tools",
       "intervention_path": "interventions/doraemon-public-tools.json",
       "intervention_sha256": "2e116cde3f8ad9547261cc58fd1b88c594f8bbefcc0d34961687dc47d21cf455",
       "abstract_function": "高度な道具へのアクセスを監査可能な公共基盤として広げる",
+      "target_doom": "生活基盤と戦略的自律性の破滅連鎖",
+      "side_effect_candidates": [
+        "単一技術依存"
+      ],
       "allowed_seeds": [
         2036
       ],
@@ -23,13 +27,17 @@
     },
     {
       "template_id": "contested-world-observation.v1",
-      "template_version": 1,
+      "template_version": 2,
       "status": "preview_allowed",
       "scenario_id": "japan-2036-centralization",
       "intervention_id": "haruhi-world-observation",
       "intervention_path": "interventions/haruhi-world-observation.json",
       "intervention_sha256": "6b9420240ae02129b4fd24f679aef0a9e79dbd53dca052f58700e1a7d5c79d70",
       "abstract_function": "複数の独立観測と異議申立てで世界状態の変化を検証する",
+      "target_doom": "認知主権と修復能力の破滅連鎖",
+      "side_effect_candidates": [
+        "観測基盤への依存"
+      ],
       "allowed_seeds": [
         2036
       ],

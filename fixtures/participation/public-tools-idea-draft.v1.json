@@ -6,9 +6,7 @@
   "idea_summary": "高度な道具を公共インフラとして使う",
   "abstract_function": "高度な道具へのアクセスを監査可能な公共基盤として広げる",
   "target_doom": "生活基盤と戦略的自律性の破滅連鎖",
-  "unresolved_conditions": [
-    "本人確認"
-  ],
+  "unresolved_conditions": [],
   "side_effect_candidates": [
     "単一技術依存"
   ],

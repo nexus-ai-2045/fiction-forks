@@ -13,6 +13,7 @@ from .engine import ContractError, ENGINE_VERSION, load_json
 
 IDEA_DRAFT_SCHEMA = "fiction_forks_idea_draft.v1"
 PROVISIONAL_REQUEST_SCHEMA = "fiction_forks_provisional_run_request.v1"
+TEMPLATE_CONFIRMATION_SCHEMA = "fiction_forks_template_selection_confirmation.v1"
 RUN_SUMMARY_SCHEMA = "fiction_forks_run_summary.v1"
 CATALOG_SCHEMA = "fiction_forks_preview_template_catalog.v1"
 IDEA_STATUS_SCHEMA = "fiction_forks_idea_status_projection.v1"
@@ -155,6 +156,8 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
             "intervention_path",
             "intervention_sha256",
             "abstract_function",
+            "target_doom",
+            "side_effect_candidates",
             "allowed_seeds",
             "delay_profiles",
             "requires_user_confirmation",
@@ -179,9 +182,17 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
             raise ContractError(
                 f"template:{template_id} must not let idea text change engine inputs"
             )
-        _string(template["scenario_id"], f"template:{template_id}.scenario_id")
+        scenario_id = _string(
+            template["scenario_id"], f"template:{template_id}.scenario_id"
+        )
         _string(template["intervention_id"], f"template:{template_id}.intervention_id")
         _string(template["abstract_function"], f"template:{template_id}.abstract_function")
+        _string(template["target_doom"], f"template:{template_id}.target_doom")
+        _string_list(
+            template["side_effect_candidates"],
+            f"template:{template_id}.side_effect_candidates",
+            maximum=10,
+        )
         expected_digest = _string(
             template["intervention_sha256"],
             f"template:{template_id}.intervention_sha256",
@@ -213,6 +224,15 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
         actual_digest = _canonical_digest(intervention)
         if actual_digest != expected_digest:
             raise ContractError(f"template:{template_id} intervention_sha256 mismatch")
+        scenario_matches = []
+        for scenario_path in root_path.glob("scenarios/**/scenario.json"):
+            scenario = load_json(scenario_path)
+            if scenario.get("id") == scenario_id:
+                scenario_matches.append(scenario_path)
+        if len(scenario_matches) != 1:
+            raise ContractError(
+                f"template:{template_id} scenario_id must resolve exactly once"
+            )
         normalized_templates.append(dict(template))
     return {
         "schema_version": CATALOG_SCHEMA,
@@ -298,7 +318,27 @@ def validate_idea_status_projection(value: Any) -> dict[str, Any]:
             raise ContractError(f"idea:{number} not-ready status needs missing_conditions")
         if simulation_status != "not-ready" and missing:
             raise ContractError(f"idea:{number} ready status cannot keep missing_conditions")
-        normalized_ideas.append(dict(idea))
+        if simulation_status == "not-ready" and lifecycle["simulated"]:
+            raise ContractError(f"idea:{number} simulation_status conflicts with lifecycle")
+        if simulation_status == "candidate" and (
+            not lifecycle["simulated"] or lifecycle["reported_back"]
+        ):
+            raise ContractError(f"idea:{number} simulation_status conflicts with lifecycle")
+        if simulation_status == "official" and not lifecycle["reported_back"]:
+            raise ContractError(f"idea:{number} simulation_status conflicts with lifecycle")
+        normalized_ideas.append(
+            {
+                "issue_number": number,
+                "issue_url": expected_url,
+                "source_updated_at": updated_at,
+                "lifecycle": dict(lifecycle),
+                "simulation_status": simulation_status,
+                "missing_conditions": missing,
+                "next_action": _string(
+                    idea["next_action"], f"idea:{number}.next_action"
+                ),
+            }
+        )
     return {
         "schema_version": IDEA_STATUS_SCHEMA,
         "observed_at": observed_at,
@@ -307,9 +347,92 @@ def validate_idea_status_projection(value: Any) -> dict[str, Any]:
     }
 
 
+def _validate_template_confirmation(
+    value: Any, *, selected: Mapping[str, Any]
+) -> dict[str, Any]:
+    confirmation = _mapping(value, "template selection confirmation")
+    required = {
+        "schema_version",
+        "template_id",
+        "template_version",
+        "intervention_sha256",
+        "user_confirmed",
+    }
+    _exact_fields(
+        confirmation,
+        required=required,
+        optional=set(),
+        label="template selection confirmation",
+    )
+    if confirmation["schema_version"] != TEMPLATE_CONFIRMATION_SCHEMA:
+        raise ContractError("unsupported template selection confirmation schema_version")
+    if confirmation["user_confirmed"] is not True:
+        raise ContractError("template selection confirmation must be confirmed")
+    expected = {
+        "template_id": selected["template_id"],
+        "template_version": selected["template_version"],
+        "intervention_sha256": selected["intervention_sha256"],
+    }
+    for field, expected_value in expected.items():
+        if confirmation[field] != expected_value:
+            raise ContractError(f"template selection confirmation {field} mismatch")
+    return dict(confirmation)
+
+
+def validate_provisional_request(
+    value: Any, catalog_value: Any, *, root: str | Path
+) -> dict[str, Any]:
+    request = _mapping(value, "ProvisionalRunRequest")
+    required = {
+        "schema_version",
+        "scenario_id",
+        "template_id",
+        "template_version",
+        "catalog_id",
+        "catalog_version",
+        "intervention_id",
+        "intervention_sha256",
+        "seed",
+        "delay_profile",
+        "user_confirmed",
+    }
+    _exact_fields(request, required=required, optional=set(), label="ProvisionalRunRequest")
+    if request["schema_version"] != PROVISIONAL_REQUEST_SCHEMA:
+        raise ContractError("unsupported ProvisionalRunRequest schema_version")
+    if request["user_confirmed"] is not True:
+        raise ContractError("ProvisionalRunRequest must be confirmed")
+    catalog = validate_template_catalog(catalog_value, root=root)
+    template_id = _string(request["template_id"], "template_id")
+    selected = next(
+        (item for item in catalog["templates"] if item["template_id"] == template_id),
+        None,
+    )
+    if selected is None:
+        raise ContractError("template_id is not registered")
+    expected = {
+        "scenario_id": selected["scenario_id"],
+        "template_version": selected["template_version"],
+        "catalog_id": catalog["catalog_id"],
+        "catalog_version": catalog["catalog_version"],
+        "intervention_id": selected["intervention_id"],
+        "intervention_sha256": selected["intervention_sha256"],
+    }
+    for field, expected_value in expected.items():
+        if request[field] != expected_value:
+            raise ContractError(f"ProvisionalRunRequest {field} mismatch")
+    seed = _integer(request["seed"], "seed")
+    if seed not in selected["allowed_seeds"]:
+        raise ContractError("ProvisionalRunRequest seed is not allowed")
+    delay_profile = _string(request["delay_profile"], "delay_profile")
+    if delay_profile not in selected["delay_profiles"]:
+        raise ContractError("ProvisionalRunRequest delay_profile is not allowed")
+    return dict(request)
+
+
 def prepare_provisional_request(
     draft_value: Any,
     catalog_value: Any,
+    template_confirmation_value: Any,
     *,
     root: str | Path,
     template_id: str,
@@ -329,11 +452,18 @@ def prepare_provisional_request(
             "classification": "provisional",
             "missing_conditions": ["既知のtemplateを選択してください"],
         }
+    _validate_template_confirmation(template_confirmation_value, selected=selected)
     missing = []
     if selected["status"] != "preview_allowed":
         missing.append("選択したtemplateはpreviewを許可していません")
     if draft["abstract_function"] != selected["abstract_function"]:
         missing.append("確認済みの抽象機能を既知templateへ完全に対応させてください")
+    if draft["target_doom"] != selected["target_doom"]:
+        missing.append("対象doomを既知templateへ完全に対応させてください")
+    if draft["side_effect_candidates"] != selected["side_effect_candidates"]:
+        missing.append("副作用候補を既知templateへ完全に対応させてください")
+    if draft["unresolved_conditions"]:
+        missing.append("未解決条件をすべて解消してください")
     if seed not in selected["allowed_seeds"]:
         missing.append("catalogで許可されたseedを選択してください")
     if delay_profile not in selected["delay_profiles"]:
@@ -349,11 +479,16 @@ def prepare_provisional_request(
         "schema_version": PROVISIONAL_REQUEST_SCHEMA,
         "scenario_id": selected["scenario_id"],
         "template_id": selected["template_id"],
+        "template_version": selected["template_version"],
+        "catalog_id": catalog["catalog_id"],
         "catalog_version": catalog["catalog_version"],
+        "intervention_id": selected["intervention_id"],
+        "intervention_sha256": selected["intervention_sha256"],
         "seed": seed,
         "delay_profile": delay_profile,
         "user_confirmed": True,
     }
+    validate_provisional_request(request, catalog, root=root)
     return {
         "schema_version": RUN_SUMMARY_SCHEMA,
         "status": "ready",
