@@ -251,6 +251,8 @@ class DocumentationContractTests(unittest.TestCase):
 
     def test_relative_markdown_links_resolve(self) -> None:
         for markdown in ROOT.rglob("*.md"):
+            if "node_modules" in markdown.parts:
+                continue
             content = markdown.read_text(encoding="utf-8")
             for raw_target in re.findall(r"\[[^]]*\]\(([^)]+)\)", content):
                 target = raw_target.split("#", 1)[0]

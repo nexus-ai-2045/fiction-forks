@@ -1,0 +1,133 @@
+import { useEffect, useRef, useState } from "react";
+import { comparison, contestationDelay, intervention, manifest } from "./data";
+import { metricKeys, type ComparisonArtifact, type MetricKey, type TechnologyNode } from "./types";
+
+const metricLabels: Record<MetricKey, string> = {
+  cognitive_sovereignty: "認知主権",
+  legitimacy: "正統性",
+  living_systems: "生活基盤",
+  repair_capacity: "修復能力",
+  strategic_autonomy: "戦略的自律",
+};
+
+const kindLabels: Record<TechnologyNode["kind"], string> = {
+  technology: "TECHNOLOGY",
+  institution: "INSTITUTION",
+  operations: "OPERATIONS",
+};
+
+type Profile = "normal" | "delay";
+
+function StateMark({ collapsed }: { collapsed: boolean }) {
+  return <span className={`state-mark ${collapsed ? "is-collapse" : "is-avoided"}`}>{collapsed ? "◆ 修復不能条件" : "○ 条件を回避"}</span>;
+}
+
+function MetricRows({ artifact }: { artifact: ComparisonArtifact }) {
+  return <div className="metric-table" role="table" aria-label={`${artifact.comparison_year}年の5指標比較`}>
+    <div className="metric-head" role="row"><span>指標</span><span>BASELINE</span><span>FORK</span><span>差分</span></div>
+    {metricKeys.map((key) => {
+      const delta = artifact.state_delta_at_comparison_year[key];
+      return <div className="metric-row" role="row" key={key}>
+        <strong>{metricLabels[key]}</strong>
+        <span>{artifact.baseline.state_at_comparison_year[key]}</span>
+        <span>{artifact.fork.state_at_comparison_year[key]}</span>
+        <span className={delta > 0 ? "positive" : delta < 0 ? "negative" : "neutral"}>{delta > 0 ? "+" : ""}{delta}</span>
+      </div>;
+    })}
+  </div>;
+}
+
+function TechnologyTree({ artifact }: { artifact: ComparisonArtifact }) {
+  return <section className="tree" aria-labelledby="tree-title">
+    <div className="section-heading"><div><span>FORK / IMPLEMENTATION</span><h2 id="tree-title">発動までの実装ツリー</h2></div><p>各ノードの完成証拠を開いて確認できます。</p></div>
+    <div className="node-list">
+      {intervention.technology_tree.nodes.map((node) => <details className={`node node-${node.kind}`} key={node.id}>
+        <summary>
+          <span className="node-kind">{kindLabels[node.kind]}</span>
+          <strong>{node.label}</strong>
+          <span className="node-year">{artifact.fork.technology_schedule[node.id]} 完成</span>
+        </summary>
+        <div className="node-detail"><p><b>完成証拠</b>{node.completion_evidence}</p><p><b>依存</b>{node.depends_on.join(" / ")}</p></div>
+      </details>)}
+    </div>
+  </section>;
+}
+
+function ProvenanceDrawer({ open, onClose, artifact }: { open: boolean; onClose: () => void; artifact: ComparisonArtifact }) {
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => { if (open) closeRef.current?.focus(); }, [open]);
+  if (!open) return null;
+  return <div className="drawer-layer" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <aside className="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" onKeyDown={(event) => {
+      if (event.key === "Escape") onClose();
+      if (event.key === "Tab") {
+        const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button, a[href], [tabindex]:not([tabindex="-1"])'));
+        if (controls.length === 0) return;
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    }}>
+      <button ref={closeRef} className="drawer-close" type="button" onClick={onClose} aria-label="根拠を閉じる">×</button>
+      <span>EXPLAIN / PROVENANCE</span><h2 id="drawer-title">この比較の根拠と限界</h2>
+      <dl className="provenance"><div><dt>artifact</dt><dd>{manifest.run_kind.toUpperCase()} / AI実測ではない</dd></div><div><dt>schema</dt><dd>{artifact.schema_version}</dd></div><div><dt>engine</dt><dd>{artifact.engine_version}</dd></div><div><dt>engine commit</dt><dd>{manifest.engine_commit}</dd></div><div><dt>scenario</dt><dd>{artifact.scenario_id}</dd></div><div><dt>intervention</dt><dd>{artifact.intervention_id}</dd></div><div><dt>seed</dt><dd>{artifact.seed}</dd></div><div><dt>comparison SHA-256</dt><dd>{manifest.comparison_artifact_sha256}</dd></div><div><dt>delay SHA-256</dt><dd>{manifest.delay_artifact_sha256}</dd></div><div><dt>replay</dt><dd>同値検証済み</dd></div></dl>
+      <h3>費用</h3><ul>{artifact.declared_costs.map((item) => <li key={item}>{item}</li>)}</ul>
+      <h3>副作用</h3><ul>{artifact.declared_side_effects.map((item) => <li key={item}>{item}</li>)}</ul>
+      <h3>失敗条件</h3><ul>{artifact.declared_failure_modes.map((item) => <li key={item}>{item}</li>)}</ul>
+    </aside>
+  </div>;
+}
+
+export function App() {
+  const [profile, setProfile] = useState<Profile>("normal");
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const explainButtonRef = useRef<HTMLButtonElement>(null);
+  const artifact = profile === "normal" ? comparison : contestationDelay;
+  const delayed = profile === "delay";
+
+  return <>
+    <a className="skip-link" href="#comparison">比較結果へ移動</a>
+    <header className="topbar">
+      <a className="brand" href="../"><span className="branch-glyph" aria-hidden="true">⑂</span><span>FICTION FORKS<small>WORLDLINE WORKBENCH</small></span></a>
+      <nav aria-label="サイトナビゲーション"><a href="../">Idea Builder</a><a href="https://github.com/nexus-ai-2045/fiction-forks">GitHub</a></nav>
+    </header>
+    <main>
+      <section className="hero">
+        <div><span className="fixture-label">FIXTURE / 2036</span><h1>分岐する時間軸を読む。</h1><p>{intervention.extracted_function}</p></div>
+        <div className="hero-status"><span>JAPAN 2036</span><StateMark collapsed={artifact.fork.collapsed} /><strong>{artifact.fork.collapsed ? "介入が間に合わない" : "このモデルでは破滅条件を回避"}</strong></div>
+      </section>
+
+      <section className="workflow" aria-label="作戦卓の流れ">
+        {[["01", "OBSERVE", "放置世界を見る"], ["02", "FORK", "介入世界を比べる"], ["03", "STRESS", "制度を遅らせる"], ["04", "EXPLAIN", "根拠と限界を読む"]].map(([number, name, text]) => <div key={name}><span>{number}</span><strong>{name}</strong><small>{text}</small></div>)}
+      </section>
+
+      <section className="comparison" id="comparison" aria-labelledby="comparison-title">
+        <div className="section-heading"><div><span>OBSERVE → FORK</span><h2 id="comparison-title">同じ2036年、二つの世界</h2></div><p>未来予測ではなく、同じseedのモデル結果を比較しています。</p></div>
+        <div className="worldline-summary">
+          <article><span>BASELINE / 無介入</span><strong>2036</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>修復能力の喪失が破滅条件へ到達。</p></article>
+          <div className="fork-line" aria-hidden="true"><span></span></div>
+          <article className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / 複数の独立観測と異議申立て</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{delayed ? "発動が2037年となり、2036年に間に合いません。" : "2032年に発動し、このモデルでは破滅条件を回避。"}</p></article>
+        </div>
+        <MetricRows artifact={artifact} />
+      </section>
+
+      <section className="stress" aria-labelledby="stress-title">
+        <div><span>STRESS / NAMED PROFILE</span><h2 id="stress-title">制度の遅延は、技術全体を遅らせる。</h2><p>自由な数値入力ではなく、検証済みartifactに対応するnamed profileだけを切り替えます。</p></div>
+        <fieldset><legend>遅延条件</legend>
+          <label className={profile === "normal" ? "selected" : ""}><input type="radio" name="profile" value="normal" checked={profile === "normal"} onChange={() => setProfile("normal")} /><span><strong>遅延なし</strong>発動 2032 / 回避</span></label>
+          <label className={profile === "delay" ? "selected" : ""}><input type="radio" name="profile" value="delay" checked={profile === "delay"} onChange={() => setProfile("delay")} /><span><strong>異議申立て制度を5年遅延</strong>発動 2037 / 間に合わない</span></label>
+        </fieldset>
+      </section>
+
+      <TechnologyTree artifact={artifact} />
+
+      <section className="explain">
+        <div><span>EXPLAIN</span><h2>改善だけでなく、代償も読む。</h2><p>生活基盤は通常介入でも5ポイント悪化。費用・副作用・失敗条件まで含めて初めて比較できます。</p></div>
+        <button ref={explainButtonRef} type="button" onClick={() => setDrawerOpen(true)}>根拠と限界を開く <span aria-hidden="true">→</span></button>
+      </section>
+    </main>
+    <footer><span>FIXTURE PROJECTION — ENGINE LOGIC IS NOT IMPLEMENTED IN THIS UI</span><a href="../">自分のアイデアをIdea Builderで話す →</a></footer>
+    <ProvenanceDrawer open={drawerOpen} onClose={() => { setDrawerOpen(false); requestAnimationFrame(() => explainButtonRef.current?.focus()); }} artifact={artifact} />
+  </>;
+}
