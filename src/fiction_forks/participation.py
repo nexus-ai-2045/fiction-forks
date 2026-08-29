@@ -69,6 +69,8 @@ def _integer(value: Any, label: str) -> int:
 
 def _utc_date(value: Any, label: str) -> str:
     text = _string(value, label)
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+        raise ContractError(f"{label} must use YYYY-MM-DD")
     try:
         datetime.strptime(text, "%Y-%m-%d")
     except ValueError as exc:
@@ -78,6 +80,8 @@ def _utc_date(value: Any, label: str) -> str:
 
 def _utc_datetime(value: Any, label: str) -> str:
     text = _string(value, label)
+    if not re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", text):
+        raise ContractError(f"{label} must use YYYY-MM-DDTHH:MM:SSZ")
     try:
         datetime.strptime(text, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
     except ValueError as exc:

@@ -292,6 +292,20 @@ class ParticipationContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractError, "UTC datetime"):
             validate_idea_status_projection(projection)
 
+    def test_idea_status_requires_zero_padded_timestamps(self) -> None:
+        projection = json.loads(
+            (ROOT / "catalogs/idea-status.v1.json").read_text(encoding="utf-8")
+        )
+        projection["observed_at"] = "2026-2-3"
+        with self.assertRaisesRegex(ContractError, "YYYY-MM-DD"):
+            validate_idea_status_projection(projection)
+        projection = json.loads(
+            (ROOT / "catalogs/idea-status.v1.json").read_text(encoding="utf-8")
+        )
+        projection["ideas"][0]["source_updated_at"] = "2026-2-3T1:2:3Z"
+        with self.assertRaisesRegex(ContractError, "YYYY-MM-DDTHH:MM:SSZ"):
+            validate_idea_status_projection(projection)
+
 
 if __name__ == "__main__":
     unittest.main()
