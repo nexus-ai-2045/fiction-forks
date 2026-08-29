@@ -18,5 +18,7 @@
   "comparison_artifact_sha256": "8b75d3470b5ea6e6b3180231712267ce70af3fa39036bcfc9f9871ded1861d2f",
   "delay_artifact_path": "artifacts/runs/haruhi-world-observation-contestation-delay.json",
   "delay_artifact_sha256": "122a8fb540bc60d93dc4b7a68ff200093f65b05941a404bc5db2b8d3c635b7d5",
-  "replay_equivalent": true
+  "replay_equivalent": true,
+  "intervention_artifact_path": "interventions/haruhi-world-observation.json",
+  "intervention_artifact_sha256": "669ee38b16ff13709d6f96659d389e26540c788f3d24aa88ce373d36465b466a"
 }

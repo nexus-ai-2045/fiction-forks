@@ -16,6 +16,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from fiction_forks.engine import ENGINE_VERSION, compare_worlds, load_json, simulate
+from fiction_forks.agent_protocol import digest
 from fiction_forks.cli import main as cli_main
 from fiction_forks.providers import FixtureProvider, ReplayProvider
 from fiction_forks.social import (
@@ -168,6 +169,19 @@ class WorldObservationForkTests(unittest.TestCase):
         self.assertEqual(PROTOCOL_VERSION, social["protocol_version"])
         self.assertEqual(social["run_id"], manifest["run_id"])
         self.assertEqual(social["input_digest"], manifest["input_digest"])
+        self.assertEqual(
+            digest(
+                {
+                    "protocol_version": PROTOCOL_VERSION,
+                    "engine_version": ENGINE_VERSION,
+                    "scenario": self.scenario,
+                    "intervention": self.intervention,
+                    "social_config": self.social_config,
+                    "seed": 2036,
+                }
+            ),
+            social["input_digest"],
+        )
         self.assertEqual(social["final_event_hash"], manifest["final_event_hash"])
         self.assertEqual(
             hashlib.sha256(

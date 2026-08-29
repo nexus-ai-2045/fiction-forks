@@ -11,9 +11,9 @@
 | アーキテクチャと設計判断 | `docs/architecture.md` と `docs/adr/` |
 | シナリオ契約 | `scenarios/` と `docs/simulation-contract.md` |
 | 社会エージェント契約 | `scenarios/*/social*.json`、`src/fiction_forks/agent_protocol.py`、`docs/social-simulation.md` |
-| アイデア受付UI | `web/`。現在は静的Idea Builder、0.4 milestoneはDoom Map・Idea Chat・Result Browser。正本化は確認済み公開GitHub Issue |
+| Web参加面 | `web/`。静的Idea Builderを維持し、`web/workbench-src/`がcurated fixtureを投影するResult Workbench縦切りを所有する。状態遷移と破滅判定はPython engine、値とprovenanceは`artifacts/runs/`のartifact・manifestが正本。Doom Map・Idea Chat・公式Result Browser全体は0.4残務 |
 | 対話草案 | `src/fiction_forks/participation.py`のversion付き`IdeaDraft` schema。会話全文ではなく本人確認済みprojectionだけを受理する |
-| 暫定simulation | `src/fiction_forks/participation.py`の`ProvisionalRunRequest`／`RunSummary`と`catalogs/intervention-templates.v1.json`。固定templateへの完全写像だけを許し、公式結果と分離する |
+| 暫定simulation | `src/fiction_forks/participation.py`の`ProvisionalRunRequest`／`RunSummary`と`catalogs/intervention-templates.v1.json`。`preview_allowed`な固定templateへの完全写像だけを許し、公式結果と分離する |
 | Public run transport | triage済みsimulation-requestを`main`固定Actionsで非同期実行する契約（0.4で追加予定）。fork/PR codeとsecretを使わない |
 | Local run transport | loopback adapterからcanonical Python CLIを呼ぶ契約（0.4で追加予定）。公開listenと独自engineを持たない |
 | Local Codex連携 | optional loopback companion（spike）。公開Web、Codex credential、filesystem、GitHub writeの正本ではない |

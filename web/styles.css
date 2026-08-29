@@ -1116,7 +1116,7 @@ footer a {
 @media (max-width: 980px) {
   :root { --content: min(100% - 28px, 760px); }
 
-  .site-header nav a:first-child,
+  .site-header nav .nav-handoff,
   .site-header .text-button { display: none; }
 
   .builder-heading { display: block; }
