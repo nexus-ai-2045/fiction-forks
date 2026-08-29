@@ -251,6 +251,8 @@ class DocumentationContractTests(unittest.TestCase):
 
     def test_relative_markdown_links_resolve(self) -> None:
         for markdown in ROOT.rglob("*.md"):
+            if "node_modules" in markdown.parts:
+                continue
             content = markdown.read_text(encoding="utf-8")
             for raw_target in re.findall(r"\[[^]]*\]\(([^)]+)\)", content):
                 target = raw_target.split("#", 1)[0]
@@ -282,6 +284,9 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertIn("textContent", script)
         self.assertIn("field.value.trim().length === 0", script)
         self.assertNotIn("data-step-indicator", html)
+        self.assertIn('href="workbench/"', html)
+        self.assertIn('class="nav-handoff" href="#handoff"', html)
+        self.assertNotIn(".site-header nav a:first-child", (ROOT / "web/styles.css").read_text(encoding="utf-8"))
         self.assertNotIn("借りたい機能</b>", html)
         self.assertNotIn("変えたい未来</b>", html)
         self.assertNotIn("条件・副作用</b>", html)

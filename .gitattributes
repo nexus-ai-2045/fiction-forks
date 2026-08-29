@@ -1,1 +1,2 @@
 artifacts/runs/*.json text eol=lf
+interventions/*.json text eol=lf
