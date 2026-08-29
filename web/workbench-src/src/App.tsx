@@ -97,8 +97,8 @@ export function App() {
     </header>
     <main>
       <section className="hero">
-        <div><span className="fixture-label">FIXTURE / 2036</span><h1>分岐する時間軸を読む。</h1><p>{intervention.extracted_function}</p></div>
-        <div className="hero-status"><span>JAPAN 2036</span><StateMark collapsed={artifact.fork.collapsed} /><strong>{artifact.fork.collapsed ? "介入が間に合わない" : "このモデルでは破滅条件を回避"}</strong></div>
+        <div><span className="fixture-label">FIXTURE / {artifact.comparison_year}</span><h1>分岐する時間軸を読む。</h1><p>{intervention.extracted_function}</p></div>
+        <div className="hero-status"><span>JAPAN {artifact.comparison_year}</span><StateMark collapsed={artifact.fork.collapsed} /><strong>{artifact.fork.collapsed ? "介入が間に合わない" : "このモデルでは破滅条件を回避"}</strong></div>
       </section>
 
       <section className="workflow" aria-label="作戦卓の流れ">
@@ -106,7 +106,7 @@ export function App() {
       </section>
 
       <section className="comparison" id="comparison" aria-labelledby="comparison-title">
-        <div className="section-heading"><div><span>OBSERVE → FORK</span><h2 id="comparison-title">同じ2036年、二つの世界</h2></div><p>未来予測ではなく、同じseedのモデル結果を比較しています。</p></div>
+        <div className="section-heading"><div><span>OBSERVE → FORK</span><h2 id="comparison-title">同じ{artifact.comparison_year}年、二つの世界</h2></div><p>未来予測ではなく、同じseedのモデル結果を比較しています。</p></div>
         <div className="worldline-summary">
           <article><span>BASELINE / 無介入</span><strong>{artifact.comparison_year}</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>修復能力の喪失が破滅条件へ到達。</p></article>
           <div className="fork-line" aria-hidden="true"><span></span></div>

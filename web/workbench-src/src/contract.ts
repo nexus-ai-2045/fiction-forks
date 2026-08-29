@@ -67,6 +67,7 @@ export function parseInterventionArtifact(value: unknown): InterventionArtifact 
   if (!isRecord(value) || !isRecord(value.technology_tree) || !Array.isArray(value.technology_tree.nodes)) {
     throw new Error("intervention technology_tree.nodes is required");
   }
+  if (value.schema_version !== "fiction_forks_intervention.v1") throw new Error("unsupported intervention schema_version");
   for (const key of ["id", "fiction_reference", "extracted_function", "implementation_hypothesis", "realization_mode"]) {
     assertString(value, key);
   }

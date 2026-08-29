@@ -46,7 +46,8 @@ main { overflow: hidden; }
 .state-mark { display: inline-flex; align-items: center; width: fit-content; gap: 7px; font-size: 12px; font-weight: 800; letter-spacing: .04em; }
 .state-mark.is-collapse { color: var(--danger); }
 .hero .state-mark.is-collapse { color: #ff8f80; }
-.state-mark.is-avoided { color: #4ab8a8; }
+.state-mark.is-avoided { color: #0f6f64; }
+.hero .state-mark.is-avoided { color: #4ab8a8; }
 
 .workflow { padding: 0 clamp(20px, 7vw, 110px); display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--ink); }
 .workflow div { padding: 28px 20px; border-left: 1px solid var(--line); display: grid; grid-template-columns: auto 1fr; gap: 5px 14px; }
@@ -71,7 +72,7 @@ main { overflow: hidden; }
 .fork-line span { display: block; width: 100%; border-top: 2px solid var(--ink); position: relative; }
 .fork-line span::after { content: ""; position: absolute; right: -1px; top: -6px; width: 10px; height: 10px; border-top: 2px solid; border-right: 2px solid; transform: rotate(45deg); }
 
-.metric-table { margin-top: 34px; border-top: 1px solid var(--ink); }
+.metric-table { margin-top: 34px; border-top: 1px solid var(--ink); position: relative; }
 .metric-head, .metric-row { display: grid; grid-template-columns: minmax(180px, 2fr) repeat(3, 1fr); align-items: center; min-height: 62px; border-bottom: 1px solid var(--line); }
 .metric-head { min-height: 38px; color: var(--muted); font: 700 10px ui-monospace, monospace; letter-spacing: .12em; }
 .metric-row > span, .metric-head > span:not(:first-child) { text-align: right; }
@@ -108,6 +109,7 @@ main { overflow: hidden; }
 .explain > div { max-width: 780px; }
 .explain p { max-width: 650px; line-height: 1.8; }
 .explain button { flex: 0 0 auto; border: 1px solid var(--ink); background: var(--ink); color: white; padding: 18px 24px; cursor: pointer; font-weight: 800; }
+.explain button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; box-shadow: 0 0 0 6px var(--paper); }
 footer { background: var(--ink); color: white; padding: 28px clamp(20px, 7vw, 110px); display: flex; justify-content: space-between; gap: 30px; font: 700 10px ui-monospace, monospace; letter-spacing: .08em; }
 
 .drawer-layer { position: fixed; inset: 0; z-index: 10; background: rgb(10 25 23 / .62); display: flex; justify-content: flex-end; }
@@ -128,7 +130,7 @@ footer { background: var(--ink); color: white; padding: 28px clamp(20px, 7vw, 11
   .comparison, .tree { padding: 64px 20px; }.section-heading { align-items: start; flex-direction: column; margin-bottom: 30px; }.section-heading h2, .stress h2, .explain h2 { font-size: 38px; }
   .worldline-summary { grid-template-columns: 1fr; }.fork-line { height: 62px; padding: 0 50%; }.fork-line span { height: 100%; width: 0; border-top: 0; border-left: 2px solid var(--ink); }.fork-line span::after { right: -5px; top: auto; bottom: 0; transform: rotate(135deg); }
   .worldline-summary article { min-height: 180px; }.worldline-summary article > strong { font-size: 50px; }
-  .metric-head { display: none; }.metric-row { grid-template-columns: 1fr repeat(3, auto); gap: 12px; min-height: 70px; }.metric-row strong::after { content: "\A BASE / FORK / 差分"; white-space: pre; color: var(--muted); font: 600 9px ui-monospace, monospace; }
+  .metric-head { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }.metric-row { grid-template-columns: 1fr repeat(3, auto); gap: 12px; min-height: 70px; }.metric-row strong::after { content: "\A BASE / FORK / 差分"; white-space: pre; color: var(--muted); font: 600 9px ui-monospace, monospace; }
   .stress { grid-template-columns: 1fr; padding: 62px 20px; }.stress fieldset { min-width: 0; }
   .node summary { grid-template-columns: 1fr auto; gap: 8px; padding: 20px 5px; }.node-kind { grid-column: 1; }.node summary strong { grid-column: 1; }.node-year { grid-column: 2; grid-row: 1 / span 2; }.node summary::after { grid-column: 3; grid-row: 1 / span 2; }.node-detail { padding: 0 5px 20px; }.node-detail p { grid-template-columns: 1fr; gap: 4px; }
   .explain { padding: 62px 20px; flex-direction: column; align-items: stretch; }.explain button { width: 100%; }

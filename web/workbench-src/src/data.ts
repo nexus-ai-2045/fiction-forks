@@ -1,14 +1,24 @@
 import comparisonJson from "../../../artifacts/runs/haruhi-world-observation-comparison.json";
 import delayJson from "../../../artifacts/runs/haruhi-world-observation-contestation-delay.json";
-import interventionJson from "../../../interventions/haruhi-world-observation.json";
+import interventionRaw from "../../../interventions/haruhi-world-observation.json?raw";
 import manifestJson from "../../../artifacts/runs/haruhi-world-observation-fixture.manifest.json";
 import { parseComparisonArtifact, parseInterventionArtifact, parseRunManifest } from "./contract";
 
+async function sha256Hex(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 export const comparison = parseComparisonArtifact(comparisonJson);
 export const contestationDelay = parseComparisonArtifact(delayJson);
-export const intervention = parseInterventionArtifact(interventionJson);
 export const manifest = parseRunManifest(manifestJson);
 
+const interventionDigest = await sha256Hex(interventionRaw);
+if (interventionDigest !== manifest.intervention_artifact_sha256) {
+  throw new Error("rendered intervention digest does not match the canonical manifest");
+}
+
+export const intervention = parseInterventionArtifact(JSON.parse(interventionRaw));
 if (intervention.id !== manifest.intervention_id) throw new Error("rendered intervention does not match the canonical manifest");
 
 const nodeIds = new Set(intervention.technology_tree.nodes.map((node) => node.id));

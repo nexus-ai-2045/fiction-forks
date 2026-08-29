@@ -46,6 +46,7 @@ export interface TechnologyNode {
 }
 
 export interface InterventionArtifact {
+  schema_version: "fiction_forks_intervention.v1";
   id: string;
   fiction_reference: string;
   extracted_function: string;
