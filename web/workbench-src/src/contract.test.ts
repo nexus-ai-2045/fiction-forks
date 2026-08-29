@@ -2,7 +2,7 @@ import comparisonJson from "../../../artifacts/runs/haruhi-world-observation-com
 import delayJson from "../../../artifacts/runs/haruhi-world-observation-contestation-delay.json";
 import interventionJson from "../../../interventions/haruhi-world-observation.json";
 import manifestJson from "../../../artifacts/runs/haruhi-world-observation-fixture.manifest.json";
-import { parseComparisonArtifact, parseInterventionArtifact, parseRunManifest } from "./contract";
+import { parseComparisonArtifact, parseInterventionArtifact, parseRunManifest, validateWorkbenchRelationships } from "./contract";
 
 describe("canonical comparison artifacts", () => {
   it("accepts the normal and named-delay fixtures", () => {
@@ -24,6 +24,11 @@ describe("canonical comparison artifacts", () => {
       ...comparisonJson,
       fork: { ...comparisonJson.fork, collapsed: false, collapse_year: 2036 },
     })).toThrow(/inconsistent/);
+    expect(() => parseComparisonArtifact({ ...comparisonJson, comparison_year: 2036.5 })).toThrow(/integer/);
+    expect(() => parseComparisonArtifact({
+      ...comparisonJson,
+      fork: { ...comparisonJson.fork, technology_delays: { "contested-evidence-protocol": -1 } },
+    })).toThrow(/greater than or equal to 0/);
   });
 
   it("accepts only replay-equivalent non-AI fixture provenance", () => {
@@ -31,5 +36,30 @@ describe("canonical comparison artifacts", () => {
     expect(parseInterventionArtifact(interventionJson).schema_version).toBe("fiction_forks_intervention.v1");
     expect(() => parseRunManifest({ ...manifestJson, ai_measured: true })).toThrow(/fixture manifests/);
     expect(() => parseRunManifest({ ...manifestJson, comparison_artifact_sha256: "spoof" })).toThrow(/SHA|sha|comparison_artifact/);
+  });
+
+  it("fails closed when named-profile meaning drifts across canonical artifacts", () => {
+    const normal = parseComparisonArtifact(comparisonJson);
+    const delay = parseComparisonArtifact(delayJson);
+    const intervention = parseInterventionArtifact(interventionJson);
+    const manifest = parseRunManifest(manifestJson);
+    expect(() => validateWorkbenchRelationships(
+      { ...normal, fork: { ...normal.fork, technology_delays: { "contested-evidence-protocol": 1 } } },
+      delay,
+      intervention,
+      manifest,
+    )).toThrow(/normal profile/);
+    expect(() => validateWorkbenchRelationships(
+      normal,
+      delay,
+      { ...intervention, costs: ["drift"] },
+      manifest,
+    )).toThrow(/declared_costs/);
+    expect(() => validateWorkbenchRelationships(
+      normal,
+      delay,
+      intervention,
+      { ...manifest, scenario_id: "another-scenario" },
+    )).toThrow(/Japan scenario/);
   });
 });

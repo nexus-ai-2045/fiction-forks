@@ -7,6 +7,7 @@ describe("workbench projection", () => {
     expect(screen.getByRole("heading", { name: "同じ2036年、二つの世界" })).toBeInTheDocument();
     expect(screen.getByText("2036年に修復不能条件へ到達。")).toBeInTheDocument();
     expect(screen.getByText(/生活基盤は通常介入で5ポイント悪化/)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "制度の遅延は、技術全体を遅らせる。" })).toBeInTheDocument();
     expect(screen.getByText("2032年に発動し、2036年の比較時点で破滅条件を回避。")).toBeInTheDocument();
     fireEvent.click(screen.getByLabelText(/証拠来歴と対立仮説の公開検証手続を5年遅延/));
     expect(screen.getByText("発動が2037年となり、2036年の破滅条件に間に合いません。")).toBeInTheDocument();

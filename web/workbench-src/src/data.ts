@@ -2,7 +2,7 @@ import comparisonJson from "../../../artifacts/runs/haruhi-world-observation-com
 import delayJson from "../../../artifacts/runs/haruhi-world-observation-contestation-delay.json";
 import interventionRaw from "../../../interventions/haruhi-world-observation.json?raw";
 import manifestJson from "../../../artifacts/runs/haruhi-world-observation-fixture.manifest.json";
-import { parseComparisonArtifact, parseInterventionArtifact, parseRunManifest } from "./contract";
+import { parseComparisonArtifact, parseInterventionArtifact, parseRunManifest, validateWorkbenchRelationships } from "./contract";
 
 async function sha256Hex(text: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -20,6 +20,7 @@ if (interventionDigest !== manifest.intervention_artifact_sha256) {
 
 export const intervention = parseInterventionArtifact(JSON.parse(interventionRaw));
 if (intervention.id !== manifest.intervention_id) throw new Error("rendered intervention does not match the canonical manifest");
+validateWorkbenchRelationships(comparison, contestationDelay, intervention, manifest);
 
 const nodeIds = new Set(intervention.technology_tree.nodes.map((node) => node.id));
 if (nodeIds.size !== intervention.technology_tree.nodes.length) throw new Error("technology node IDs must be unique");
@@ -32,6 +33,7 @@ if (intervention.technology_tree.activation_requires.some((nodeId) => !nodeIds.h
 }
 
 const technologyLabels = new Map(intervention.technology_tree.nodes.map((node) => [node.id, node.label]));
+const technologyKinds = new Map(intervention.technology_tree.nodes.map((node) => [node.id, node.kind]));
 const namedDelayEntries = Object.entries(contestationDelay.fork.technology_delays);
 if (namedDelayEntries.length === 0 || namedDelayEntries.some(([nodeId, years]) => !nodeIds.has(nodeId) || years <= 0)) {
   throw new Error("named delay profile must contain positive delays for canonical technology nodes");
@@ -39,6 +41,9 @@ if (namedDelayEntries.length === 0 || namedDelayEntries.some(([nodeId, years]) =
 export const contestationDelayLabel = namedDelayEntries
   .map(([nodeId, years]) => `${technologyLabels.get(nodeId)}を${years}年遅延`)
   .join("・");
+const kindLabels = { technology: "技術", institution: "制度", operations: "運用" } as const;
+const delayedKinds = [...new Set(namedDelayEntries.map(([nodeId]) => technologyKinds.get(nodeId)))];
+export const contestationDelayHeading = `${delayedKinds.map((kind) => kindLabels[kind!]).join("・")}の遅延は、技術全体を遅らせる。`;
 
 for (const artifact of [comparison, contestationDelay]) {
   if (artifact.engine_version !== manifest.engine_version || artifact.scenario_id !== manifest.scenario_id ||
@@ -53,9 +58,4 @@ for (const artifact of [comparison, contestationDelay]) {
     const expectedDelta = Number((artifact.fork.state_at_comparison_year[key] - artifact.baseline.state_at_comparison_year[key]).toFixed(2));
     if (artifact.state_delta_at_comparison_year[key] !== expectedDelta) throw new Error(`artifact delta is inconsistent for ${key}`);
   }
-}
-
-if (comparison.comparison_year !== contestationDelay.comparison_year ||
-    JSON.stringify(comparison.baseline) !== JSON.stringify(contestationDelay.baseline)) {
-  throw new Error("named stress profiles must share an identical baseline and comparison year");
 }

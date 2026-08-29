@@ -53,6 +53,9 @@ export interface InterventionArtifact {
   implementation_hypothesis: string;
   realization_mode: string;
   prerequisites: string[];
+  costs: string[];
+  side_effects: string[];
+  failure_modes: string[];
   technology_tree: { nodes: TechnologyNode[]; activation_requires: string[] };
 }
 

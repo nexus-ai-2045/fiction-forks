@@ -11,6 +11,10 @@ function assertNumber(record: Record<string, unknown>, key: string): void {
   if (typeof record[key] !== "number" || !Number.isFinite(record[key])) throw new Error(`${key} must be a finite number`);
 }
 
+function assertInteger(record: Record<string, unknown>, key: string): void {
+  if (typeof record[key] !== "number" || !Number.isInteger(record[key])) throw new Error(`${key} must be an integer`);
+}
+
 function assertMetricState(value: unknown, path: string): void {
   if (!isRecord(value)) throw new Error(`${path} must be an object`);
   const actualKeys = Object.keys(value).sort();
@@ -31,17 +35,19 @@ function assertYearOrNull(record: Record<string, unknown>, key: string): void {
   }
 }
 
-function assertNumberRecord(value: unknown, path: string): void {
+function assertIntegerRecord(value: unknown, path: string, minimum: number): void {
   if (!isRecord(value)) throw new Error(`${path} must be an object`);
   Object.entries(value).forEach(([key, item]) => {
-    if (!key || typeof item !== "number" || !Number.isFinite(item)) throw new Error(`${path}.${key} must be a finite number`);
+    if (!key || typeof item !== "number" || !Number.isInteger(item) || item < minimum) {
+      throw new Error(`${path}.${key} must be an integer greater than or equal to ${minimum}`);
+    }
   });
 }
 
 export function parseComparisonArtifact(value: unknown): ComparisonArtifact {
   if (!isRecord(value)) throw new Error("comparison artifact must be an object");
   if (value.schema_version !== "fiction_forks_comparison.v1") throw new Error("unsupported comparison schema_version");
-  ["comparison_year", "seed"].forEach((key) => assertNumber(value, key));
+  ["comparison_year", "seed"].forEach((key) => assertInteger(value, key));
   ["engine_version", "scenario_id", "intervention_id"].forEach((key) => assertString(value, key));
   if (!isRecord(value.baseline) || !isRecord(value.fork)) throw new Error("baseline and fork are required");
   [value.baseline, value.fork].forEach((world, index) => {
@@ -51,9 +57,9 @@ export function parseComparisonArtifact(value: unknown): ComparisonArtifact {
     assertMetricState(world.final_state, `world ${index} final state`);
     assertMetricState(world.state_at_comparison_year, `world ${index} state`);
   });
-  assertNumber(value.fork, "activation_year");
-  assertNumberRecord(value.fork.technology_delays, "technology_delays");
-  assertNumberRecord(value.fork.technology_schedule, "technology_schedule");
+  assertInteger(value.fork, "activation_year");
+  assertIntegerRecord(value.fork.technology_delays, "technology_delays", 0);
+  assertIntegerRecord(value.fork.technology_schedule, "technology_schedule", 0);
   assertMetricState(value.state_delta_at_comparison_year, "delta");
   for (const key of ["declared_costs", "declared_failure_modes", "declared_side_effects"] as const) {
     if (!Array.isArray(value[key]) || !(value[key] as unknown[]).every((item) => typeof item === "string")) {
@@ -71,8 +77,10 @@ export function parseInterventionArtifact(value: unknown): InterventionArtifact 
   for (const key of ["id", "fiction_reference", "extracted_function", "implementation_hypothesis", "realization_mode"]) {
     assertString(value, key);
   }
-  if (!Array.isArray(value.prerequisites) || !value.prerequisites.every((item) => typeof item === "string")) {
-    throw new Error("prerequisites must be a string array");
+  for (const key of ["prerequisites", "costs", "side_effects", "failure_modes"] as const) {
+    if (!Array.isArray(value[key]) || !value[key].every((item) => typeof item === "string")) {
+      throw new Error(`${key} must be a string array`);
+    }
   }
   if (!Array.isArray(value.technology_tree.activation_requires) ||
       !value.technology_tree.activation_requires.every((item) => typeof item === "string")) {
@@ -95,10 +103,43 @@ export function parseRunManifest(value: unknown): RunManifest {
     throw new Error("workbench only accepts replay-equivalent fixture manifests");
   }
   ["engine_version", "scenario_id", "intervention_id"].forEach((key) => assertString(value, key));
-  assertNumber(value, "seed");
+  assertInteger(value, "seed");
   if (typeof value.engine_commit !== "string" || !commitPattern.test(value.engine_commit)) throw new Error("invalid engine_commit");
   for (const key of ["artifact_sha256", "comparison_artifact_sha256", "delay_artifact_sha256", "intervention_artifact_sha256"] as const) {
     if (typeof value[key] !== "string" || !sha256Pattern.test(value[key])) throw new Error(`invalid ${key}`);
   }
   return value as unknown as RunManifest;
+}
+
+export function validateWorkbenchRelationships(
+  normal: ComparisonArtifact,
+  delay: ComparisonArtifact,
+  intervention: InterventionArtifact,
+  manifest: RunManifest,
+): void {
+  if (manifest.scenario_id !== "japan-2036-centralization") {
+    throw new Error("the Japan workbench only accepts the canonical Japan scenario");
+  }
+  if (Object.keys(normal.fork.technology_delays).length !== 0) {
+    throw new Error("the normal profile must not contain technology delays");
+  }
+  const nodeIds = new Set(intervention.technology_tree.nodes.map((node) => node.id));
+  const delayEntries = Object.entries(delay.fork.technology_delays);
+  if (delayEntries.length === 0 || delayEntries.some(([nodeId, years]) => !nodeIds.has(nodeId) || years <= 0)) {
+    throw new Error("named delay profile must contain positive delays for canonical technology nodes");
+  }
+  if (normal.comparison_year !== delay.comparison_year || JSON.stringify(normal.baseline) !== JSON.stringify(delay.baseline)) {
+    throw new Error("named stress profiles must share an identical baseline and comparison year");
+  }
+  for (const artifact of [normal, delay]) {
+    for (const [artifactKey, interventionKey] of [
+      ["declared_costs", "costs"],
+      ["declared_side_effects", "side_effects"],
+      ["declared_failure_modes", "failure_modes"],
+    ] as const) {
+      if (JSON.stringify(artifact[artifactKey]) !== JSON.stringify(intervention[interventionKey])) {
+        throw new Error(`${artifactKey} does not match the canonical intervention`);
+      }
+    }
+  }
 }
