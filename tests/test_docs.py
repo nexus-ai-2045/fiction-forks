@@ -22,6 +22,8 @@ class DocumentationContractTests(unittest.TestCase):
             "docs/social-simulation.md",
             "docs/adr/README.md",
             "catalogs/intervention-templates.v1.json",
+            "catalogs/idea-status.v1.json",
+            "fixtures/participation/public-tools-idea-draft.v1.json",
             "RESULTS.md",
             "web/index.html",
             "web/styles.css",
@@ -101,6 +103,7 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertIn("Origin: null", security)
         self.assertIn("同時run数", security)
         self.assertIn("Issue open/closedだけで推定しない", ssot)
+        self.assertIn("catalogs/idea-status.v1.json", ssot)
 
         prohibited = adr.split("## Prohibited", 1)[1].split(
             "## Human Review Gate", 1
@@ -120,7 +123,7 @@ class DocumentationContractTests(unittest.TestCase):
             catalog["schema_version"],
             "fiction_forks_preview_template_catalog.v1",
         )
-        self.assertEqual(catalog["catalog_version"], 1)
+        self.assertEqual(catalog["catalog_version"], 2)
         scenario = json.loads(
             (ROOT / "scenarios/japan-2036/scenario.json").read_text(
                 encoding="utf-8"

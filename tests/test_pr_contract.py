@@ -40,6 +40,7 @@ class PullRequestContractTests(unittest.TestCase):
                 {
                     "schema_version": "fiction_forks_preview_template_catalog.v1",
                     "catalog_version": 1,
+                    "catalog_id": "test-preview-templates",
                     "templates": [
                         {
                             "template_id": "fixed-preview.v1",
@@ -49,6 +50,9 @@ class PullRequestContractTests(unittest.TestCase):
                             "intervention_id": "fixed-preview",
                             "intervention_path": "interventions/fixed-preview.json",
                             "intervention_sha256": digest_override or digest,
+                            "abstract_function": "fixed preview",
+                            "target_doom": "fixed doom",
+                            "side_effect_candidates": ["fixed side effect"],
                             "requires_user_confirmation": True,
                             "idea_text_changes_engine_inputs": False,
                             "allowed_seeds": [2036],
@@ -58,6 +62,11 @@ class PullRequestContractTests(unittest.TestCase):
                 }
             ),
             encoding="utf-8",
+        )
+        scenario_path = root / "scenarios/test/scenario.json"
+        scenario_path.parent.mkdir(parents=True, exist_ok=True)
+        scenario_path.write_text(
+            json.dumps({"id": "japan-2036-centralization"}), encoding="utf-8"
         )
         return "catalogs/intervention-templates.v1.json"
 
@@ -194,7 +203,7 @@ class PullRequestContractTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             catalog = self._write_preview_catalog(root, digest_override="0" * 64)
-            with self.assertRaisesRegex(ContractError, "SHA-256"):
+            with self.assertRaisesRegex(ContractError, "sha256"):
                 validate_contract(
                     "maintenance",
                     [Change("M", catalog)],
@@ -221,6 +230,42 @@ class PullRequestContractTests(unittest.TestCase):
                 [Change("A", "catalogs/unreviewed.json")],
                 root=Path("."),
             )
+
+    def test_maintenance_validates_idea_status_catalog_as_explicit_scope(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = root / "catalogs/idea-status.v1.json"
+            catalog.parent.mkdir(parents=True)
+            catalog.write_text(
+                json.dumps(
+                    {
+                        "schema_version": "fiction_forks_idea_status_projection.v1",
+                        "observed_at": "2026-08-28",
+                        "repository": "nexus-ai-2045/fiction-forks",
+                        "ideas": [],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            result = validate_contract(
+                "maintenance",
+                [Change("A", "catalogs/idea-status.v1.json")],
+                root=root,
+            )
+        self.assertEqual(result.kind, "maintenance")
+
+    def test_maintenance_rejects_invalid_idea_status_catalog(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            catalog = root / "catalogs/idea-status.v1.json"
+            catalog.parent.mkdir(parents=True)
+            catalog.write_text("{}", encoding="utf-8")
+            with self.assertRaisesRegex(ContractError, "missing fields"):
+                validate_contract(
+                    "maintenance",
+                    [Change("A", "catalogs/idea-status.v1.json")],
+                    root=root,
+                )
 
     def test_worldline_rejects_preview_catalog_change(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

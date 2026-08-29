@@ -9,6 +9,7 @@ from typing import Sequence
 
 from .engine import ContractError, compare_worlds, load_json, simulate
 from .providers import FixtureProvider, OpenAIProvider, ProviderError, ReplayProvider
+from .participation import load_template_catalog, prepare_provisional_request
 from .social import run_social_simulation
 
 
@@ -76,6 +77,16 @@ def build_parser() -> argparse.ArgumentParser:
     social_parser.add_argument("--confirm-live", action="store_true")
     social_parser.add_argument("--seed", type=int, default=2036)
     _add_output_options(social_parser)
+    preview_parser = subparsers.add_parser(
+        "prepare-preview", help="確認済みIdeaDraftを暫定run requestへ変換する"
+    )
+    preview_parser.add_argument("--idea-draft", required=True)
+    preview_parser.add_argument("--catalog", required=True)
+    preview_parser.add_argument("--template-confirmation", required=True)
+    preview_parser.add_argument("--template-id", required=True)
+    preview_parser.add_argument("--seed", type=int, required=True)
+    preview_parser.add_argument("--delay-profile", required=True)
+    preview_parser.add_argument("--repo-root", default=".")
     return parser
 
 
@@ -114,6 +125,18 @@ def _write_output(path_value: str, rendered: str, *, overwrite: bool) -> None:
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        if args.command == "prepare-preview":
+            result = prepare_provisional_request(
+                load_json(args.idea_draft),
+                load_template_catalog(args.catalog, root=args.repo_root),
+                load_json(args.template_confirmation),
+                root=args.repo_root,
+                template_id=args.template_id,
+                seed=args.seed,
+                delay_profile=args.delay_profile,
+            )
+            print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+            return 0 if result["status"] == "ready" else 3
         scenario = load_json(args.scenario)
         intervention = load_json(args.intervention) if args.intervention else None
         if args.command == "social":

@@ -180,3 +180,16 @@ Webはルールエンジンの状態を所有しない。現在の参加面は�
 | 1.0条件 | 公開運用、複数worldline、公式result browser、費用・安全・moderation runbook | 人間レビュー済みの運用証拠が揃う |
 
 0.4は複数PRをまとめる一つのmilestoneであり、文書や小機能ごとに版を上げない。版番号は到達点だけで自動決定せず、[VERSIONING.md](../VERSIONING.md) の互換性規則に従う。
+
+### 0.4の実装順
+
+0.4は次の依存順で進める。後段が前段の契約を独自に再実装しないことを各PRの判定条件にする。
+
+1. Python契約基盤: `IdeaDraft`、preview catalog、`ProvisionalRunRequest`、`RunSummary`、Idea状態projection
+2. Guided参加ループ: 理解確認、本人確認、`not-simulatable`、Issue handoff
+3. Web workbench: React + TypeScript projection、Doom Map、Result Browser。Python fixtureとのcross-language検証を必須にする
+4. 実行transport: public非同期Actionsとlocal loopbackを、同じrequest/result契約へ接続する
+5. 公式結果還流: exact `main` run、artifact digest、元Issueへの`reported-back`
+6. 次シーズン: `DoomLevelContract`と人間レビュー済み`doom-candidate`
+
+Issue #12は1段目のIdea状態projectionへ`listed`として取り込む。タケコプターの自由飛行は、既存の公共道具アクセスと作品レンズを共有するが、同じ介入とは未確定である。抽象機能、対象doom、完成証拠、副作用・失敗条件をguided対話で本人確認するまで、既存templateへ写像せず`not-ready`を維持する。
