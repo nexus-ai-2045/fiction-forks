@@ -27,6 +27,14 @@ describe("canonical comparison artifacts", () => {
     expect(() => parseComparisonArtifact({ ...comparisonJson, comparison_year: 2036.5 })).toThrow(/integer/);
     expect(() => parseComparisonArtifact({
       ...comparisonJson,
+      baseline: { ...comparisonJson.baseline, final_state: { ...comparisonJson.baseline.final_state, legitimacy: 101 } },
+    })).toThrow(/between 0 and 100/);
+    expect(() => parseComparisonArtifact({
+      ...comparisonJson,
+      state_delta_at_comparison_year: { ...comparisonJson.state_delta_at_comparison_year, legitimacy: -101 },
+    })).not.toThrow();
+    expect(() => parseComparisonArtifact({
+      ...comparisonJson,
       fork: { ...comparisonJson.fork, technology_delays: { "contested-evidence-protocol": -1 } },
     })).toThrow(/greater than or equal to 0/);
   });
@@ -67,5 +75,17 @@ describe("canonical comparison artifacts", () => {
       intervention,
       manifest,
     )).toThrow(/schedule/);
+    expect(() => validateWorkbenchRelationships(
+      { ...normal, fork: { ...normal.fork, technology_schedule: { ...normal.fork.technology_schedule, "cross-observer-anomaly-drills": 2030 } } },
+      delay,
+      intervention,
+      manifest,
+    )).toThrow(/normal technology schedule|normal activation year/);
+    expect(() => validateWorkbenchRelationships(
+      { ...normal, fork: { ...normal.fork, activation_year: 2031 } },
+      delay,
+      intervention,
+      manifest,
+    )).toThrow(/normal activation year/);
   });
 });

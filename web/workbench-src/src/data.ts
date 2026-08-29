@@ -43,7 +43,18 @@ export const contestationDelayLabel = namedDelayEntries
   .join("・");
 const kindLabels = { technology: "技術", institution: "制度", operations: "運用" } as const;
 const delayedKinds = [...new Set(namedDelayEntries.map(([nodeId]) => technologyKinds.get(nodeId)))];
-export const contestationDelayHeading = `${delayedKinds.map((kind) => kindLabels[kind!]).join("・")}の遅延は、技術全体を遅らせる。`;
+const delayedKindLabel = delayedKinds.map((kind) => kindLabels[kind!]).join("・");
+export function describeActivationDelay(kindLabel: string, normalYear: number, delayYear: number): string {
+  const activationDelayYears = delayYear - normalYear;
+  return activationDelayYears === 0
+    ? `${kindLabel}を遅らせても、発動年は変わらない。`
+    : `${kindLabel}の遅延が、発動を${activationDelayYears}年遅らせる。`;
+}
+export const contestationDelayHeading = describeActivationDelay(
+  delayedKindLabel,
+  comparison.fork.activation_year,
+  contestationDelay.fork.activation_year,
+);
 
 for (const artifact of [comparison, contestationDelay]) {
   if (artifact.engine_version !== manifest.engine_version || artifact.scenario_id !== manifest.scenario_id ||

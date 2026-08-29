@@ -53,7 +53,7 @@ function TechnologyTree({ artifact }: { artifact: ComparisonArtifact }) {
   </section>;
 }
 
-function ProvenanceDrawer({ open, onClose, artifact }: { open: boolean; onClose: () => void; artifact: ComparisonArtifact }) {
+function ProvenanceDrawer({ open, onClose, artifact, replayVerified }: { open: boolean; onClose: () => void; artifact: ComparisonArtifact; replayVerified: boolean }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => { if (open) closeRef.current?.focus(); }, [open]);
   if (!open) return null;
@@ -71,7 +71,7 @@ function ProvenanceDrawer({ open, onClose, artifact }: { open: boolean; onClose:
     }}>
       <button ref={closeRef} className="drawer-close" type="button" onClick={onClose} aria-label="根拠を閉じる">×</button>
       <span>EXPLAIN / PROVENANCE</span><h2 id="drawer-title">この比較の根拠と限界</h2>
-      <dl className="provenance"><div><dt>artifact</dt><dd>{manifest.run_kind.toUpperCase()} / AI実測ではない</dd></div><div><dt>schema</dt><dd>{artifact.schema_version}</dd></div><div><dt>engine</dt><dd>{artifact.engine_version}</dd></div><div><dt>engine commit</dt><dd>{manifest.engine_commit}</dd></div><div><dt>scenario</dt><dd>{artifact.scenario_id}</dd></div><div><dt>intervention</dt><dd>{artifact.intervention_id}</dd></div><div><dt>seed</dt><dd>{artifact.seed}</dd></div><div><dt>comparison SHA-256</dt><dd>{manifest.comparison_artifact_sha256}</dd></div><div><dt>delay SHA-256</dt><dd>{manifest.delay_artifact_sha256}</dd></div><div><dt>intervention SHA-256</dt><dd>{manifest.intervention_artifact_sha256}</dd></div><div><dt>replay</dt><dd>同値検証済み</dd></div></dl>
+      <dl className="provenance"><div><dt>artifact</dt><dd>{manifest.run_kind.toUpperCase()} / AI実測ではない</dd></div><div><dt>schema</dt><dd>{artifact.schema_version}</dd></div><div><dt>engine</dt><dd>{artifact.engine_version}</dd></div><div><dt>engine commit</dt><dd>{manifest.engine_commit}</dd></div><div><dt>scenario</dt><dd>{artifact.scenario_id}</dd></div><div><dt>intervention</dt><dd>{artifact.intervention_id}</dd></div><div><dt>seed</dt><dd>{artifact.seed}</dd></div><div><dt>comparison SHA-256</dt><dd>{manifest.comparison_artifact_sha256}</dd></div><div><dt>delay SHA-256</dt><dd>{manifest.delay_artifact_sha256}</dd></div><div><dt>intervention SHA-256</dt><dd>{manifest.intervention_artifact_sha256}</dd></div><div><dt>evidence</dt><dd>{replayVerified ? "fixture replay同値検証済み" : "canonical digest検証済み（replay未検証）"}</dd></div></dl>
       <h3>費用</h3><ul>{artifact.declared_costs.map((item) => <li key={item}>{item}</li>)}</ul>
       <h3>副作用</h3><ul>{artifact.declared_side_effects.map((item) => <li key={item}>{item}</li>)}</ul>
       <h3>失敗条件</h3><ul>{artifact.declared_failure_modes.map((item) => <li key={item}>{item}</li>)}</ul>
@@ -117,7 +117,7 @@ export function App() {
         <div className="worldline-summary">
           <article><span>BASELINE / 無介入</span><strong>{artifact.comparison_year}</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>{baselineSummary}</p></article>
           <div className="fork-line" aria-hidden="true"><span></span></div>
-          <article className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / 複数の独立観測と異議申立て</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{activationSummary}</p></article>
+          <article aria-label="介入世界" className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / {intervention.extracted_function}</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{activationSummary}</p></article>
         </div>
         <MetricRows artifact={artifact} />
       </section>
@@ -138,6 +138,6 @@ export function App() {
       </section>
     </main>
     <footer><span>FIXTURE PROJECTION — ENGINE LOGIC IS NOT IMPLEMENTED IN THIS UI</span><a href="../">自分のアイデアをIdea Builderで話す →</a></footer>
-    <ProvenanceDrawer open={drawerOpen} onClose={() => { setDrawerOpen(false); requestAnimationFrame(() => explainButtonRef.current?.focus()); }} artifact={artifact} />
+    <ProvenanceDrawer open={drawerOpen} onClose={() => { setDrawerOpen(false); requestAnimationFrame(() => explainButtonRef.current?.focus()); }} artifact={artifact} replayVerified={!delayed} />
   </>;
 }

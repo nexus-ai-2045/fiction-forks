@@ -44,6 +44,13 @@ function assertIntegerRecord(value: unknown, path: string, minimum: number): voi
   });
 }
 
+function assertBoundedState(value: unknown, path: string): void {
+  assertMetricState(value, path);
+  for (const [key, item] of Object.entries(value as Record<string, number>)) {
+    if (item < 0 || item > 100) throw new Error(`${path}.${key} must be between 0 and 100`);
+  }
+}
+
 export function parseComparisonArtifact(value: unknown): ComparisonArtifact {
   if (!isRecord(value)) throw new Error("comparison artifact must be an object");
   if (value.schema_version !== "fiction_forks_comparison.v1") throw new Error("unsupported comparison schema_version");
@@ -54,8 +61,8 @@ export function parseComparisonArtifact(value: unknown): ComparisonArtifact {
     if (typeof world.collapsed !== "boolean") throw new Error(`world ${index} collapsed must be boolean`);
     assertYearOrNull(world, "collapse_year");
     if (world.collapsed !== (world.collapse_year !== null)) throw new Error(`world ${index} collapse state is inconsistent`);
-    assertMetricState(world.final_state, `world ${index} final state`);
-    assertMetricState(world.state_at_comparison_year, `world ${index} state`);
+    assertBoundedState(world.final_state, `world ${index} final state`);
+    assertBoundedState(world.state_at_comparison_year, `world ${index} state`);
   });
   assertInteger(value.fork, "activation_year");
   assertIntegerRecord(value.fork.technology_delays, "technology_delays", 0);
@@ -125,11 +132,29 @@ export function validateWorkbenchRelationships(
     throw new Error("the normal profile must not contain technology delays");
   }
   const nodeIds = new Set(intervention.technology_tree.nodes.map((node) => node.id));
+  const nodes = new Map(intervention.technology_tree.nodes.map((node) => [node.id, node]));
+  for (const node of intervention.technology_tree.nodes) {
+    const normalYear = normal.fork.technology_schedule[node.id];
+    if (normalYear === undefined) throw new Error("normal technology schedule does not cover the canonical technology tree");
+    for (const dependencyId of node.depends_on.filter((id) => nodes.has(id))) {
+      if (normalYear < normal.fork.technology_schedule[dependencyId] + node.lead_time_years) {
+        throw new Error("normal technology schedule violates canonical dependencies");
+      }
+    }
+  }
+  if (Object.keys(normal.fork.technology_schedule).length !== nodeIds.size) {
+    throw new Error("normal technology schedule does not cover exactly the canonical technology tree");
+  }
+  const normalActivationYear = Math.max(
+    ...intervention.technology_tree.activation_requires.map((nodeId) => normal.fork.technology_schedule[nodeId]),
+  );
+  if (normal.fork.activation_year !== normalActivationYear) {
+    throw new Error("normal activation year does not match its technology schedule");
+  }
   const delayEntries = Object.entries(delay.fork.technology_delays);
   if (delayEntries.length === 0 || delayEntries.some(([nodeId, years]) => !nodeIds.has(nodeId) || years <= 0)) {
     throw new Error("named delay profile must contain positive delays for canonical technology nodes");
   }
-  const nodes = new Map(intervention.technology_tree.nodes.map((node) => [node.id, node]));
   const expectedSchedule = new Map<string, number>();
   const visiting = new Set<string>();
   const projectCompletionYear = (nodeId: string): number => {
