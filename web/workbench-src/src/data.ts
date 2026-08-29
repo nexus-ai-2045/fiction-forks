@@ -9,6 +9,8 @@ export const contestationDelay = parseComparisonArtifact(delayJson);
 export const intervention = parseInterventionArtifact(interventionJson);
 export const manifest = parseRunManifest(manifestJson);
 
+if (intervention.id !== manifest.intervention_id) throw new Error("rendered intervention does not match the canonical manifest");
+
 const nodeIds = new Set(intervention.technology_tree.nodes.map((node) => node.id));
 if (nodeIds.size !== intervention.technology_tree.nodes.length) throw new Error("technology node IDs must be unique");
 const dependencyIds = new Set([...nodeIds, ...intervention.prerequisites]);
@@ -29,7 +31,12 @@ for (const artifact of [comparison, contestationDelay]) {
     throw new Error("artifact technology schedule does not cover the canonical technology tree");
   }
   for (const key of Object.keys(artifact.state_delta_at_comparison_year) as Array<keyof typeof artifact.state_delta_at_comparison_year>) {
-    const expectedDelta = artifact.fork.state_at_comparison_year[key] - artifact.baseline.state_at_comparison_year[key];
+    const expectedDelta = Number((artifact.fork.state_at_comparison_year[key] - artifact.baseline.state_at_comparison_year[key]).toFixed(2));
     if (artifact.state_delta_at_comparison_year[key] !== expectedDelta) throw new Error(`artifact delta is inconsistent for ${key}`);
   }
+}
+
+if (comparison.comparison_year !== contestationDelay.comparison_year ||
+    JSON.stringify(comparison.baseline) !== JSON.stringify(contestationDelay.baseline)) {
+  throw new Error("named stress profiles must share an identical baseline and comparison year");
 }

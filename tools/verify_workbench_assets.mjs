@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 const expected = {
   comparison_artifact_path: "artifacts/runs/haruhi-world-observation-comparison.json",
   delay_artifact_path: "artifacts/runs/haruhi-world-observation-contestation-delay.json",
+  intervention_artifact_path: "interventions/haruhi-world-observation.json",
 };
 
 export async function verifyWorkbenchAssets(root) {
@@ -22,6 +23,10 @@ export async function verifyWorkbenchAssets(root) {
     const hashKey = pathKey.replace("_path", "_sha256");
     if (actual !== manifest[hashKey]) throw new Error(`${relativePath} SHA-256 does not match the canonical manifest`);
     const artifact = JSON.parse(bytes.toString("utf8"));
+    if (pathKey === "intervention_artifact_path") {
+      if (artifact.id !== manifest.intervention_id) throw new Error(`${relativePath} id does not match the canonical manifest`);
+      continue;
+    }
     for (const key of ["engine_version", "scenario_id", "intervention_id", "seed"]) {
       if (artifact[key] !== manifest[key]) throw new Error(`${relativePath} ${key} does not match the canonical manifest`);
     }

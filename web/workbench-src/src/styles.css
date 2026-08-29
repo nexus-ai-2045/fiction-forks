@@ -44,7 +44,8 @@ main { overflow: hidden; }
 .hero-status > span:first-child { font: 700 12px ui-monospace, monospace; letter-spacing: .18em; }
 .hero-status strong { font-size: 20px; line-height: 1.5; }
 .state-mark { display: inline-flex; align-items: center; width: fit-content; gap: 7px; font-size: 12px; font-weight: 800; letter-spacing: .04em; }
-.state-mark.is-collapse { color: #d56b5d; }
+.state-mark.is-collapse { color: var(--danger); }
+.hero .state-mark.is-collapse { color: #ff8f80; }
 .state-mark.is-avoided { color: #4ab8a8; }
 
 .workflow { padding: 0 clamp(20px, 7vw, 110px); display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--ink); }
@@ -85,6 +86,7 @@ main { overflow: hidden; }
 .stress label { display: block; border: 1px solid #7b9893; margin-top: -1px; cursor: pointer; }
 .stress label.selected { background: var(--paper); color: var(--ink); border-color: var(--yellow); position: relative; }
 .stress label input { position: absolute; opacity: 0; }
+.stress label:has(input:focus-visible) { outline: 3px solid var(--yellow); outline-offset: 3px; position: relative; z-index: 1; }
 .stress label span { display: flex; flex-direction: column; gap: 5px; padding: 18px 20px; font-size: 12px; }
 .stress label strong { font-size: 15px; }
 

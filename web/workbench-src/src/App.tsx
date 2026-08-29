@@ -24,14 +24,14 @@ function StateMark({ collapsed }: { collapsed: boolean }) {
 
 function MetricRows({ artifact }: { artifact: ComparisonArtifact }) {
   return <div className="metric-table" role="table" aria-label={`${artifact.comparison_year}年の5指標比較`}>
-    <div className="metric-head" role="row"><span>指標</span><span>BASELINE</span><span>FORK</span><span>差分</span></div>
+    <div className="metric-head" role="row"><span role="columnheader">指標</span><span role="columnheader">BASELINE</span><span role="columnheader">FORK</span><span role="columnheader">差分</span></div>
     {metricKeys.map((key) => {
       const delta = artifact.state_delta_at_comparison_year[key];
       return <div className="metric-row" role="row" key={key}>
-        <strong>{metricLabels[key]}</strong>
-        <span>{artifact.baseline.state_at_comparison_year[key]}</span>
-        <span>{artifact.fork.state_at_comparison_year[key]}</span>
-        <span className={delta > 0 ? "positive" : delta < 0 ? "negative" : "neutral"}>{delta > 0 ? "+" : ""}{delta}</span>
+        <strong role="rowheader">{metricLabels[key]}</strong>
+        <span role="cell">{artifact.baseline.state_at_comparison_year[key]}</span>
+        <span role="cell">{artifact.fork.state_at_comparison_year[key]}</span>
+        <span role="cell" className={delta > 0 ? "positive" : delta < 0 ? "negative" : "neutral"}>{delta > 0 ? "+" : ""}{delta}</span>
       </div>;
     })}
   </div>;
@@ -71,7 +71,7 @@ function ProvenanceDrawer({ open, onClose, artifact }: { open: boolean; onClose:
     }}>
       <button ref={closeRef} className="drawer-close" type="button" onClick={onClose} aria-label="根拠を閉じる">×</button>
       <span>EXPLAIN / PROVENANCE</span><h2 id="drawer-title">この比較の根拠と限界</h2>
-      <dl className="provenance"><div><dt>artifact</dt><dd>{manifest.run_kind.toUpperCase()} / AI実測ではない</dd></div><div><dt>schema</dt><dd>{artifact.schema_version}</dd></div><div><dt>engine</dt><dd>{artifact.engine_version}</dd></div><div><dt>engine commit</dt><dd>{manifest.engine_commit}</dd></div><div><dt>scenario</dt><dd>{artifact.scenario_id}</dd></div><div><dt>intervention</dt><dd>{artifact.intervention_id}</dd></div><div><dt>seed</dt><dd>{artifact.seed}</dd></div><div><dt>comparison SHA-256</dt><dd>{manifest.comparison_artifact_sha256}</dd></div><div><dt>delay SHA-256</dt><dd>{manifest.delay_artifact_sha256}</dd></div><div><dt>replay</dt><dd>同値検証済み</dd></div></dl>
+      <dl className="provenance"><div><dt>artifact</dt><dd>{manifest.run_kind.toUpperCase()} / AI実測ではない</dd></div><div><dt>schema</dt><dd>{artifact.schema_version}</dd></div><div><dt>engine</dt><dd>{artifact.engine_version}</dd></div><div><dt>engine commit</dt><dd>{manifest.engine_commit}</dd></div><div><dt>scenario</dt><dd>{artifact.scenario_id}</dd></div><div><dt>intervention</dt><dd>{artifact.intervention_id}</dd></div><div><dt>seed</dt><dd>{artifact.seed}</dd></div><div><dt>comparison SHA-256</dt><dd>{manifest.comparison_artifact_sha256}</dd></div><div><dt>delay SHA-256</dt><dd>{manifest.delay_artifact_sha256}</dd></div><div><dt>intervention SHA-256</dt><dd>{manifest.intervention_artifact_sha256}</dd></div><div><dt>replay</dt><dd>同値検証済み</dd></div></dl>
       <h3>費用</h3><ul>{artifact.declared_costs.map((item) => <li key={item}>{item}</li>)}</ul>
       <h3>副作用</h3><ul>{artifact.declared_side_effects.map((item) => <li key={item}>{item}</li>)}</ul>
       <h3>失敗条件</h3><ul>{artifact.declared_failure_modes.map((item) => <li key={item}>{item}</li>)}</ul>
@@ -85,6 +85,9 @@ export function App() {
   const explainButtonRef = useRef<HTMLButtonElement>(null);
   const artifact = profile === "normal" ? comparison : contestationDelay;
   const delayed = profile === "delay";
+  const activationSummary = artifact.fork.collapsed
+    ? `発動が${artifact.fork.activation_year}年となり、${artifact.fork.collapse_year ?? artifact.comparison_year}年の破滅条件に間に合いません。`
+    : `${artifact.fork.activation_year}年に発動し、${artifact.comparison_year}年の比較時点で破滅条件を回避。`;
 
   return <>
     <a className="skip-link" href="#comparison">比較結果へ移動</a>
@@ -105,9 +108,9 @@ export function App() {
       <section className="comparison" id="comparison" aria-labelledby="comparison-title">
         <div className="section-heading"><div><span>OBSERVE → FORK</span><h2 id="comparison-title">同じ2036年、二つの世界</h2></div><p>未来予測ではなく、同じseedのモデル結果を比較しています。</p></div>
         <div className="worldline-summary">
-          <article><span>BASELINE / 無介入</span><strong>2036</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>修復能力の喪失が破滅条件へ到達。</p></article>
+          <article><span>BASELINE / 無介入</span><strong>{artifact.comparison_year}</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>修復能力の喪失が破滅条件へ到達。</p></article>
           <div className="fork-line" aria-hidden="true"><span></span></div>
-          <article className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / 複数の独立観測と異議申立て</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{delayed ? "発動が2037年となり、2036年に間に合いません。" : "2032年に発動し、このモデルでは破滅条件を回避。"}</p></article>
+          <article className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / 複数の独立観測と異議申立て</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{activationSummary}</p></article>
         </div>
         <MetricRows artifact={artifact} />
       </section>
@@ -115,8 +118,8 @@ export function App() {
       <section className="stress" aria-labelledby="stress-title">
         <div><span>STRESS / NAMED PROFILE</span><h2 id="stress-title">制度の遅延は、技術全体を遅らせる。</h2><p>自由な数値入力ではなく、検証済みartifactに対応するnamed profileだけを切り替えます。</p></div>
         <fieldset><legend>遅延条件</legend>
-          <label className={profile === "normal" ? "selected" : ""}><input type="radio" name="profile" value="normal" checked={profile === "normal"} onChange={() => setProfile("normal")} /><span><strong>遅延なし</strong>発動 2032 / 回避</span></label>
-          <label className={profile === "delay" ? "selected" : ""}><input type="radio" name="profile" value="delay" checked={profile === "delay"} onChange={() => setProfile("delay")} /><span><strong>異議申立て制度を5年遅延</strong>発動 2037 / 間に合わない</span></label>
+          <label className={profile === "normal" ? "selected" : ""}><input type="radio" name="profile" value="normal" checked={profile === "normal"} onChange={() => setProfile("normal")} /><span><strong>遅延なし</strong>発動 {comparison.fork.activation_year} / {comparison.fork.collapsed ? "間に合わない" : "回避"}</span></label>
+          <label className={profile === "delay" ? "selected" : ""}><input type="radio" name="profile" value="delay" checked={profile === "delay"} onChange={() => setProfile("delay")} /><span><strong>異議申立て制度を5年遅延</strong>発動 {contestationDelay.fork.activation_year} / {contestationDelay.fork.collapsed ? "間に合わない" : "回避"}</span></label>
         </fieldset>
       </section>
 

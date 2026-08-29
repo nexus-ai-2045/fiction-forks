@@ -96,7 +96,7 @@ export function parseRunManifest(value: unknown): RunManifest {
   ["engine_version", "scenario_id", "intervention_id"].forEach((key) => assertString(value, key));
   assertNumber(value, "seed");
   if (typeof value.engine_commit !== "string" || !commitPattern.test(value.engine_commit)) throw new Error("invalid engine_commit");
-  for (const key of ["artifact_sha256", "comparison_artifact_sha256", "delay_artifact_sha256"] as const) {
+  for (const key of ["artifact_sha256", "comparison_artifact_sha256", "delay_artifact_sha256", "intervention_artifact_sha256"] as const) {
     if (typeof value[key] !== "string" || !sha256Pattern.test(value[key])) throw new Error(`invalid ${key}`);
   }
   return value as unknown as RunManifest;

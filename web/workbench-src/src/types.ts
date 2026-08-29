@@ -67,5 +67,6 @@ export interface RunManifest {
   artifact_sha256: string;
   comparison_artifact_sha256: string;
   delay_artifact_sha256: string;
+  intervention_artifact_sha256: string;
   replay_equivalent: true;
 }
