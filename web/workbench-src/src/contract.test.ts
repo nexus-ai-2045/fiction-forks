@@ -13,6 +13,9 @@ describe("canonical comparison artifacts", () => {
   it("fails closed for unknown contracts", () => {
     expect(() => parseComparisonArtifact({ ...comparisonJson, schema_version: "v2" })).toThrow(/schema_version/);
     expect(() => parseInterventionArtifact({ ...interventionJson, schema_version: "v2" })).toThrow(/schema_version/);
+    expect(() => parseInterventionArtifact({ ...interventionJson, costs: [] })).toThrow(/non-empty/);
+    expect(() => parseInterventionArtifact({ ...interventionJson, failure_modes: ["   "] })).toThrow(/non-blank/);
+    expect(() => parseComparisonArtifact({ ...comparisonJson, declared_side_effects: [] })).toThrow(/non-empty/);
   });
 
   it("fails closed when a rendered schedule or collapse state is malformed", () => {

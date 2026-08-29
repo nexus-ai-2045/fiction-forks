@@ -17,21 +17,24 @@
 }
 
 * { box-sizing: border-box; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 html { scroll-behavior: smooth; }
 body { margin: 0; min-width: 320px; background: var(--paper); }
 a { color: inherit; }
 button, input { font: inherit; }
 button, summary, label { -webkit-tap-highlight-color: transparent; }
-:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 
 .skip-link { position: fixed; top: -60px; left: 16px; z-index: 20; background: var(--ink); color: white; padding: 12px 16px; }
 .skip-link:focus { top: 12px; }
+.skip-link:focus-visible, footer a:focus-visible { outline-color: var(--yellow); }
 
 .topbar { min-height: 76px; padding: 0 clamp(20px, 5vw, 72px); border-bottom: 1px solid var(--ink); display: flex; align-items: center; justify-content: space-between; background: var(--paper); }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-size: 13px; font-weight: 900; letter-spacing: .13em; }
 .brand small { display: block; color: var(--fork); font-size: 9px; letter-spacing: .2em; margin-top: 3px; }
 .branch-glyph { font-size: 34px; color: var(--fork); line-height: 1; }
 .topbar nav { display: flex; gap: 28px; font-size: 12px; font-weight: 700; }
+.topbar nav a, footer a { display: inline-flex; align-items: center; min-height: 44px; }
 
 main { overflow: hidden; }
 .hero { min-height: 430px; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, .7fr); gap: 8vw; align-items: end; padding: 80px clamp(20px, 7vw, 110px) 64px; background: var(--ink); color: white; position: relative; }
@@ -68,6 +71,7 @@ main { overflow: hidden; }
 .worldline-summary article p { color: var(--muted); margin: auto 0 0; }
 .fork-world { border-color: var(--fork) !important; background: var(--fork-soft); }
 .fork-world.is-late { border-color: var(--danger) !important; background: var(--danger-soft); }
+.fork-world.is-late p { color: var(--ink); }
 .fork-line { display: flex; align-items: center; padding: 0 14px; }
 .fork-line span { display: block; width: 100%; border-top: 2px solid var(--ink); position: relative; }
 .fork-line span::after { content: ""; position: absolute; right: -1px; top: -6px; width: 10px; height: 10px; border-top: 2px solid; border-right: 2px solid; transform: rotate(45deg); }
@@ -88,6 +92,7 @@ main { overflow: hidden; }
 .stress label.selected { background: var(--paper); color: var(--ink); border-color: var(--yellow); position: relative; }
 .stress label input { position: absolute; opacity: 0; }
 .stress label:has(input:focus-visible) { outline: 3px solid var(--yellow); outline-offset: 3px; position: relative; z-index: 1; }
+.stress label.selected:has(input:focus-visible) { outline-color: var(--ink); box-shadow: 0 0 0 6px var(--paper); }
 .stress label span { display: flex; flex-direction: column; gap: 5px; padding: 18px 20px; font-size: 12px; }
 .stress label strong { font-size: 15px; }
 
@@ -107,6 +112,7 @@ main { overflow: hidden; }
 
 .explain { padding: 80px clamp(20px, 7vw, 110px); display: flex; justify-content: space-between; align-items: end; gap: 40px; background: var(--yellow); }
 .explain > div { max-width: 780px; }
+.explain > div > span { color: var(--ink); }
 .explain p { max-width: 650px; line-height: 1.8; }
 .explain button { flex: 0 0 auto; border: 1px solid var(--ink); background: var(--ink); color: white; padding: 18px 24px; cursor: pointer; font-weight: 800; }
 .explain button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; box-shadow: 0 0 0 6px var(--paper); }
@@ -114,7 +120,8 @@ footer { background: var(--ink); color: white; padding: 28px clamp(20px, 7vw, 11
 
 .drawer-layer { position: fixed; inset: 0; z-index: 10; background: rgb(10 25 23 / .62); display: flex; justify-content: flex-end; }
 .drawer { width: min(680px, 100%); height: 100%; overflow: auto; background: var(--paper); padding: 52px clamp(24px, 5vw, 64px); box-shadow: -20px 0 50px rgb(0 0 0 / .22); animation: slide-in .22s ease-out; position: relative; }
-.drawer-close { position: absolute; right: 24px; top: 20px; border: 0; background: none; font-size: 32px; cursor: pointer; }
+.drawer-close { position: absolute; right: 24px; top: 20px; min-width: 44px; min-height: 44px; border: 0; background: none; font-size: 32px; cursor: pointer; }
+.drawer > span { color: var(--fork); }
 .drawer h2 { font-size: 38px; letter-spacing: -.04em; margin: 12px 0 28px; }
 .drawer h3 { margin-top: 36px; border-bottom: 1px solid var(--ink); padding-bottom: 10px; }
 .drawer li { margin-bottom: 12px; line-height: 1.65; }

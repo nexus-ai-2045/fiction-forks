@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { App } from "./App";
-import { describeActivationDelay, intervention } from "./data";
+import { App, describeForkOutcome } from "./App";
+import { comparison, describeActivationDelay, intervention } from "./data";
 
 describe("workbench projection", () => {
   it("switches only between canonical named profiles", () => {
@@ -42,5 +42,16 @@ describe("workbench projection", () => {
   it("describes both critical and slack delays from activation evidence", () => {
     expect(describeActivationDelay("制度", 2032, 2037)).toBe("制度の遅延が、発動を5年遅らせる。");
     expect(describeActivationDelay("技術", 2032, 2032)).toBe("技術を遅らせても、発動年は変わらない。");
+  });
+
+  it("does not confuse late activation with an ineffective active intervention", () => {
+    const activeButCollapsed = {
+      ...comparison,
+      fork: { ...comparison.fork, activation_year: 2032, collapse_year: 2036, collapsed: true },
+    };
+    expect(describeForkOutcome(activeButCollapsed)).toEqual({
+      status: "介入後も破滅条件に到達",
+      summary: "2032年に発動しましたが、2036年に修復不能条件へ到達。",
+    });
   });
 });

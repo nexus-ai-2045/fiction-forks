@@ -44,6 +44,13 @@ function assertIntegerRecord(value: unknown, path: string, minimum: number): voi
   });
 }
 
+function assertNonEmptyStringArray(value: unknown, path: string): void {
+  if (!Array.isArray(value) || value.length === 0 ||
+      !value.every((item) => typeof item === "string" && item.trim().length > 0)) {
+    throw new Error(`${path} must be a non-empty array of non-blank strings`);
+  }
+}
+
 function assertBoundedState(value: unknown, path: string): void {
   assertMetricState(value, path);
   for (const [key, item] of Object.entries(value as Record<string, number>)) {
@@ -69,9 +76,7 @@ export function parseComparisonArtifact(value: unknown): ComparisonArtifact {
   assertIntegerRecord(value.fork.technology_schedule, "technology_schedule", 0);
   assertMetricState(value.state_delta_at_comparison_year, "delta");
   for (const key of ["declared_costs", "declared_failure_modes", "declared_side_effects"] as const) {
-    if (!Array.isArray(value[key]) || !(value[key] as unknown[]).every((item) => typeof item === "string")) {
-      throw new Error(`${key} must be a string array`);
-    }
+    assertNonEmptyStringArray(value[key], key);
   }
   return value as unknown as ComparisonArtifact;
 }
@@ -85,9 +90,7 @@ export function parseInterventionArtifact(value: unknown): InterventionArtifact 
     assertString(value, key);
   }
   for (const key of ["prerequisites", "costs", "side_effects", "failure_modes"] as const) {
-    if (!Array.isArray(value[key]) || !value[key].every((item) => typeof item === "string")) {
-      throw new Error(`${key} must be a string array`);
-    }
+    assertNonEmptyStringArray(value[key], key);
   }
   if (!Array.isArray(value.technology_tree.activation_requires) ||
       !value.technology_tree.activation_requires.every((item) => typeof item === "string")) {

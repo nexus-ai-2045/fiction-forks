@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { comparison, contestationDelay, contestationDelayHeading, contestationDelayLabel, intervention, manifest } from "./data";
 import { metricKeys, type ComparisonArtifact, type MetricKey, type TechnologyNode } from "./types";
 
@@ -17,6 +17,26 @@ const kindLabels: Record<TechnologyNode["kind"], string> = {
 };
 
 type Profile = "normal" | "delay";
+
+export function describeForkOutcome(artifact: ComparisonArtifact): { summary: string; status: string } {
+  if (!artifact.fork.collapsed) {
+    return {
+      status: "このモデルでは破滅条件を回避",
+      summary: `${artifact.fork.activation_year}年に発動し、${artifact.comparison_year}年の比較時点で破滅条件を回避。`,
+    };
+  }
+  const collapseYear = artifact.fork.collapse_year ?? artifact.comparison_year;
+  if (artifact.fork.activation_year > collapseYear) {
+    return {
+      status: "介入が間に合わない",
+      summary: `発動が${artifact.fork.activation_year}年となり、${collapseYear}年の破滅条件に間に合いません。`,
+    };
+  }
+  return {
+    status: "介入後も破滅条件に到達",
+    summary: `${artifact.fork.activation_year}年に発動しましたが、${collapseYear}年に修復不能条件へ到達。`,
+  };
+}
 
 function StateMark({ collapsed }: { collapsed: boolean }) {
   return <span className={`state-mark ${collapsed ? "is-collapse" : "is-avoided"}`}>{collapsed ? "◆ 修復不能条件" : "○ 条件を回避"}</span>;
@@ -85,9 +105,7 @@ export function App() {
   const explainButtonRef = useRef<HTMLButtonElement>(null);
   const artifact = profile === "normal" ? comparison : contestationDelay;
   const delayed = profile === "delay";
-  const activationSummary = artifact.fork.collapsed
-    ? `発動が${artifact.fork.activation_year}年となり、${artifact.fork.collapse_year ?? artifact.comparison_year}年の破滅条件に間に合いません。`
-    : `${artifact.fork.activation_year}年に発動し、${artifact.comparison_year}年の比較時点で破滅条件を回避。`;
+  const forkOutcome = describeForkOutcome(artifact);
   const baselineSummary = artifact.baseline.collapsed
     ? `${artifact.baseline.collapse_year ?? artifact.comparison_year}年に修復不能条件へ到達。`
     : `${artifact.comparison_year}年の比較時点では修復不能条件を回避。`;
@@ -96,8 +114,15 @@ export function App() {
     ? "変化なし"
     : `${Math.abs(livingSystemsDelta)}ポイント${livingSystemsDelta > 0 ? "改善" : "悪化"}`;
 
+  const focusComparison = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const target = document.getElementById("comparison");
+    target?.focus();
+    target?.scrollIntoView();
+  };
+
   return <>
-    <a className="skip-link" href="#comparison">比較結果へ移動</a>
+    <a className="skip-link" href="#comparison" onClick={focusComparison}>比較結果へ移動</a>
     <header className="topbar">
       <a className="brand" href="../"><span className="branch-glyph" aria-hidden="true">⑂</span><span>FICTION FORKS<small>WORLDLINE WORKBENCH</small></span></a>
       <nav aria-label="サイトナビゲーション"><a href="../">Idea Builder</a><a href="https://github.com/nexus-ai-2045/fiction-forks">GitHub</a></nav>
@@ -105,19 +130,19 @@ export function App() {
     <main>
       <section className="hero">
         <div><span className="fixture-label">FIXTURE / {artifact.comparison_year}</span><h1>分岐する時間軸を読む。</h1><p>{intervention.extracted_function}</p></div>
-        <div className="hero-status"><span>JAPAN {artifact.comparison_year}</span><StateMark collapsed={artifact.fork.collapsed} /><strong>{artifact.fork.collapsed ? "介入が間に合わない" : "このモデルでは破滅条件を回避"}</strong></div>
+        <div className="hero-status"><span>JAPAN {artifact.comparison_year}</span><StateMark collapsed={artifact.fork.collapsed} /><strong>{forkOutcome.status}</strong></div>
       </section>
 
       <section className="workflow" aria-label="作戦卓の流れ">
         {[["01", "OBSERVE", "放置世界を見る"], ["02", "FORK", "介入世界を比べる"], ["03", "STRESS", "制度を遅らせる"], ["04", "EXPLAIN", "根拠と限界を読む"]].map(([number, name, text]) => <div key={name}><span>{number}</span><strong>{name}</strong><small>{text}</small></div>)}
       </section>
 
-      <section className="comparison" id="comparison" aria-labelledby="comparison-title">
+      <section className="comparison" id="comparison" aria-labelledby="comparison-title" tabIndex={-1}>
         <div className="section-heading"><div><span>OBSERVE → FORK</span><h2 id="comparison-title">同じ{artifact.comparison_year}年、二つの世界</h2></div><p>未来予測ではなく、同じseedのモデル結果を比較しています。</p></div>
         <div className="worldline-summary">
           <article><span>BASELINE / 無介入</span><strong>{artifact.comparison_year}</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>{baselineSummary}</p></article>
           <div className="fork-line" aria-hidden="true"><span></span></div>
-          <article aria-label="介入世界" className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / {intervention.extracted_function}</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{activationSummary}</p></article>
+          <article aria-label="介入世界" className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / {intervention.extracted_function}</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{forkOutcome.summary}</p></article>
         </div>
         <MetricRows artifact={artifact} />
       </section>
@@ -128,6 +153,7 @@ export function App() {
           <label className={profile === "normal" ? "selected" : ""}><input type="radio" name="profile" value="normal" checked={profile === "normal"} onChange={() => setProfile("normal")} /><span><strong>遅延なし</strong>発動 {comparison.fork.activation_year} / {comparison.fork.collapsed ? "間に合わない" : "回避"}</span></label>
           <label className={profile === "delay" ? "selected" : ""}><input type="radio" name="profile" value="delay" checked={profile === "delay"} onChange={() => setProfile("delay")} /><span><strong>{contestationDelayLabel}</strong>発動 {contestationDelay.fork.activation_year} / {contestationDelay.fork.collapsed ? "間に合わない" : "回避"}</span></label>
         </fieldset>
+        <p className="sr-only" aria-live="polite">{`${delayed ? contestationDelayLabel : "遅延なし"}: ${forkOutcome.summary}`}</p>
       </section>
 
       <TechnologyTree artifact={artifact} />

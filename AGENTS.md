@@ -13,6 +13,11 @@
 
 ## Code Review Rules
 
+### MVP acceptance boundary
+
+- Result Workbenchのmerge blockerは、現在サポートするnormalとnamed-delayの2 profile、現在到達可能なPC/mobile UI、またはこのPRが変更したcontractで再現する不具合に限定する。未変更fieldを同時に書き換えるcounterfactual hardeningは有用でも、現行artifactで再現しない限り同じPRの完了条件へ追加せず、別残務として報告する。
+- 完了判定の正本は、fixture input digest、manifest digest、fixtureからnormal comparisonへの同値projection、artifact relationship、unit test、build、PC/mobile E2Eを実行する既存CIである。生成AIレビューの指摘ゼロを完了条件やmerge gateにしない。
+
 ### Canonical artifact boundary
 
 - UIへ表示するシナリオ、介入、年、状態、制約、結果、説明は、manifestでdigest検証されたcanonical artifactから導出する。固定文言を残す場合は、対応するcanonical identityと意味論をfail-closedで検証する。artifact間で複製される値は全入力間の一致を検査する。
