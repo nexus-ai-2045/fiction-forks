@@ -220,7 +220,7 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
         side_effect_candidates = _string_list(
             template["side_effect_candidates"],
             f"template:{template_id}.side_effect_candidates",
-            maximum=10,
+            maximum=3,
         )
         expected_digest = _string(
             template["intervention_sha256"],
@@ -239,10 +239,20 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
             f"template:{template_id}.delay_profiles",
             maximum=20,
         )
+        if status == "preview_allowed" and not delay_profiles:
+            raise ContractError(
+                f"template:{template_id}.delay_profiles must be non-empty"
+            )
         relative_path = Path(
             _string(template["intervention_path"], "intervention_path")
         )
-        if relative_path.is_absolute() or ".." in relative_path.parts:
+        if (
+            relative_path.is_absolute()
+            or ".." in relative_path.parts
+            or not re.fullmatch(
+                r"interventions/[a-z0-9-]+\.json", relative_path.as_posix()
+            )
+        ):
             raise ContractError(f"template:{template_id} intervention_path is unsafe")
         intervention_path = (root_path / relative_path).resolve()
         if root_path not in intervention_path.parents:
@@ -368,21 +378,22 @@ def validate_idea_status_projection(value: Any) -> dict[str, Any]:
             not lifecycle["simulated"] or lifecycle["reported_back"]
         ):
             raise ContractError(f"idea:{number} simulation_status conflicts with lifecycle")
-        if simulation_status == "official" and not lifecycle["reported_back"]:
-            raise ContractError(f"idea:{number} simulation_status conflicts with lifecycle")
-        normalized_ideas.append(
-            {
-                "issue_number": number,
-                "issue_url": expected_url,
-                "source_updated_at": updated_at,
-                "lifecycle": dict(lifecycle),
-                "simulation_status": simulation_status,
-                "missing_conditions": missing,
-                "next_action": _string(
-                    idea["next_action"], f"idea:{number}.next_action"
-                ),
-            }
-        )
+        if simulation_status == "official":
+            raise ContractError(
+                f"idea:{number} simulation_status official requires the verified main-run promotion boundary"
+            )
+        normalized_idea = {
+            "issue_number": number,
+            "issue_url": expected_url,
+            "source_updated_at": updated_at,
+            "lifecycle": dict(lifecycle),
+            "simulation_status": simulation_status,
+            "missing_conditions": missing,
+            "next_action": _string(
+                idea["next_action"], f"idea:{number}.next_action"
+            ),
+        }
+        normalized_ideas.append(normalized_idea)
     return {
         "schema_version": IDEA_STATUS_SCHEMA,
         "observed_at": observed_at,

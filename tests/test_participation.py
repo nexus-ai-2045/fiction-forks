@@ -88,6 +88,21 @@ class ParticipationContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractError, "sha256 mismatch"):
             validate_template_catalog(catalog, root=ROOT)
 
+    def test_catalog_restricts_preview_templates_to_executable_contracts(self) -> None:
+        for update, message in (
+            (
+                {"intervention_path": "fixtures/participation/not-an-intervention.json"},
+                "intervention_path",
+            ),
+            ({"delay_profiles": []}, "delay_profiles"),
+            ({"side_effect_candidates": ["a", "b", "c", "d"]}, "at most 3"),
+        ):
+            with self.subTest(update=update):
+                catalog = copy.deepcopy(self.catalog)
+                catalog["templates"][0].update(update)
+                with self.assertRaisesRegex(ContractError, message):
+                    validate_template_catalog(catalog, root=ROOT)
+
     def test_catalog_rejects_unknown_fields(self) -> None:
         catalog = copy.deepcopy(self.catalog)
         catalog["templates"][0]["provider"] = "arbitrary"
@@ -216,6 +231,17 @@ class ParticipationContractTests(unittest.TestCase):
         projection["ideas"][0]["simulation_status"] = "official"
         projection["ideas"][0]["missing_conditions"] = []
         with self.assertRaisesRegex(ContractError, "simulation_status"):
+            validate_idea_status_projection(projection)
+
+    def test_pure_projection_cannot_promote_an_official_result(self) -> None:
+        projection = json.loads(
+            (ROOT / "catalogs/idea-status.v1.json").read_text(encoding="utf-8")
+        )
+        idea = projection["ideas"][0]
+        idea["lifecycle"] = dict.fromkeys(idea["lifecycle"], True)
+        idea["simulation_status"] = "official"
+        idea["missing_conditions"] = []
+        with self.assertRaisesRegex(ContractError, "verified main-run promotion"):
             validate_idea_status_projection(projection)
 
     def test_next_action_must_be_a_string(self) -> None:
