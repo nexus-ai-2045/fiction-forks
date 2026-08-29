@@ -17,6 +17,8 @@ test("asset verifier rejects content drift against the manifest", async () => {
   const digest = createHash("sha256").update(bytes).digest("hex");
   const comparisonPath = join(runs, "haruhi-world-observation-comparison.json");
   const delayPath = join(runs, "haruhi-world-observation-contestation-delay.json");
+  const fixturePath = join(runs, "haruhi-world-observation-fixture.json");
+  await writeFile(fixturePath, bytes);
   await writeFile(comparisonPath, bytes);
   await writeFile(delayPath, bytes);
   const interventionBytes = Buffer.from(JSON.stringify({ id: "intervention" }));
@@ -31,6 +33,8 @@ test("asset verifier rejects content drift against the manifest", async () => {
     scenario_id: "scenario",
     intervention_id: "intervention",
     seed: 2036,
+    artifact_path: "artifacts/runs/haruhi-world-observation-fixture.json",
+    artifact_sha256: digest,
     comparison_artifact_path: "artifacts/runs/haruhi-world-observation-comparison.json",
     comparison_artifact_sha256: digest,
     delay_artifact_path: "artifacts/runs/haruhi-world-observation-contestation-delay.json",
@@ -43,5 +47,8 @@ test("asset verifier rejects content drift against the manifest", async () => {
   await assert.rejects(verifyWorkbenchAssets(root), /SHA-256/);
   await writeFile(delayPath, bytes);
   await writeFile(join(interventions, "haruhi-world-observation.json"), JSON.stringify({ id: "changed" }));
+  await assert.rejects(verifyWorkbenchAssets(root), /SHA-256/);
+  await writeFile(join(interventions, "haruhi-world-observation.json"), interventionBytes);
+  await writeFile(fixturePath, JSON.stringify({ ...artifact, seed: 2037 }));
   await assert.rejects(verifyWorkbenchAssets(root), /SHA-256/);
 });

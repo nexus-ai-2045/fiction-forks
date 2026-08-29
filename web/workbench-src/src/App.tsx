@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { comparison, contestationDelay, intervention, manifest } from "./data";
+import { comparison, contestationDelay, contestationDelayLabel, intervention, manifest } from "./data";
 import { metricKeys, type ComparisonArtifact, type MetricKey, type TechnologyNode } from "./types";
 
 const metricLabels: Record<MetricKey, string> = {
@@ -88,6 +88,13 @@ export function App() {
   const activationSummary = artifact.fork.collapsed
     ? `発動が${artifact.fork.activation_year}年となり、${artifact.fork.collapse_year ?? artifact.comparison_year}年の破滅条件に間に合いません。`
     : `${artifact.fork.activation_year}年に発動し、${artifact.comparison_year}年の比較時点で破滅条件を回避。`;
+  const baselineSummary = artifact.baseline.collapsed
+    ? `${artifact.baseline.collapse_year ?? artifact.comparison_year}年に修復不能条件へ到達。`
+    : `${artifact.comparison_year}年の比較時点では修復不能条件を回避。`;
+  const livingSystemsDelta = comparison.state_delta_at_comparison_year.living_systems;
+  const livingSystemsSummary = livingSystemsDelta === 0
+    ? "変化なし"
+    : `${Math.abs(livingSystemsDelta)}ポイント${livingSystemsDelta > 0 ? "改善" : "悪化"}`;
 
   return <>
     <a className="skip-link" href="#comparison">比較結果へ移動</a>
@@ -108,7 +115,7 @@ export function App() {
       <section className="comparison" id="comparison" aria-labelledby="comparison-title">
         <div className="section-heading"><div><span>OBSERVE → FORK</span><h2 id="comparison-title">同じ{artifact.comparison_year}年、二つの世界</h2></div><p>未来予測ではなく、同じseedのモデル結果を比較しています。</p></div>
         <div className="worldline-summary">
-          <article><span>BASELINE / 無介入</span><strong>{artifact.comparison_year}</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>修復能力の喪失が破滅条件へ到達。</p></article>
+          <article><span>BASELINE / 無介入</span><strong>{artifact.comparison_year}</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>{baselineSummary}</p></article>
           <div className="fork-line" aria-hidden="true"><span></span></div>
           <article className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / 複数の独立観測と異議申立て</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{activationSummary}</p></article>
         </div>
@@ -119,14 +126,14 @@ export function App() {
         <div><span>STRESS / NAMED PROFILE</span><h2 id="stress-title">制度の遅延は、技術全体を遅らせる。</h2><p>自由な数値入力ではなく、検証済みartifactに対応するnamed profileだけを切り替えます。</p></div>
         <fieldset><legend>遅延条件</legend>
           <label className={profile === "normal" ? "selected" : ""}><input type="radio" name="profile" value="normal" checked={profile === "normal"} onChange={() => setProfile("normal")} /><span><strong>遅延なし</strong>発動 {comparison.fork.activation_year} / {comparison.fork.collapsed ? "間に合わない" : "回避"}</span></label>
-          <label className={profile === "delay" ? "selected" : ""}><input type="radio" name="profile" value="delay" checked={profile === "delay"} onChange={() => setProfile("delay")} /><span><strong>異議申立て制度を5年遅延</strong>発動 {contestationDelay.fork.activation_year} / {contestationDelay.fork.collapsed ? "間に合わない" : "回避"}</span></label>
+          <label className={profile === "delay" ? "selected" : ""}><input type="radio" name="profile" value="delay" checked={profile === "delay"} onChange={() => setProfile("delay")} /><span><strong>{contestationDelayLabel}</strong>発動 {contestationDelay.fork.activation_year} / {contestationDelay.fork.collapsed ? "間に合わない" : "回避"}</span></label>
         </fieldset>
       </section>
 
       <TechnologyTree artifact={artifact} />
 
       <section className="explain">
-        <div><span>EXPLAIN</span><h2>改善だけでなく、代償も読む。</h2><p>生活基盤は通常介入でも5ポイント悪化。費用・副作用・失敗条件まで含めて初めて比較できます。</p></div>
+        <div><span>EXPLAIN</span><h2>改善だけでなく、代償も読む。</h2><p>生活基盤は通常介入で{livingSystemsSummary}。費用・副作用・失敗条件まで含めて初めて比較できます。</p></div>
         <button ref={explainButtonRef} type="button" onClick={() => setDrawerOpen(true)}>根拠と限界を開く <span aria-hidden="true">→</span></button>
       </section>
     </main>

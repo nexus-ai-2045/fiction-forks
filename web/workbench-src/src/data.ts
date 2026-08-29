@@ -31,6 +31,15 @@ if (intervention.technology_tree.activation_requires.some((nodeId) => !nodeIds.h
   throw new Error("activation_requires contains an unknown technology node");
 }
 
+const technologyLabels = new Map(intervention.technology_tree.nodes.map((node) => [node.id, node.label]));
+const namedDelayEntries = Object.entries(contestationDelay.fork.technology_delays);
+if (namedDelayEntries.length === 0 || namedDelayEntries.some(([nodeId, years]) => !nodeIds.has(nodeId) || years <= 0)) {
+  throw new Error("named delay profile must contain positive delays for canonical technology nodes");
+}
+export const contestationDelayLabel = namedDelayEntries
+  .map(([nodeId, years]) => `${technologyLabels.get(nodeId)}を${years}年遅延`)
+  .join("・");
+
 for (const artifact of [comparison, contestationDelay]) {
   if (artifact.engine_version !== manifest.engine_version || artifact.scenario_id !== manifest.scenario_id ||
       artifact.intervention_id !== manifest.intervention_id || artifact.seed !== manifest.seed) {

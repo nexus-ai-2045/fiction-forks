@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const expected = {
+  artifact_path: "artifacts/runs/haruhi-world-observation-fixture.json",
   comparison_artifact_path: "artifacts/runs/haruhi-world-observation-comparison.json",
   delay_artifact_path: "artifacts/runs/haruhi-world-observation-contestation-delay.json",
   intervention_artifact_path: "interventions/haruhi-world-observation.json",

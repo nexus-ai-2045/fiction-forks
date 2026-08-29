@@ -5,8 +5,10 @@ describe("workbench projection", () => {
   it("switches only between canonical named profiles", () => {
     render(<App />);
     expect(screen.getByRole("heading", { name: "同じ2036年、二つの世界" })).toBeInTheDocument();
+    expect(screen.getByText("2036年に修復不能条件へ到達。")).toBeInTheDocument();
+    expect(screen.getByText(/生活基盤は通常介入で5ポイント悪化/)).toBeInTheDocument();
     expect(screen.getByText("2032年に発動し、2036年の比較時点で破滅条件を回避。")).toBeInTheDocument();
-    fireEvent.click(screen.getByLabelText(/異議申立て制度を5年遅延/));
+    fireEvent.click(screen.getByLabelText(/証拠来歴と対立仮説の公開検証手続を5年遅延/));
     expect(screen.getByText("発動が2037年となり、2036年の破滅条件に間に合いません。")).toBeInTheDocument();
     expect(screen.getAllByText("◆ 修復不能条件")).toHaveLength(3);
   });
