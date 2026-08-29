@@ -61,5 +61,11 @@ describe("canonical comparison artifacts", () => {
       intervention,
       { ...manifest, scenario_id: "another-scenario" },
     )).toThrow(/Japan scenario/);
+    expect(() => validateWorkbenchRelationships(
+      normal,
+      { ...delay, fork: { ...delay.fork, technology_delays: { "contested-evidence-protocol": 1 } } },
+      intervention,
+      manifest,
+    )).toThrow(/schedule/);
   });
 });

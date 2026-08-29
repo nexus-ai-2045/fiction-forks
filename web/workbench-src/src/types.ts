@@ -41,6 +41,7 @@ export interface TechnologyNode {
   id: string;
   label: string;
   kind: "technology" | "institution" | "operations";
+  lead_time_years: number;
   completion_evidence: string;
   depends_on: string[];
 }

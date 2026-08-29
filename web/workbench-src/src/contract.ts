@@ -89,6 +89,7 @@ export function parseInterventionArtifact(value: unknown): InterventionArtifact 
   for (const node of value.technology_tree.nodes) {
     if (!isRecord(node) || typeof node.id !== "string" || typeof node.label !== "string" ||
       !["technology", "institution", "operations"].includes(String(node.kind)) ||
+      typeof node.lead_time_years !== "number" || !Number.isInteger(node.lead_time_years) || node.lead_time_years < 0 ||
       typeof node.completion_evidence !== "string" || !Array.isArray(node.depends_on) ||
       !node.depends_on.every((item) => typeof item === "string")) {
       throw new Error("invalid technology node");
@@ -127,6 +128,39 @@ export function validateWorkbenchRelationships(
   const delayEntries = Object.entries(delay.fork.technology_delays);
   if (delayEntries.length === 0 || delayEntries.some(([nodeId, years]) => !nodeIds.has(nodeId) || years <= 0)) {
     throw new Error("named delay profile must contain positive delays for canonical technology nodes");
+  }
+  const nodes = new Map(intervention.technology_tree.nodes.map((node) => [node.id, node]));
+  const expectedSchedule = new Map<string, number>();
+  const visiting = new Set<string>();
+  const projectCompletionYear = (nodeId: string): number => {
+    const cached = expectedSchedule.get(nodeId);
+    if (cached !== undefined) return cached;
+    const node = nodes.get(nodeId);
+    const baselineYear = normal.fork.technology_schedule[nodeId];
+    if (!node || baselineYear === undefined) throw new Error("normal technology schedule does not cover the canonical technology tree");
+    if (visiting.has(nodeId)) throw new Error("canonical technology tree must not contain a cycle");
+    visiting.add(nodeId);
+    const delayedDependencies = node.depends_on
+      .filter((dependencyId) => nodes.has(dependencyId))
+      .map((dependencyId) => projectCompletionYear(dependencyId) + node.lead_time_years);
+    visiting.delete(nodeId);
+    const completionYear = Math.max(baselineYear, ...delayedDependencies) + (delay.fork.technology_delays[nodeId] ?? 0);
+    expectedSchedule.set(nodeId, completionYear);
+    return completionYear;
+  };
+  for (const nodeId of nodeIds) {
+    if (delay.fork.technology_schedule[nodeId] !== projectCompletionYear(nodeId)) {
+      throw new Error("named delay profile schedule does not match its declared technology delays");
+    }
+  }
+  if (Object.keys(delay.fork.technology_schedule).length !== nodeIds.size) {
+    throw new Error("named delay profile schedule does not cover exactly the canonical technology tree");
+  }
+  const expectedActivationYear = Math.max(
+    ...intervention.technology_tree.activation_requires.map((nodeId) => projectCompletionYear(nodeId)),
+  );
+  if (delay.fork.activation_year !== expectedActivationYear) {
+    throw new Error("named delay profile activation year does not match its technology schedule");
   }
   if (normal.comparison_year !== delay.comparison_year || JSON.stringify(normal.baseline) !== JSON.stringify(delay.baseline)) {
     throw new Error("named stress profiles must share an identical baseline and comparison year");
