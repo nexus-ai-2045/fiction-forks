@@ -251,5 +251,21 @@ document.querySelector("#idea-queue-list").addEventListener("click", (event) => 
   );
 });
 
+// 実行API (run request) の状態表示。API契約が確定するまで pending / error のみを扱い、
+// 成功状態 (running / verified) はこのUIから作らない。契約: web/workbench-src/src/run-request.ts
+const RUN_REQUEST_MESSAGES = {
+  pending: "シミュレーション実行APIは準備中です。実行はcontributorのworldline PRとChecksで行われ、この画面からは実行されません。",
+  error: "実行APIの状態を確認できませんでした。実行はcontributorのworldline PRとChecksで行われます。",
+};
+
+function renderRunRequestStatus(state) {
+  const statusElement = document.querySelector("#run-request-status");
+  if (!statusElement) return;
+  const message = RUN_REQUEST_MESSAGES[state] ?? RUN_REQUEST_MESSAGES.error;
+  statusElement.dataset.state = state in RUN_REQUEST_MESSAGES ? state : "error";
+  statusElement.textContent = message;
+}
+
 updateSummary();
+renderRunRequestStatus("pending");
 loadIdeaQueue();

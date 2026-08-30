@@ -13,6 +13,7 @@
       content="作品や登場人物から抽出した機能を、日本の未来を変えるアイデアIssueへ翻訳するFiction Forksの参加UI"
     >
     <title>Fiction Forks — Idea Builder</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
   </head>
@@ -39,10 +40,15 @@
       <section class="builder-shell" id="idea-builder" aria-labelledby="builder-title">
         <div class="builder-heading">
           <h1 id="builder-title">フィクションの力で、<br>未来の選択肢をひらく。</h1>
-          <p>
-            作品の設定を再現するのではなく、役立つ機能を一つ抽出して、
-            日本の未来課題へつなげます。
-          </p>
+          <div class="builder-heading-copy">
+            <p class="builder-reassurance">
+              <strong>アイデアを書くだけでOK。</strong>実装と検証は、AIとcontributor（実装協力者）が引き受けます。
+            </p>
+            <p>
+              作品の設定を再現するのではなく、役立つ機能を一つ抽出して、
+              日本の未来課題へつなげます。
+            </p>
+          </div>
         </div>
 
         <div class="builder-grid">
@@ -74,7 +80,7 @@
                 placeholder="例：どこでもドアのように、災害時でも離れた地域へ医療や物資を届けられる仕組みがあれば未来が良くなる"
                 required
               ></textarea>
-              <p class="field-help">技術、制度、費用、副作用は、worldline PRを作るcontributorが一緒に詰めます。</p>
+              <p class="field-help">技術、制度、費用、副作用は、worldline PRを作るcontributor（実装協力者）が一緒に詰めます。</p>
 
               <fieldset class="boundary-checks">
                 <legend>権利・安全の確認</legend>
@@ -124,7 +130,14 @@
                 <button class="text-button" type="button" data-action="edit">編集する</button>
               </div>
               <pre tabindex="0"><code id="issue-markdown"></code></pre>
-              <p class="preview-note">この段階ではシミュレーションを実行しません。GitHubでも投稿前に編集できます。</p>
+              <ol class="idea-state-steps" aria-label="このアイデアの現在の状態">
+                <li aria-current="step"><b>draft</b><span>下書き（いまここ）</span></li>
+                <li><b>human review</b><span>人間レビュー</span></li>
+                <li><b>simulator run</b><span>シミュレーター実行</span></li>
+                <li><b>verified artifact</b><span>検証済みartifact</span></li>
+              </ol>
+              <p class="preview-note">この段階ではシミュレーションを実行しません。Issueを投稿しても状態は「下書き」のままで、実装済み・実行済みにはなりません。GitHubでも投稿前に編集できます。</p>
+              <p class="run-request-status" id="run-request-status" data-state="pending" aria-live="polite"></p>
               <div class="preview-actions">
                 <a class="button button-primary" id="github-issue-link" href="#" target="_blank" rel="noopener noreferrer">
                   GitHubでIssueを確認 <span aria-hidden="true">↗</span>
@@ -159,6 +172,16 @@
           </ol>
           <a href="#idea-library">実装するIdeaを選ぶ <span aria-hidden="true">↓</span></a>
         </div>
+
+        <details class="term-guide">
+          <summary>はじめての人向け：Issue・PR・forkとは？</summary>
+          <dl>
+            <div><dt>Issue（イシュー）</dt><dd>GitHub上の公開メモ。ここでは1つのアイデア = 1つのIssueです。書くだけで参加でき、コードは不要です。</dd></div>
+            <div><dt>PR（Pull Request）</dt><dd>「この実装を取り込んでください」という提案。ここでは1つのPR = 1つの世界線（worldline）です。</dd></div>
+            <div><dt>fork（フォーク）</dt><dd>自分のアカウントに作るrepositoryのコピー。元を壊さずに実装を試せます。</dd></div>
+            <div><dt>Checks（チェック）</dt><dd>PRに自動で走る検証。投稿者名・介入・行動・比較結果を表示し、その後に人間がレビューします。</dd></div>
+          </dl>
+        </details>
 
         <div class="handoff-stage">
           <ol class="handoff-flow">

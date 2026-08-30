@@ -60,6 +60,41 @@ export interface InterventionArtifact {
   technology_tree: { nodes: TechnologyNode[]; activation_requires: string[] };
 }
 
+export const replayStances = ["support", "condition", "oppose", "abstain"] as const;
+export type ReplayStance = (typeof replayStances)[number];
+
+export interface ReplayAction {
+  schema_version: "fiction_forks_action.v1";
+  run_id: string;
+  turn: number;
+  agent_id: string;
+  action_id: string;
+  stance: ReplayStance;
+  responds_to: string[];
+  target_ids: string[];
+}
+
+export interface ReplayEvent {
+  /** 保存順 (1始まり)。表示専用で、event列の並びそのもの。 */
+  sequence: number;
+  intent_id: string;
+  action: ReplayAction;
+  valid: boolean;
+  invalid_reason: string | null;
+  previous_event_hash: string;
+  state_before_hash: string;
+  state_after_hash: string;
+  event_hash: string;
+}
+
+export interface ReplayRun {
+  run_id: string;
+  seed: number;
+  turn_count: number;
+  final_event_hash: string;
+  events: ReplayEvent[];
+}
+
 export interface RunManifest {
   schema_version: "fiction_forks_run_manifest.v1";
   run_kind: "fixture";

@@ -211,6 +211,12 @@ a {
   font-size: .84rem;
 }
 
+.builder-heading-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .builder-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.42fr) minmax(360px, .78fr);
@@ -1191,4 +1197,112 @@ footer a {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; }
+}
+
+/* 初心者向け導線: 安心コピー / 状態ステッパー / 実行API状態 / 用語ガイド */
+.builder-reassurance {
+  margin: 14px 0 6px;
+  color: var(--text);
+  font-size: .86rem;
+}
+
+.builder-reassurance strong {
+  color: var(--cyan);
+}
+
+.idea-state-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 14px 0 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.idea-state-steps li {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 8px 10px;
+  color: var(--muted);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.idea-state-steps li b {
+  font: .62rem Consolas, monospace;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.idea-state-steps li span {
+  font-size: .66rem;
+}
+
+.idea-state-steps li[aria-current="step"] {
+  border-color: var(--cyan);
+  color: var(--text);
+  background: rgb(30 215 239 / 8%);
+}
+
+.idea-state-steps li[aria-current="step"] b {
+  color: var(--cyan);
+}
+
+.run-request-status {
+  min-height: 18px;
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: .7rem;
+}
+
+.run-request-status[data-state="error"] {
+  color: var(--danger);
+}
+
+.term-guide {
+  margin-top: 22px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 18px;
+}
+
+.term-guide summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--amber);
+  font-size: .8rem;
+  font-weight: 700;
+}
+
+.term-guide dl {
+  margin: 0 0 16px;
+}
+
+.term-guide dl div {
+  display: grid;
+  grid-template-columns: minmax(130px, 180px) 1fr;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+}
+
+.term-guide dt {
+  color: var(--text);
+  font-size: .76rem;
+  font-weight: 700;
+}
+
+.term-guide dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: .74rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 720px) {
+  .idea-state-steps { grid-template-columns: repeat(2, 1fr); }
+  .term-guide dl div { grid-template-columns: 1fr; gap: 4px; }
 }

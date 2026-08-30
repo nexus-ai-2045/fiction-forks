@@ -1,8 +1,9 @@
 import comparisonJson from "../../../artifacts/runs/haruhi-world-observation-comparison.json";
 import delayJson from "../../../artifacts/runs/haruhi-world-observation-contestation-delay.json";
+import fixtureJson from "../../../artifacts/runs/haruhi-world-observation-fixture.json";
 import interventionRaw from "../../../interventions/haruhi-world-observation.json?raw";
 import manifestJson from "../../../artifacts/runs/haruhi-world-observation-fixture.manifest.json";
-import { parseComparisonArtifact, parseInterventionArtifact, parseRunManifest, validateWorkbenchRelationships } from "./contract";
+import { parseComparisonArtifact, parseInterventionArtifact, parseReplayRun, parseRunManifest, validateWorkbenchRelationships } from "./contract";
 
 async function sha256Hex(text: string): Promise<string> {
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -12,6 +13,12 @@ async function sha256Hex(text: string): Promise<string> {
 export const comparison = parseComparisonArtifact(comparisonJson);
 export const contestationDelay = parseComparisonArtifact(delayJson);
 export const manifest = parseRunManifest(manifestJson);
+
+export const replayRun = await parseReplayRun(fixtureJson);
+if (replayRun.seed !== manifest.seed) throw new Error("replay run seed does not match the canonical manifest");
+if (replayRun.events[replayRun.events.length - 1].event_hash !== replayRun.final_event_hash) {
+  throw new Error("replay run final_event_hash does not match the stored event stream");
+}
 
 const interventionDigest = await sha256Hex(interventionRaw);
 if (interventionDigest !== manifest.intervention_artifact_sha256) {

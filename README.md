@@ -174,6 +174,38 @@ python -m fiction_forks social `
   --output run.json
 ```
 
+画面を目視確認する場合は、依存関係を導入してproduction buildを`web/`から配信します。表示URLは **`/workbench/`** です。
+
+```powershell
+npm ci
+npm run preview
+# http://127.0.0.1:4173/workbench/
+```
+
+`npm run dev`はUI開発専用で、`http://127.0.0.1:5173/`を開きます。開発時だけViteのstyle injectionを許可し、production buildのContent Security Policyは緩めません。
+
+ブラウザから新規runを開始するローカルadapterは、別ターミナルでloopbackへ起動します。既定では外部通信を行わないfixtureだけが許可され、ブラウザはscenario pathやmodel名を指定できません。
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m fiction_forks.local_adapter --repo-root .
+# http://127.0.0.1:8765/api/health
+```
+
+Workbenchは同一originの`/api`をVite proxy経由でadapterへ接続します。同時実行は1件、入力は固定worldline ID・provider・seedだけです。OllamaまたはVertexはserver起動時のgrantと各runの明示確認を両方要求します。
+
+```powershell
+# Ollamaを明示的に許可する場合
+python -m fiction_forks.local_adapter --repo-root . `
+  --allow-ollama-model qwen2.5vl:3b
+
+# Vertexを明示的に許可する場合（費用・送信先を確認してから起動）
+python -m fiction_forks.local_adapter --repo-root . `
+  --allow-vertex-model gemini-2.5-flash `
+  --vertex-project nexus-ai-2045 `
+  --vertex-location us-central1
+```
+
 live providerの依存関係は、hash固定済みlockから導入します。
 
 ```powershell

@@ -1,0 +1,629 @@
+{
+  "aggregates": {
+    "all": {
+      "action_diversity": {
+        "distribution": {
+          "counts": {
+            "3": 1,
+            "6": 2,
+            "7": 1
+          },
+          "measured": 4,
+          "not_measured": 2
+        },
+        "mean": 5.5
+      },
+      "activation_year": {
+        "counts": {
+          "2032": 3,
+          "2037": 2,
+          "2047": 1
+        },
+        "measured": 6,
+        "not_measured": 0
+      },
+      "capability_coverage": {
+        "mean": 6.5,
+        "not_measured": 4
+      },
+      "collapse_rate": 0.5,
+      "collapsed": {
+        "counts": {
+          "False": 3,
+          "True": 3
+        },
+        "measured": 6,
+        "not_measured": 0
+      },
+      "fail_closed_rate": {
+        "mean": 0.0667,
+        "not_measured": 2
+      },
+      "interaction_density": {
+        "mean": 0.1667,
+        "not_measured": 4
+      },
+      "interaction_edge_count": {
+        "distribution": {
+          "counts": {
+            "10": 3,
+            "9": 1
+          },
+          "measured": 4,
+          "not_measured": 2
+        },
+        "mean": 9.75
+      },
+      "n": 6,
+      "provider_model": {
+        "counts": {
+          "ollama/qwen2.5vl:3b": 1,
+          "vertex/gemini-2.5-flash": 1
+        },
+        "measured": 2,
+        "not_measured": 4
+      },
+      "stances": {
+        "abstain": {
+          "mean": 0.0,
+          "not_measured": 4
+        },
+        "condition": {
+          "mean": 15.0,
+          "not_measured": 4
+        },
+        "oppose": {
+          "mean": 0.0,
+          "not_measured": 4
+        },
+        "support": {
+          "mean": 0.0,
+          "not_measured": 4
+        }
+      }
+    },
+    "by_source_class": {
+      "deterministic_comparison": {
+        "action_diversity": {
+          "distribution": {
+            "counts": {},
+            "measured": 0,
+            "not_measured": 2
+          },
+          "mean": "not_measured"
+        },
+        "activation_year": {
+          "counts": {
+            "2032": 1,
+            "2037": 1
+          },
+          "measured": 2,
+          "not_measured": 0
+        },
+        "capability_coverage": {
+          "mean": "not_measured",
+          "not_measured": 2
+        },
+        "collapse_rate": 0.5,
+        "collapsed": {
+          "counts": {
+            "False": 1,
+            "True": 1
+          },
+          "measured": 2,
+          "not_measured": 0
+        },
+        "fail_closed_rate": {
+          "mean": "not_measured",
+          "not_measured": 2
+        },
+        "interaction_density": {
+          "mean": "not_measured",
+          "not_measured": 2
+        },
+        "interaction_edge_count": {
+          "distribution": {
+            "counts": {},
+            "measured": 0,
+            "not_measured": 2
+          },
+          "mean": "not_measured"
+        },
+        "n": 2,
+        "provider_model": {
+          "counts": {},
+          "measured": 0,
+          "not_measured": 2
+        },
+        "stances": {
+          "abstain": {
+            "mean": "not_measured",
+            "not_measured": 2
+          },
+          "condition": {
+            "mean": "not_measured",
+            "not_measured": 2
+          },
+          "oppose": {
+            "mean": "not_measured",
+            "not_measured": 2
+          },
+          "support": {
+            "mean": "not_measured",
+            "not_measured": 2
+          }
+        }
+      },
+      "fixture": {
+        "action_diversity": {
+          "distribution": {
+            "counts": {
+              "6": 1,
+              "7": 1
+            },
+            "measured": 2,
+            "not_measured": 0
+          },
+          "mean": 6.5
+        },
+        "activation_year": {
+          "counts": {
+            "2032": 2
+          },
+          "measured": 2,
+          "not_measured": 0
+        },
+        "capability_coverage": {
+          "mean": 6.5,
+          "not_measured": 0
+        },
+        "collapse_rate": 0.0,
+        "collapsed": {
+          "counts": {
+            "False": 2
+          },
+          "measured": 2,
+          "not_measured": 0
+        },
+        "fail_closed_rate": {
+          "mean": 0.0,
+          "not_measured": 0
+        },
+        "interaction_density": {
+          "mean": 0.1667,
+          "not_measured": 0
+        },
+        "interaction_edge_count": {
+          "distribution": {
+            "counts": {
+              "10": 2
+            },
+            "measured": 2,
+            "not_measured": 0
+          },
+          "mean": 10.0
+        },
+        "n": 2,
+        "provider_model": {
+          "counts": {},
+          "measured": 0,
+          "not_measured": 2
+        },
+        "stances": {
+          "abstain": {
+            "mean": 0.0,
+            "not_measured": 0
+          },
+          "condition": {
+            "mean": 15.0,
+            "not_measured": 0
+          },
+          "oppose": {
+            "mean": 0.0,
+            "not_measured": 0
+          },
+          "support": {
+            "mean": 0.0,
+            "not_measured": 0
+          }
+        }
+      },
+      "live": {
+        "action_diversity": {
+          "distribution": {
+            "counts": {
+              "3": 1,
+              "6": 1
+            },
+            "measured": 2,
+            "not_measured": 0
+          },
+          "mean": 4.5
+        },
+        "activation_year": {
+          "counts": {
+            "2037": 1,
+            "2047": 1
+          },
+          "measured": 2,
+          "not_measured": 0
+        },
+        "capability_coverage": {
+          "mean": "not_measured",
+          "not_measured": 2
+        },
+        "collapse_rate": 1.0,
+        "collapsed": {
+          "counts": {
+            "True": 2
+          },
+          "measured": 2,
+          "not_measured": 0
+        },
+        "fail_closed_rate": {
+          "mean": 0.1333,
+          "not_measured": 0
+        },
+        "interaction_density": {
+          "mean": "not_measured",
+          "not_measured": 2
+        },
+        "interaction_edge_count": {
+          "distribution": {
+            "counts": {
+              "10": 1,
+              "9": 1
+            },
+            "measured": 2,
+            "not_measured": 0
+          },
+          "mean": 9.5
+        },
+        "n": 2,
+        "provider_model": {
+          "counts": {
+            "ollama/qwen2.5vl:3b": 1,
+            "vertex/gemini-2.5-flash": 1
+          },
+          "measured": 2,
+          "not_measured": 0
+        },
+        "stances": {
+          "abstain": {
+            "mean": "not_measured",
+            "not_measured": 2
+          },
+          "condition": {
+            "mean": "not_measured",
+            "not_measured": 2
+          },
+          "oppose": {
+            "mean": "not_measured",
+            "not_measured": 2
+          },
+          "support": {
+            "mean": "not_measured",
+            "not_measured": 2
+          }
+        }
+      }
+    }
+  },
+  "disclaimer": "この報告は創発性の断定ではない。観測できた行動の多様性、相互作用、契約棄却、技術遅延、発動年、破滅判定の分散だけを集計する。LLM生成そのものの決定論性は主張しない。同じ入力run_idでも provider / model / runtime_revision / result SHA / event SHA が違えば別実行である。",
+  "executions": [
+    {
+      "action_diversity": "not_measured",
+      "action_ids": "not_measured",
+      "activation_year": 2032,
+      "bundle_contract_verified": "not_measured",
+      "capability_coverage": "not_measured",
+      "collapse_year": "not_measured",
+      "collapsed": false,
+      "event_count": "not_measured",
+      "fail_closed_rate": "not_measured",
+      "identity": {
+        "artifact_sha256": "8b75d3470b5ea6e6b3180231712267ce70af3fa39036bcfc9f9871ded1861d2f",
+        "declared_result_sha256": "not_measured",
+        "declared_result_sha256_matches_artifact": "not_measured",
+        "event_stream_sha256": "not_measured",
+        "model": "not_measured",
+        "provider": "not_measured",
+        "run_id": "not_measured",
+        "runtime_revision": "not_measured",
+        "seed": 2036,
+        "source_path": "artifacts/runs/haruhi-world-observation-comparison.json"
+      },
+      "interaction_density": "not_measured",
+      "interaction_edge_count": "not_measured",
+      "invalid_action_count": "not_measured",
+      "missing_actions_by_node": "not_measured",
+      "replay_verified": "not_measured",
+      "schema_version": "fiction_forks_comparison.v1",
+      "source_class": "deterministic_comparison",
+      "stances": {
+        "abstain": "not_measured",
+        "condition": "not_measured",
+        "oppose": "not_measured",
+        "support": "not_measured"
+      },
+      "technology_delays": {},
+      "valid_action_count": "not_measured"
+    },
+    {
+      "action_diversity": "not_measured",
+      "action_ids": "not_measured",
+      "activation_year": 2037,
+      "bundle_contract_verified": "not_measured",
+      "capability_coverage": "not_measured",
+      "collapse_year": 2036,
+      "collapsed": true,
+      "event_count": "not_measured",
+      "fail_closed_rate": "not_measured",
+      "identity": {
+        "artifact_sha256": "122a8fb540bc60d93dc4b7a68ff200093f65b05941a404bc5db2b8d3c635b7d5",
+        "declared_result_sha256": "not_measured",
+        "declared_result_sha256_matches_artifact": "not_measured",
+        "event_stream_sha256": "not_measured",
+        "model": "not_measured",
+        "provider": "not_measured",
+        "run_id": "not_measured",
+        "runtime_revision": "not_measured",
+        "seed": 2036,
+        "source_path": "artifacts/runs/haruhi-world-observation-contestation-delay.json"
+      },
+      "interaction_density": "not_measured",
+      "interaction_edge_count": "not_measured",
+      "invalid_action_count": "not_measured",
+      "missing_actions_by_node": "not_measured",
+      "replay_verified": "not_measured",
+      "schema_version": "fiction_forks_comparison.v1",
+      "source_class": "deterministic_comparison",
+      "stances": {
+        "abstain": "not_measured",
+        "condition": "not_measured",
+        "oppose": "not_measured",
+        "support": "not_measured"
+      },
+      "technology_delays": {
+        "contested-evidence-protocol": 5
+      },
+      "valid_action_count": "not_measured"
+    },
+    {
+      "action_diversity": 7,
+      "action_ids": [
+        "establish-contestation-rights",
+        "deploy-observation-mesh",
+        "publish-provenance-ledger",
+        "audit-common-cause-failure",
+        "calibrate-local-labs",
+        "establish-contestation-rights",
+        "calibrate-local-labs",
+        "compare-rival-hypotheses",
+        "compare-rival-hypotheses",
+        "exercise-anomaly-handoff",
+        "exercise-anomaly-handoff",
+        "audit-common-cause-failure",
+        "publish-provenance-ledger",
+        "compare-rival-hypotheses",
+        "deploy-observation-mesh"
+      ],
+      "activation_year": 2032,
+      "bundle_contract_verified": "not_measured",
+      "capability_coverage": 7,
+      "collapse_year": "not_measured",
+      "collapsed": false,
+      "event_count": 15,
+      "fail_closed_rate": 0.0,
+      "identity": {
+        "artifact_sha256": "12b1a98cbd0d5df0fe3235b54b67e37b69f6abae0a5feb6b900171d9cc34c670",
+        "declared_result_sha256": "not_measured",
+        "declared_result_sha256_matches_artifact": "not_measured",
+        "event_stream_sha256": "420bb03c9656c32e57372489efea48eb14fd70ac1ff518d0a186d47192010824",
+        "model": "not_measured",
+        "provider": "fixture",
+        "run_id": "ff-c705e4136e2fce00",
+        "runtime_revision": "not_measured",
+        "seed": 2036,
+        "source_path": "artifacts/runs/haruhi-world-observation-fixture.json"
+      },
+      "interaction_density": 0.1667,
+      "interaction_edge_count": 10,
+      "invalid_action_count": 0,
+      "missing_actions_by_node": {
+        "contested-evidence-protocol": [],
+        "cross-observer-anomaly-drills": [],
+        "federated-observation-probes": [],
+        "local-verification-labs": [],
+        "observation-data-charter": []
+      },
+      "replay_verified": "not_measured",
+      "schema_version": "fiction_forks_social_result.v1",
+      "source_class": "fixture",
+      "stances": {
+        "abstain": 0,
+        "condition": 15,
+        "oppose": 0,
+        "support": 0
+      },
+      "technology_delays": {
+        "contested-evidence-protocol": 0,
+        "cross-observer-anomaly-drills": 0,
+        "federated-observation-probes": 0,
+        "local-verification-labs": 0,
+        "observation-data-charter": 0
+      },
+      "valid_action_count": 15
+    },
+    {
+      "action_diversity": 6,
+      "action_ids": [
+        "audit-assumptions",
+        "translate-consent",
+        "prototype-repair-network",
+        "preposition-logistics",
+        "red-team-boundaries",
+        "audit-assumptions",
+        "translate-consent",
+        "red-team-boundaries",
+        "coordinate-drill",
+        "audit-assumptions",
+        "coordinate-drill",
+        "coordinate-drill",
+        "prototype-repair-network",
+        "preposition-logistics",
+        "red-team-boundaries"
+      ],
+      "activation_year": 2032,
+      "bundle_contract_verified": "not_measured",
+      "capability_coverage": 6,
+      "collapse_year": "not_measured",
+      "collapsed": false,
+      "event_count": 15,
+      "fail_closed_rate": 0.0,
+      "identity": {
+        "artifact_sha256": "a062aba6011163a609b0ecc01dccbe094d10827ea6f50c7fd1d106ee09ccf485",
+        "declared_result_sha256": "not_measured",
+        "declared_result_sha256_matches_artifact": "not_measured",
+        "event_stream_sha256": "2cf8bd0fd46f8d9581234f233c09672f1b951641b253ca8d562920ddb8b1f1f7",
+        "model": "not_measured",
+        "provider": "fixture",
+        "run_id": "ff-b74f4c768380c732",
+        "runtime_revision": "not_measured",
+        "seed": 2036,
+        "source_path": "artifacts/runs/japan-2036-fixture.json"
+      },
+      "interaction_density": 0.1667,
+      "interaction_edge_count": 10,
+      "invalid_action_count": 0,
+      "missing_actions_by_node": {
+        "joint-governance-and-drills": [],
+        "local-data-governance": [],
+        "public-ai-reference-stack": [],
+        "regional-fabrication-cells": []
+      },
+      "replay_verified": "not_measured",
+      "schema_version": "fiction_forks_social_result.v1",
+      "source_class": "fixture",
+      "stances": {
+        "abstain": 0,
+        "condition": 15,
+        "oppose": 0,
+        "support": 0
+      },
+      "technology_delays": {
+        "joint-governance-and-drills": 0,
+        "local-data-governance": 0,
+        "public-ai-reference-stack": 0,
+        "regional-fabrication-cells": 0
+      },
+      "valid_action_count": 15
+    },
+    {
+      "action_diversity": 3,
+      "action_ids": [
+        "establish-contestation-rights",
+        "deploy-observation-mesh",
+        "abstain",
+        "abstain",
+        "establish-contestation-rights",
+        "abstain",
+        "abstain",
+        "abstain",
+        "exercise-anomaly-handoff",
+        "establish-contestation-rights",
+        "abstain",
+        "abstain",
+        "abstain",
+        "abstain"
+      ],
+      "activation_year": 2047,
+      "bundle_contract_verified": true,
+      "capability_coverage": "not_measured",
+      "collapse_year": 2036,
+      "collapsed": true,
+      "event_count": 15,
+      "fail_closed_rate": 0.0667,
+      "identity": {
+        "artifact_sha256": "2dcf5b0fc3eeaea3c051c27de621cba5017a6b7b53596fc30d7b286a1ed9dec5",
+        "declared_result_sha256": "6cab7fe6fa887a018bc4604103dfc68faac3eac20901885f167311dc42050e21",
+        "declared_result_sha256_matches_artifact": false,
+        "event_stream_sha256": "eeb30dd5569d37d29dccef86a552bc37b06243599fd2a29c2fa8a24625ad3b4d",
+        "model": "qwen2.5vl:3b",
+        "provider": "ollama",
+        "run_id": "ff-c705e4136e2fce00",
+        "runtime_revision": "a530c2d5d2e03a49599b456bf58af6b9d56352de",
+        "seed": 2036,
+        "source_path": "artifacts/runs/ollama-live-run-summary.json"
+      },
+      "interaction_density": "not_measured",
+      "interaction_edge_count": 10,
+      "invalid_action_count": 1,
+      "missing_actions_by_node": "not_measured",
+      "replay_verified": true,
+      "schema_version": "fiction_forks_live_run_summary.v1",
+      "source_class": "live",
+      "stances": {
+        "abstain": "not_measured",
+        "condition": "not_measured",
+        "oppose": "not_measured",
+        "support": "not_measured"
+      },
+      "technology_delays": "not_measured",
+      "valid_action_count": 14
+    },
+    {
+      "action_diversity": 6,
+      "action_ids": [
+        "establish-contestation-rights",
+        "deploy-observation-mesh",
+        "publish-provenance-ledger",
+        "audit-common-cause-failure",
+        "exercise-anomaly-handoff",
+        "establish-contestation-rights",
+        "calibrate-local-labs",
+        "publish-provenance-ledger",
+        "audit-common-cause-failure",
+        "exercise-anomaly-handoff",
+        "calibrate-local-labs",
+        "exercise-anomaly-handoff"
+      ],
+      "activation_year": 2037,
+      "bundle_contract_verified": true,
+      "capability_coverage": "not_measured",
+      "collapse_year": 2036,
+      "collapsed": true,
+      "event_count": 15,
+      "fail_closed_rate": 0.2,
+      "identity": {
+        "artifact_sha256": "d1a758b63c61f90e422fc38bbaed07d212847f18f1e712f9052dbfae8b6e7bd8",
+        "declared_result_sha256": "47c715588686a6934c26966088b21ee69ce5f5f8c83d0bad19964af7e72d9c8b",
+        "declared_result_sha256_matches_artifact": false,
+        "event_stream_sha256": "cb7a5f714d21eb27cb2eb1d31010be5479c19fb10a9f9553a343dacc10c00293",
+        "model": "gemini-2.5-flash",
+        "provider": "vertex",
+        "run_id": "ff-c705e4136e2fce00",
+        "runtime_revision": "2f5b91e43cf303e88898a171d0e381f05854c9da",
+        "seed": 2036,
+        "source_path": "artifacts/runs/vertex-live-run-summary.json"
+      },
+      "interaction_density": "not_measured",
+      "interaction_edge_count": 9,
+      "invalid_action_count": 3,
+      "missing_actions_by_node": "not_measured",
+      "replay_verified": true,
+      "schema_version": "fiction_forks_live_run_summary.v1",
+      "source_class": "live",
+      "stances": {
+        "abstain": "not_measured",
+        "condition": "not_measured",
+        "oppose": "not_measured",
+        "support": "not_measured"
+      },
+      "technology_delays": "not_measured",
+      "valid_action_count": 12
+    }
+  ],
+  "n_executions": 6,
+  "schema_version": "fiction_forks_emergence_report.v1"
+}

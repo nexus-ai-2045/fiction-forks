@@ -1,0 +1,102 @@
+{
+  "schema_version": "fiction_forks_intervention.v1",
+  "id": "low-altitude-public-mobility",
+  "fiction_reference": "『ドラえもん』",
+  "extracted_function": "子どもを含む非専門家が、近距離の低空移動を専門家独占ではなく地域の公共インフラとして使える",
+  "realization_mode": "institutional_equivalent",
+  "implementation_hypothesis": "公開設計の低空近距離機、子ども利用の同意と飛行禁止空域、落下・騒音の異議申立て、地域修理拠点、捜索救助の共同訓練を組み合わせ、近距離移動を単一事業者の娯楽機器にしない。",
+  "prerequisites": [
+    "auditable_public_ai",
+    "local_data_trusts",
+    "distributed_fabrication"
+  ],
+  "technology_tree": {
+    "nodes": [
+      {
+        "id": "open-low-altitude-platform",
+        "label": "公開設計の低空近距離機と交換可能な安全装置",
+        "kind": "technology",
+        "lead_time_years": 1,
+        "completion_evidence": "独立した2主体が同一公開設計から機体を組み立て、落下試験と監査ログを相互再現できる",
+        "depends_on": [
+          "auditable_public_ai",
+          "distributed_fabrication"
+        ]
+      },
+      {
+        "id": "child-consent-and-airspace-charter",
+        "label": "子ども利用の同意、保護者代理、飛行禁止空域",
+        "kind": "institution",
+        "lead_time_years": 1,
+        "completion_evidence": "未成年の利用目的、時間帯、空域制限、撤回手続の処理時間を第三者が監査できる",
+        "depends_on": [
+          "local_data_trusts"
+        ]
+      },
+      {
+        "id": "neighborhood-repair-bays",
+        "label": "地域修理拠点と部品交換",
+        "kind": "technology",
+        "lead_time_years": 1,
+        "completion_evidence": "複数地域が共通部品を交換し、一拠点停止時にも耐空検査を継続できる",
+        "depends_on": [
+          "distributed_fabrication",
+          "open-low-altitude-platform"
+        ]
+      },
+      {
+        "id": "nuisance-and-fall-redress",
+        "label": "騒音・落下・覗き込みの異議申立て",
+        "kind": "institution",
+        "lead_time_years": 1,
+        "completion_evidence": "住民が被害記録を提出し、飛行停止、補償、再発防止の決定を公開追跡できる",
+        "depends_on": [
+          "child-consent-and-airspace-charter"
+        ]
+      },
+      {
+        "id": "joint-search-rescue-drills",
+        "label": "落下・迷子・悪天候・事業者停止の捜索救助訓練",
+        "kind": "operations",
+        "lead_time_years": 1,
+        "completion_evidence": "年1回以上の共同訓練で到着時間、権限移譲、未合意点、再開条件を記録できる",
+        "depends_on": [
+          "neighborhood-repair-bays",
+          "nuisance-and-fall-redress"
+        ]
+      }
+    ],
+    "activation_requires": [
+      "joint-search-rescue-drills"
+    ]
+  },
+  "activation_effects": {
+    "strategic_autonomy": 2,
+    "repair_capacity": 3,
+    "legitimacy": 1
+  },
+  "annual_effects": {
+    "living_systems": -1,
+    "strategic_autonomy": 2,
+    "cognitive_sovereignty": 1,
+    "legitimacy": 1,
+    "repair_capacity": 3
+  },
+  "costs": [
+    "空域監視、保険、修理拠点、訓練を平時から維持する費用",
+    "子ども利用の同意確認と保護者代理に要する人員"
+  ],
+  "side_effects": [
+    "騒音、落下物、覗き込みによる生活妨害",
+    "低空監視が目的外の所在把握へ転用される危険",
+    "維持費が短期の生活基盤投資を圧迫する",
+    "利用できる地域とできない地域の移動格差"
+  ],
+  "failure_modes": [
+    "安全手続が追いつく前に機体だけが普及する",
+    "子ども向けを理由に同意、禁止空域、停止権を省略する",
+    "公開設計に見える機体が単一事業者の部品と通信へ依存する",
+    "事故後に捜索救助より責任回避が優先される"
+  ],
+  "rights_notice": "作品名と抽象化した近距離低空移動の公共化だけを参照し、画像、台詞、音声、ロゴ、キャラクター表現、特徴的な口調、公式協力の示唆を含まない。現実の航空政策や事故予測ではない。"
+}

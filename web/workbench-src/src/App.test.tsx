@@ -1,19 +1,44 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { App, describeForkOutcome } from "./App";
+import ollamaLiveRun from "../../../artifacts/runs/ollama-live-run-summary.json";
+import { App, describeForkOutcome, describeLiveRunOutcome, interventionDisplayName } from "./App";
 import { comparison, describeActivationDelay, intervention } from "./data";
 
 describe("workbench projection", () => {
   it("switches only between canonical named profiles", () => {
     render(<App />);
+    expect(screen.getByRole("heading", { name: "想像力で、破滅ルートをひっくり返せ。" })).toBeInTheDocument();
+    expect(screen.getByText("アニメや物語のアイデアを、再現できる世界線シミュレーションへ。")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "検証済み世界線を比較する" })).toHaveAttribute("href", "#comparison");
+    expect(screen.getByRole("link", { name: "自分のアイデアを持ち込む" })).toHaveAttribute("href", "../");
+    expect(screen.getByText(/破滅条件を倒すまで、世界線を何度でも組み替える/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "同じ2036年、二つの世界" })).toBeInTheDocument();
     expect(screen.getByText("2036年に修復不能条件へ到達。")).toBeInTheDocument();
     expect(screen.getByText(/生活基盤は通常介入で5ポイント悪化/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "制度の遅延が、発動を5年遅らせる。" })).toBeInTheDocument();
-    expect(within(screen.getByRole("article", { name: "介入世界" })).getByText(new RegExp(intervention.extracted_function))).toBeInTheDocument();
+    const forkCard = screen.getByRole("article", { name: "介入世界" });
+    expect(within(forkCard).getByText(`FORK / ${interventionDisplayName}`)).toBeInTheDocument();
+    expect(within(forkCard).queryByText(new RegExp(intervention.extracted_function))).not.toBeInTheDocument();
+    expect(interventionDisplayName).toBe("みんなで世界を観測する力");
+    expect(screen.getByText("FIXTURE = 台本入力による決定論比較。AIの生成ではありません。")).toBeInTheDocument();
+    expect(screen.getByText(/named profile（検証済み遅延条件）だけを切り替えます/)).toBeInTheDocument();
     expect(screen.getByText("2032年に発動し、2036年の比較時点で破滅条件を回避。")).toBeInTheDocument();
     fireEvent.click(screen.getByLabelText(/証拠来歴と対立仮説の公開検証手続を5年遅延/));
     expect(screen.getByText("発動が2037年となり、2036年の破滅条件に間に合いません。")).toBeInTheDocument();
     expect(screen.getAllByText("◆ 修復不能条件")).toHaveLength(3);
+  });
+
+  it("frames the verified Vertex miss as the next worldline to beat", () => {
+    render(<App />);
+    expect(screen.getByText(/AIの選択 → 3行動を安全に棄却/)).toHaveTextContent("発動2037年");
+  });
+
+  it("derives the Ollama verdict from the verified summary", () => {
+    expect(describeLiveRunOutcome(ollamaLiveRun)).toBe(
+      "AIの選択 → 1行動を安全に棄却 → 必要行動が不足 → 発動2047年 → 2036年のBIG BOSSに11年遅れ。",
+    );
+    render(<App />);
+    fireEvent.click(screen.getByLabelText("ローカル / Ollama"));
+    expect(screen.getByText(/発動2047年/)).toHaveTextContent("11年遅れ");
   });
 
   it("opens provenance and exposes fixture metadata", () => {
@@ -24,6 +49,7 @@ describe("workbench projection", () => {
     expect(dialog).toHaveTextContent("fiction_forks_comparison.v1");
     expect(dialog).toHaveTextContent("AI実測ではない");
     expect(dialog).toHaveTextContent("fixture replay同値検証済み");
+    expect(dialog).toHaveTextContent(intervention.extracted_function);
     expect(dialog).toHaveTextContent(/5f3f88f[0-9a-f]+/);
     fireEvent.keyDown(dialog, { key: "Escape" });
     return new Promise<void>((resolve) => requestAnimationFrame(() => {

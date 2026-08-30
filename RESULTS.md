@@ -44,14 +44,15 @@ python -m fiction_forks social `
 
 - 状態: 実行済み（2026-08-30）
 - provider / model: `ollama` / `qwen2.5vl:3b`
-- 実行実装commit: `1fb1d97906501ca361a58337dc227ecdc83d359d`
+- 実行実装commit: `a530c2d5d2e03a49599b456bf58af6b9d56352de`
 - scenario / intervention: `japan-2036-centralization` / `haruhi-world-observation`
 - seed / run ID: `2036` / `ff-c705e4136e2fce00`
-- actions: 15 / valid: 14 / fail-closed: 1 / interaction edges: 16
+- actions: 15 / valid: 14 / fail-closed: 1 / abstain: 10 / interaction edges: 10
+- 世界線: 必要行動の欠落で2047年発動。2036年の破滅条件に間に合わず、介入世界も破滅
 - 選択行動: `deploy-observation-mesh`、`establish-contestation-rights`、`exercise-anomaly-handoff`
 - 公開projection: [`artifacts/runs/ollama-live-run-summary.json`](artifacts/runs/ollama-live-run-summary.json)
-- 完全result SHA-256: `90a426aad6f2a39ecfd4fff51318c66d5567704f3320c99740410eec81e1372c`
-- event stream SHA-256: `a5f80bb5f00c4b905467c64378b30944b2ca5614a06a86b1eb1b1b6937c18be8`
+- 完全result SHA-256: `6cab7fe6fa887a018bc4604103dfc68faac3eac20901885f167311dc42050e21`
+- event stream SHA-256: `eeb30dd5569d37d29dccef86a552bc37b06243599fd2a29c2fa8a24625ad3b4d`
 - replay: PASS。棄却actionを含む15 eventを同じ順序・hash chainで再現
 - `meta-security-run-bundle/v1`: canonical validator PASS
 - 境界: 自由記述とrole-scoped evidenceは公開projectionへ含めない
