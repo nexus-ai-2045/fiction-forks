@@ -18,7 +18,7 @@
 > WebでアイデアをIssueへし、contributorが技術・制度・運用の介入へ翻訳します。動く世界線だけをPull Requestとして追加します。
 
 > [!NOTE]
-> 現在公開しているrunはプロトコル検証用fixtureで、LLMの実測ではありません。live AI-agent runは未実行です。実装はlive providerに対応し、実行後はartifactとreplayを分けて記録します。
+> fixtureに加え、ローカルOllamaによる5役×3ターンのlive AI-agent runを実行済みです。画面では15行動、契約による採用・棄却、応答関係、replayとrun bundle検証を分けて表示します。
 
 ## 使い方 — コードを書かずに参加する
 
