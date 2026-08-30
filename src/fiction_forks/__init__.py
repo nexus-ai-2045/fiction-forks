@@ -1,6 +1,6 @@
 """Fiction Forks simulation package."""
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 from .engine import compare_worlds, load_json, simulate
 from .participation import (

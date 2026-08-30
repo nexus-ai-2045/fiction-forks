@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fiction-forks"
-version = "0.3.0"
+version = "0.3.1"
 description = "フィクション由来の介入で日本の未来分岐を比較する透明な社会シミュレーション"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
