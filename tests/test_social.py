@@ -20,7 +20,14 @@ from fiction_forks.agent_protocol import (
 )
 from fiction_forks.cli import main as cli_main
 from fiction_forks.engine import ENGINE_VERSION, ContractError, load_json
-from fiction_forks.providers import FixtureProvider, OpenAIProvider, ReplayProvider
+from fiction_forks.providers import (
+    FixtureProvider,
+    OllamaProvider,
+    OpenAIProvider,
+    ProviderError,
+    ReplayProvider,
+    VertexProvider,
+)
 from fiction_forks.social import (
     PROTOCOL_VERSION,
     replay_equivalent,
@@ -135,9 +142,7 @@ class SocialSimulationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.scenario = load_json(ROOT / "scenarios/japan-2036/scenario.json")
-        cls.intervention = load_json(
-            ROOT / "interventions/doraemon-public-tools.json"
-        )
+        cls.intervention = load_json(ROOT / "interventions/doraemon-public-tools.json")
         cls.social_config = load_json(ROOT / "scenarios/japan-2036/social.json")
         cls.fixture_path = ROOT / "fixtures/social/japan-2036-cooperation.jsonl"
 
@@ -156,7 +161,9 @@ class SocialSimulationTests(unittest.TestCase):
         self.assertEqual(3, result["turn_count"])
         self.assertEqual(15, result["metrics"]["action_count"])
         self.assertEqual(0, result["metrics"]["invalid_action_count"])
-        self.assertTrue(all(delay == 0 for delay in result["technology_delays"].values()))
+        self.assertTrue(
+            all(delay == 0 for delay in result["technology_delays"].values())
+        )
         self.assertTrue(result["world_comparison"]["baseline"]["collapsed"])
         self.assertFalse(result["world_comparison"]["fork"]["collapsed"])
         self.assertEqual(10, result["metrics"]["interaction_edge_count"])
@@ -208,9 +215,7 @@ class SocialSimulationTests(unittest.TestCase):
         self.assertEqual([], result["selected_action_ids"])
         self.assertTrue(result["world_comparison"]["fork"]["collapsed"])
         for receipt in result["actions"]:
-            self.assertEqual(
-                receipt["state_before_hash"], receipt["state_after_hash"]
-            )
+            self.assertEqual(receipt["state_before_hash"], receipt["state_after_hash"])
 
     def test_private_evidence_is_only_visible_to_its_audience(self) -> None:
         provider = CaptureProvider(FixtureProvider.from_jsonl(self.fixture_path))
@@ -232,9 +237,7 @@ class SocialSimulationTests(unittest.TestCase):
             else:
                 self.assertNotIn("private-audit-note", evidence_ids)
             for prior_action in observation["prior_public_actions"]:
-                self.assertNotIn(
-                    "private-audit-note", prior_action["evidence_ids"]
-                )
+                self.assertNotIn("private-audit-note", prior_action["evidence_ids"])
                 self.assertNotIn("text", prior_action)
                 self.assertNotIn("conditions", prior_action)
                 self.assertTrue(prior_action["text_redacted"])
@@ -307,6 +310,74 @@ class SocialSimulationTests(unittest.TestCase):
         self.assertFalse(kwargs["store"])
         self.assertEqual("json_schema", kwargs["text"]["format"]["type"])
         self.assertTrue(kwargs["text"]["format"]["strict"])
+
+    def test_ollama_boundary_is_loopback_structured_and_seeded(self) -> None:
+        calls = []
+
+        def transport(url, payload, **kwargs):
+            calls.append((url, payload, kwargs))
+            observation = json.loads(payload["messages"][1]["content"])
+            action = FixtureProvider.from_jsonl(self.fixture_path).choose(observation)
+            return {"message": {"content": json.dumps(action)}}
+
+        capture = CaptureProvider(FixtureProvider.from_jsonl(self.fixture_path))
+        run_social_simulation(
+            self.scenario, self.intervention, self.social_config, capture, seed=2036
+        )
+        provider = OllamaProvider(
+            model="qwen2.5vl:7b", confirm_live=True, transport=transport
+        )
+        action = provider.choose(capture.observations[0])
+        self.assertEqual(capture.observations[0]["run_id"], action["run_id"])
+        self.assertEqual("http://127.0.0.1:11434/api/chat", calls[0][0])
+        self.assertFalse(calls[0][1]["stream"])
+        self.assertEqual(0, calls[0][1]["options"]["temperature"])
+        self.assertIsInstance(calls[0][1]["options"]["seed"], int)
+        self.assertEqual("object", calls[0][1]["format"]["type"])
+        with self.assertRaisesRegex(ProviderError, "loopback"):
+            OllamaProvider(
+                model="qwen2.5vl:7b",
+                confirm_live=True,
+                endpoint="https://example.com",
+            )
+
+    def test_vertex_boundary_uses_controlled_json_and_same_seed(self) -> None:
+        calls = []
+
+        def transport(url, payload, **kwargs):
+            calls.append((url, payload, kwargs))
+            observation = json.loads(payload["contents"][0]["parts"][0]["text"])
+            action = FixtureProvider.from_jsonl(self.fixture_path).choose(observation)
+            return {
+                "candidates": [{"content": {"parts": [{"text": json.dumps(action)}]}}]
+            }
+
+        capture = CaptureProvider(FixtureProvider.from_jsonl(self.fixture_path))
+        run_social_simulation(
+            self.scenario, self.intervention, self.social_config, capture, seed=2036
+        )
+        provider = VertexProvider(
+            project="nexus-ai-2045",
+            location="us-central1",
+            model="gemini-2.5-flash",
+            confirm_live=True,
+            access_token="test-token",
+            transport=transport,
+        )
+        action = provider.choose(capture.observations[0])
+        self.assertEqual(capture.observations[0]["run_id"], action["run_id"])
+        self.assertIn("gemini-2.5-flash:generateContent", calls[0][0])
+        config = calls[0][1]["generationConfig"]
+        self.assertEqual("application/json", config["responseMimeType"])
+        self.assertEqual(0, config["temperature"])
+        self.assertIsInstance(config["seed"], int)
+        schema = config["responseJsonSchema"]
+        self.assertNotIn("const", json.dumps(schema))
+        self.assertEqual(
+            [capture.observations[0]["run_id"]],
+            schema["properties"]["run_id"]["enum"],
+        )
+        self.assertEqual("Bearer test-token", calls[0][2]["headers"]["Authorization"])
 
     def test_role_count_is_bounded_before_provider_calls(self) -> None:
         broken = json.loads(json.dumps(self.social_config))
