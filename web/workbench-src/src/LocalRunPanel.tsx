@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ReplaySection } from "./Replay";
 import { buildLocalRunRequest, requestLocalRun, type LocalProvider, type VerifiedLocalRun } from "./run-request";
 
 export function LocalRunPanel() {
@@ -40,5 +41,6 @@ export function LocalRunPanel() {
     {live && !granted && <p className="run-warning">このproviderはadapter起動時に許可されていません。</p>}
     <button type="button" onClick={submit} disabled={pending || !token || (live && (!confirmed || !granted))}>{pending ? "実行中…" : "シミュレーションを実行"}</button>
     <div aria-live="polite">{error && <p role="alert">{error}</p>}{verified && <p className="run-success"><b>検証成功</b> run_id {verified.run_id}<br />execution_id {verified.execution_id}<br />{verified.replay.events.length} events / hash-chain PASS / bundle PASS</p>}</div>
+    {verified && <ReplaySection run={verified.replay} titleId="local-run-replay-title" generated />}
   </section>;
 }

@@ -16,7 +16,7 @@ export function describeReplayEvent(event: ReplayEvent, total: number): string {
   return `行動 ${event.sequence} / ${total}: ターン${event.action.turn}の${event.action.agent_id}が${event.action.action_id}を選択（${stanceLabels[event.action.stance]}${responds}）— ${verdict}`;
 }
 
-export function ReplaySection({ run }: { run: ReplayRun }) {
+export function ReplaySection({ run, titleId = "replay-title", generated = false }: { run: ReplayRun; titleId?: string; generated?: boolean }) {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const reducedMotionRef = useRef(false);
@@ -46,13 +46,13 @@ export function ReplaySection({ run }: { run: ReplayRun }) {
   const stop = () => setPlaying(false);
   const goTo = (next: number) => { stop(); setIndex(Math.min(Math.max(next, 0), total - 1)); };
 
-  return <section className="replay" aria-labelledby="replay-title">
+  return <section className="replay" aria-labelledby={titleId}>
     <div className="section-heading">
       <div>
         <span>REPLAY / VERIFIED RUN</span>
-        <h2 id="replay-title">保存済みの{total}行動を、一手ずつ再生する。</h2>
+        <h2 id={titleId}>{generated ? "いま実行した" : "保存済みの"}{total}行動を、一手ずつ再生する。</h2>
       </div>
-      <p>これは検証済みrunのreplayです。いまAIが生成しているのではなく、保存済みeventを保存順のまま表示します。</p>
+      <p>{generated ? "直前の実行結果を、検証済みevent順のまま再生します。" : "これは検証済みrunのreplayです。いまAIが生成しているのではなく、保存済みeventを保存順のまま表示します。"}</p>
     </div>
 
     <div className="replay-stage">
