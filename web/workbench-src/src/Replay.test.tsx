@@ -76,6 +76,9 @@ describe("replay of the verified fixture run", () => {
       intent_id: "t3:civic_challenger",
       valid: false,
       invalid_reason: "missing responds_to",
+      previous_event_hash: "1".repeat(64),
+      state_before_hash: "2".repeat(64),
+      state_after_hash: "3".repeat(64),
       event_hash: "0".repeat(64),
       action: {
         schema_version: "fiction_forks_action.v1",

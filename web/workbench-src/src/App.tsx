@@ -3,6 +3,7 @@ import ollamaLiveRun from "../../../artifacts/runs/ollama-live-run-summary.json"
 import vertexLiveRun from "../../../artifacts/runs/vertex-live-run-summary.json";
 import { comparison, contestationDelay, contestationDelayHeading, contestationDelayLabel, intervention, manifest, replayRun } from "./data";
 import { ReplaySection } from "./Replay";
+import { LocalRunPanel } from "./LocalRunPanel";
 import { metricKeys, type ComparisonArtifact, type MetricKey, type TechnologyNode } from "./types";
 
 const metricLabels: Record<MetricKey, string> = {
@@ -216,6 +217,8 @@ export function App() {
       <TechnologyTree artifact={artifact} />
 
       <ReplaySection run={replayRun} />
+
+      <LocalRunPanel />
 
       <LiveRunEvidence />
 

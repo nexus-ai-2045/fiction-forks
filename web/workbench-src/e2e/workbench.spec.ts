@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import fixture from "../../../artifacts/runs/haruhi-world-observation-fixture.json" with { type: "json" };
 
 test("Observe → Fork → Stress → Explain", async ({ page }) => {
   await page.goto("./");
@@ -100,4 +101,31 @@ test("mobile live-run table keeps every column header accessible", async ({ page
   for (const name of ["TURN", "ROLE", "ACTION", "判定"]) {
     await expect(table.getByRole("columnheader", { name })).toHaveCount(1);
   }
+});
+
+test("network fixture: exact local adapter response is verified and double submit is blocked", async ({ page }) => {
+  let requests = 0;
+  await page.route("**/api/health", (route) => route.fulfill({ json: { status: "ready", providers: ["fixture"], worldlines: ["haruhi-world-observation"] } }));
+  await page.route("**/api/runs", async (route) => {
+    requests += 1;
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    const runId = fixture.run_id;
+    await route.fulfill({ json: {
+      schema_version: "fiction_forks_local_run_response.v1", run_id: runId,
+      execution_id: `ffx-${"1".repeat(32)}`, provider: { name: "fixture", model: null },
+      source_revision: "2".repeat(40), result_sha256: "3".repeat(64), bundle_sha256: "4".repeat(64),
+      result: fixture,
+      bundle: {
+        schema: "meta-security-run-bundle/v1", run_request: { run_id: runId },
+        events: fixture.actions.map((receipt, sequence) => ({ run_id: runId, sequence, payload: { receipt } })),
+        replay: { run_id: runId, seed: fixture.seed, event_count: fixture.actions.length }, evidence: { run_id: runId },
+      },
+    } });
+  });
+  await page.goto("./");
+  await page.getByLabel("Session token").fill("test-only-token");
+  const run = page.getByRole("button", { name: "シミュレーションを実行" });
+  await run.dblclick();
+  await expect(page.getByText(/hash-chain PASS \/ bundle PASS/)).toBeVisible();
+  expect(requests).toBe(1);
 });

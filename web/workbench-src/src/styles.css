@@ -182,3 +182,11 @@ footer { background: var(--ink); color: white; padding: 28px clamp(20px, 7vw, 11
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+.local-run { margin: 0 auto 4rem; max-width: 1120px; padding: 2rem; border: 1px solid var(--line); background: var(--paper); }
+.local-run > label { display: grid; gap: .45rem; margin: 1rem 0; font-weight: 700; }
+.local-run select, .local-run input[type="password"] { min-height: 44px; padding: .65rem; border: 1px solid var(--ink); background: #fff; color: var(--ink); }
+.local-run button { min-height: 44px; padding: .7rem 1rem; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-weight: 800; }
+.local-run button:disabled { opacity: .55; cursor: not-allowed; }
+.run-warning, .local-run [role="alert"] { color: #8a1c13; font-weight: 700; }
+.run-success { padding: 1rem; border-left: 5px solid #28733c; background: #edf8ef; overflow-wrap: anywhere; }

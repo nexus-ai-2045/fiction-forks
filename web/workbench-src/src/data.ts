@@ -14,7 +14,7 @@ export const comparison = parseComparisonArtifact(comparisonJson);
 export const contestationDelay = parseComparisonArtifact(delayJson);
 export const manifest = parseRunManifest(manifestJson);
 
-export const replayRun = parseReplayRun(fixtureJson);
+export const replayRun = await parseReplayRun(fixtureJson);
 if (replayRun.seed !== manifest.seed) throw new Error("replay run seed does not match the canonical manifest");
 if (replayRun.events[replayRun.events.length - 1].event_hash !== replayRun.final_event_hash) {
   throw new Error("replay run final_event_hash does not match the stored event stream");

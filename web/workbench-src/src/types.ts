@@ -81,6 +81,9 @@ export interface ReplayEvent {
   action: ReplayAction;
   valid: boolean;
   invalid_reason: string | null;
+  previous_event_hash: string;
+  state_before_hash: string;
+  state_after_hash: string;
   event_hash: string;
 }
 

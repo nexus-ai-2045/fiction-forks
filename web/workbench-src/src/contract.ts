@@ -122,7 +122,21 @@ export function parseRunManifest(value: unknown): RunManifest {
   return value as unknown as RunManifest;
 }
 
-export function parseReplayRun(value: unknown): ReplayRun {
+function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  if (isRecord(value)) {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+async function sha256(value: unknown): Promise<string> {
+  const bytes = new TextEncoder().encode(canonicalJson(value));
+  const hash = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+export async function parseReplayRun(value: unknown): Promise<ReplayRun> {
   if (!isRecord(value)) throw new Error("fixture run must be an object");
   assertString(value, "run_id");
   assertInteger(value, "seed");
@@ -132,7 +146,9 @@ export function parseReplayRun(value: unknown): ReplayRun {
   }
   if (!Array.isArray(value.actions) || value.actions.length === 0) throw new Error("fixture actions must be a non-empty array");
   // 保存順をそのまま採用する。並べ替え・再計算はしない。
-  const events: ReplayEvent[] = value.actions.map((entry, index) => {
+  let previousEventHash: string | null = null;
+  const events: ReplayEvent[] = [];
+  for (const [index, entry] of value.actions.entries()) {
     if (!isRecord(entry) || !isRecord(entry.action)) throw new Error(`event ${index} must contain an action`);
     const action = entry.action;
     if (action.schema_version !== "fiction_forks_action.v1") throw new Error(`event ${index} has an unsupported action schema`);
@@ -159,7 +175,25 @@ export function parseReplayRun(value: unknown): ReplayRun {
     if (typeof entry.event_hash !== "string" || !sha256Pattern.test(entry.event_hash)) {
       throw new Error(`event ${index} event_hash must be a SHA-256 hex digest`);
     }
-    return {
+    for (const key of ["previous_event_hash", "state_before_hash", "state_after_hash"] as const) {
+      if (typeof entry[key] !== "string" || !sha256Pattern.test(entry[key])) {
+        throw new Error(`event ${index} ${key} must be a SHA-256 hex digest`);
+      }
+    }
+    if (previousEventHash !== null && entry.previous_event_hash !== previousEventHash) {
+      throw new Error(`event ${index} previous_event_hash breaks the hash chain`);
+    }
+    const receipt = {
+      intent_id: entry.intent_id,
+      action: entry.action,
+      valid: entry.valid,
+      invalid_reason: entry.invalid_reason,
+      state_before_hash: entry.state_before_hash,
+      state_after_hash: entry.state_after_hash,
+    };
+    const expectedHash = await sha256({ previous_event_hash: entry.previous_event_hash, receipt });
+    if (entry.event_hash !== expectedHash) throw new Error(`event ${index} event_hash mismatch`);
+    const parsed: ReplayEvent = {
       sequence: index + 1,
       intent_id: entry.intent_id,
       action: {
@@ -174,9 +208,15 @@ export function parseReplayRun(value: unknown): ReplayRun {
       },
       valid: entry.valid,
       invalid_reason: entry.invalid_reason,
+      previous_event_hash: entry.previous_event_hash as string,
+      state_before_hash: entry.state_before_hash as string,
+      state_after_hash: entry.state_after_hash as string,
       event_hash: entry.event_hash,
     };
-  });
+    events.push(parsed);
+    previousEventHash = parsed.event_hash;
+  }
+  if (previousEventHash !== value.final_event_hash) throw new Error("final_event_hash does not match the hash chain");
   return {
     run_id: value.run_id as string,
     seed: value.seed as number,
