@@ -110,6 +110,13 @@ main { overflow: hidden; }
 .node-detail p { display: grid; grid-template-columns: 80px 1fr; }
 .node-detail b { color: var(--ink); }
 
+.live-run { padding: 80px clamp(20px, 7vw, 110px); background: #10191c; color: #eef6f4; }
+.live-run .section-heading span { color: #7ccdc0; }
+.live-run-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #345057; border: 1px solid #345057; }
+.live-run-stats div { background: #152327; padding: 22px; display: flex; flex-direction: column; gap: 5px; }
+.live-run-stats strong { color: #7ccdc0; font-size: 34px; }.live-run-stats span { font-size: 13px; }
+.turn-grid { margin-top: 24px; border: 1px solid #345057; }.turn-head, .turn-row { display: grid; grid-template-columns: 70px 1.2fr 1.5fr 1fr; gap: 14px; padding: 12px 16px; align-items: center; }
+.turn-head { background: #203238; color: #a9c5c0; font: 800 11px/1.2 ui-monospace, monospace; letter-spacing: .12em; }.turn-row { border-top: 1px solid #2a4147; font: 13px/1.4 ui-monospace, monospace; }.turn-row strong { overflow-wrap: anywhere; }.run-valid { color: #8ee0b2; }.run-rejected { color: #ffb49f; }.run-proof { color: #a9c5c0; font: 12px/1.8 ui-monospace, monospace; overflow-wrap: anywhere; }
 .explain { padding: 80px clamp(20px, 7vw, 110px); display: flex; justify-content: space-between; align-items: end; gap: 40px; background: var(--yellow); }
 .explain > div { max-width: 780px; }
 .explain > div > span { color: var(--ink); }
@@ -140,6 +147,7 @@ footer { background: var(--ink); color: white; padding: 28px clamp(20px, 7vw, 11
   .metric-head { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }.metric-row { grid-template-columns: 1fr repeat(3, auto); gap: 12px; min-height: 70px; }.metric-row strong::after { content: "\A BASE / FORK / 差分"; white-space: pre; color: var(--muted); font: 600 9px ui-monospace, monospace; }
   .stress { grid-template-columns: 1fr; padding: 62px 20px; }.stress fieldset { min-width: 0; }
   .node summary { grid-template-columns: 1fr auto; gap: 8px; padding: 20px 5px; }.node-kind { grid-column: 1; }.node summary strong { grid-column: 1; }.node-year { grid-column: 2; grid-row: 1 / span 2; }.node summary::after { grid-column: 3; grid-row: 1 / span 2; }.node-detail { padding: 0 5px 20px; }.node-detail p { grid-template-columns: 1fr; gap: 4px; }
+  .live-run { padding: 62px 20px; }.live-run-stats { grid-template-columns: repeat(2, 1fr); }.turn-head, .turn-row { grid-template-columns: 42px 1fr; }.turn-head span:nth-child(3), .turn-head span:nth-child(4) { display: none; }.turn-row span:nth-child(3), .turn-row span:nth-child(4) { grid-column: 2; }
   .explain { padding: 62px 20px; flex-direction: column; align-items: stretch; }.explain button { width: 100%; }
   footer { flex-direction: column; padding: 26px 20px; line-height: 1.6; }
   .drawer { padding-top: 60px; }.drawer h2 { font-size: 32px; }
