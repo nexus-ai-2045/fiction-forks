@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
+import ollamaLiveRun from "../../../artifacts/runs/ollama-live-run-summary.json";
+import vertexLiveRun from "../../../artifacts/runs/vertex-live-run-summary.json";
 import { comparison, contestationDelay, contestationDelayHeading, contestationDelayLabel, intervention, manifest } from "./data";
 import { metricKeys, type ComparisonArtifact, type MetricKey, type TechnologyNode } from "./types";
 
@@ -17,6 +19,7 @@ const kindLabels: Record<TechnologyNode["kind"], string> = {
 };
 
 type Profile = "normal" | "delay";
+type LiveProvider = "ollama" | "vertex";
 
 export function describeForkOutcome(artifact: ComparisonArtifact): { summary: string; status: string } {
   if (!artifact.fork.collapsed) {
@@ -70,6 +73,28 @@ function TechnologyTree({ artifact }: { artifact: ComparisonArtifact }) {
         <div className="node-detail"><p><b>完成証拠</b>{node.completion_evidence}</p><p><b>依存</b>{node.depends_on.join(" / ")}</p></div>
       </details>)}
     </div>
+  </section>;
+}
+
+function LiveRunEvidence() {
+  const [provider, setProvider] = useState<LiveProvider>("vertex");
+  const liveRun = provider === "vertex" ? vertexLiveRun : ollamaLiveRun;
+  const isVertex = provider === "vertex";
+  return <section className="live-run" aria-labelledby="live-run-title">
+    <div className="section-heading"><div><span>LIVE AI / {isVertex ? "GOOGLE CLOUD VERTEX AI" : "LOCAL OLLAMA"}</span><h2 id="live-run-title">5役が3ターン、実際に選んだ。</h2></div><p>fixtureではなく、同じseedとaction契約で実モデルを動かした検証済み結果です。</p></div>
+    <fieldset className="live-provider-picker"><legend>実行環境</legend>
+      <label><input type="radio" name="live-provider" checked={provider === "vertex"} onChange={() => setProvider("vertex")} />Google Cloud / Gemini 2.5 Flash</label>
+      <label><input type="radio" name="live-provider" checked={provider === "ollama"} onChange={() => setProvider("ollama")} />ローカル / Ollama</label>
+    </fieldset>
+    {isVertex && <p className="live-outcome">2037年に発動。2036年の破滅条件には1年間に合わなかった――次に倒すべき世界線です。</p>}
+    <div className="live-run-stats">
+      <div><strong>{liveRun.event_count}</strong><span>生成行動</span></div><div><strong>{liveRun.valid_action_count}</strong><span>契約を通過</span></div><div><strong>{liveRun.invalid_action_count}</strong><span>安全に棄却</span></div><div><strong>{liveRun.interaction_edge_count}</strong><span>応答関係</span></div>
+    </div>
+    <div className="turn-grid" role="table" aria-label="実モデルの行動一覧">
+      <div className="turn-head" role="row"><span role="columnheader">TURN</span><span role="columnheader">ROLE</span><span role="columnheader">ACTION</span><span role="columnheader">判定</span></div>
+      {liveRun.turns.map((item) => <div className="turn-row" role="row" key={`${item.turn}:${item.agent_id}`}><span role="cell">{item.turn}</span><strong role="rowheader">{item.agent_id}</strong><span role="cell">{item.action_id}</span><span role="cell" className={item.valid ? "run-valid" : "run-rejected"}>{item.valid ? `VALID${item.response_count ? ` / 応答${item.response_count}` : ""}` : "REJECTED"}</span></div>)}
+    </div>
+    <p className="run-proof"><b>run_id</b> {liveRun.run_id} <b>model</b> {liveRun.model} <b>seed</b> {liveRun.seed}<br /><b>replay</b> {liveRun.replay_verified ? "PASS" : "未検証"} <b>bundle contract</b> {liveRun.bundle_contract_verified ? "PASS" : "未検証"}<br /><b>event SHA-256</b> {liveRun.event_stream_sha256}</p>
   </section>;
 }
 
@@ -157,6 +182,8 @@ export function App() {
       </section>
 
       <TechnologyTree artifact={artifact} />
+
+      <LiveRunEvidence />
 
       <section className="explain">
         <div><span>EXPLAIN</span><h2>改善だけでなく、代償も読む。</h2><p>生活基盤は通常介入で{livingSystemsSummary}。費用・副作用・失敗条件まで含めて初めて比較できます。</p></div>

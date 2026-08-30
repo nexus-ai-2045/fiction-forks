@@ -13,7 +13,14 @@ from pathlib import Path
 from typing import Sequence
 
 from .engine import ContractError, compare_worlds, load_json, simulate
-from .providers import FixtureProvider, OpenAIProvider, ProviderError, ReplayProvider
+from .providers import (
+    FixtureProvider,
+    OllamaProvider,
+    OpenAIProvider,
+    ProviderError,
+    ReplayProvider,
+    VertexProvider,
+)
 from .participation import load_template_catalog, prepare_provisional_request
 from .social import run_social_simulation
 
@@ -74,11 +81,16 @@ def build_parser() -> argparse.ArgumentParser:
     social_parser.add_argument("--intervention", required=True)
     social_parser.add_argument("--social-config", required=True)
     social_parser.add_argument(
-        "--provider", choices=("fixture", "replay", "openai"), required=True
+        "--provider",
+        choices=("fixture", "replay", "openai", "ollama", "vertex"),
+        required=True,
     )
     social_parser.add_argument("--fixture")
     social_parser.add_argument("--replay")
     social_parser.add_argument("--model")
+    social_parser.add_argument("--endpoint", default="http://127.0.0.1:11434")
+    social_parser.add_argument("--project")
+    social_parser.add_argument("--location", default="us-central1")
     social_parser.add_argument("--confirm-live", action="store_true")
     social_parser.add_argument("--seed", type=int, default=2036)
     social_parser.add_argument("--bundle-output")
@@ -107,8 +119,20 @@ def _social_provider(args: argparse.Namespace):
             raise ContractError("replay provider requires --replay")
         return ReplayProvider.from_path(args.replay)
     if not args.model:
-        raise ContractError("openai provider requires --model")
-    return OpenAIProvider(
+        raise ContractError(f"{args.provider} provider requires --model")
+    if args.provider == "openai":
+        return OpenAIProvider(model=args.model, confirm_live=args.confirm_live)
+    if args.provider == "ollama":
+        return OllamaProvider(
+            model=args.model,
+            confirm_live=args.confirm_live,
+            endpoint=args.endpoint,
+        )
+    if not args.project:
+        raise ContractError("vertex provider requires --project")
+    return VertexProvider(
+        project=args.project,
+        location=args.location,
         model=args.model,
         confirm_live=args.confirm_live,
     )

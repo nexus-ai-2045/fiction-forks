@@ -42,9 +42,34 @@ python -m fiction_forks social `
 
 ## live AI-agent run
 
-- 状態: 未実行
-- 理由: 現在の実装環境では `OPENAI_API_KEY` が設定されておらず、外部API費用を伴うrunの承認も分離している
-- 完了条件: model、exact commit、scenario、seed、run ID、artifact SHA-256、観測メトリクス、replay同値性を記録する
+- 状態: 実行済み（2026-08-30）
+- provider / model: `ollama` / `qwen2.5vl:3b`
+- 実行実装commit: `1fb1d97906501ca361a58337dc227ecdc83d359d`
+- scenario / intervention: `japan-2036-centralization` / `haruhi-world-observation`
+- seed / run ID: `2036` / `ff-c705e4136e2fce00`
+- actions: 15 / valid: 14 / fail-closed: 1 / interaction edges: 16
+- 選択行動: `deploy-observation-mesh`、`establish-contestation-rights`、`exercise-anomaly-handoff`
+- 公開projection: [`artifacts/runs/ollama-live-run-summary.json`](artifacts/runs/ollama-live-run-summary.json)
+- 完全result SHA-256: `90a426aad6f2a39ecfd4fff51318c66d5567704f3320c99740410eec81e1372c`
+- event stream SHA-256: `a5f80bb5f00c4b905467c64378b30944b2ca5614a06a86b1eb1b1b6937c18be8`
+- replay: PASS。棄却actionを含む15 eventを同じ順序・hash chainで再現
+- `meta-security-run-bundle/v1`: canonical validator PASS
+- 境界: 自由記述とrole-scoped evidenceは公開projectionへ含めない
+
+### Google Cloud Vertex AI実走
+
+- 状態: 実行済み（2026-08-30）
+- provider / model: `vertex` / `gemini-2.5-flash`
+- 実行実装commit: `2f5b91e43cf303e88898a171d0e381f05854c9da`
+- scenario / intervention: `japan-2036-centralization` / `haruhi-world-observation`
+- seed / run ID: `2036` / `ff-c705e4136e2fce00`
+- actions: 15 / valid: 12 / fail-closed: 3 / interaction edges: 9
+- 世界線: 2037年発動。2036年の破滅条件には1年間に合わず、介入世界も破滅
+- 公開projection: [`artifacts/runs/vertex-live-run-summary.json`](artifacts/runs/vertex-live-run-summary.json)
+- 完全result SHA-256: `47c715588686a6934c26966088b21ee69ce5f5f8c83d0bad19964af7e72d9c8b`
+- event stream SHA-256: `cb7a5f714d21eb27cb2eb1d31010be5479c19fb10a9f9553a343dacc10c00293`
+- replay / `meta-security-run-bundle/v1`: PASS
+- 正準manifest: [`artifacts/runs/live-run-summaries.manifest.json`](artifacts/runs/live-run-summaries.manifest.json)。OllamaとVertexのprojection、identity、digestをfail-closedで検証
 
 ## 世界観測fork：決定論fixture run
 
@@ -101,7 +126,7 @@ python -m fiction_forks social `
 
 ## 世界観測fork：未確認事項
 
-- live OpenAI providerは未実行であり、実際のLLMエージェント対話や創発を実測していない
+- live Ollama runとVertex AI実API runは実行済み。単一runの結果であり、モデル間の一般的な優劣は未確認
 - 観測系が異なるデータ供給者・モデル・運営者へ十分分散しているかを測る現実の独立性指標は未設計
 - 誤警報率、異議処理時間、運用費、維持人員、法制度適合性、プライバシー影響は現実データで未校正
 - 状態値への効果量と2032年発動はMVP用の因果仮説であり、予測または政策助言として未確認

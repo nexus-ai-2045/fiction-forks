@@ -266,11 +266,19 @@ def run_social_simulation(
         if item["valid"] and item["action"]["stance"] == "oppose"
         for target_intent_id in item["action"]["responds_to"]
     }
+    # 反対は intent 単位で表明されるが、採用判定は action_id 単位で行うため、
+    # 反対された intent の action_id は別 intent の再提案があっても採用しない。
+    opposed_action_ids = {
+        item["action"]["action_id"]
+        for item in receipts
+        if item["valid"] and item["intent_id"] in opposed_intents
+    }
     selected = {
         item["action"]["action_id"]
         for item in receipts
         if item["valid"]
         and item["intent_id"] not in opposed_intents
+        and item["action"]["action_id"] not in opposed_action_ids
         and item["action"]["stance"] in {"support", "condition"}
         and item["action"]["action_id"] != "abstain"
     }
