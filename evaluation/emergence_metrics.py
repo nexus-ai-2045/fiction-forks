@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 from collections import Counter
 from pathlib import Path
 from typing import Any, Mapping
@@ -29,6 +30,7 @@ PROSE_KEYS = {
     "completion_evidence",
     "implementation_hypothesis",
 }
+ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]{0,127}$")
 
 
 def sha256_file(path: Path) -> str:
@@ -46,7 +48,7 @@ def measured(value: Any) -> bool:
 def _ratio(numerator: Any, denominator: Any) -> Any:
     if not measured(numerator) or not measured(denominator):
         return NOT_MEASURED
-    if not isinstance(numerator, (int, float)) or not isinstance(denominator, (int, float)):
+    if not _is_nonnegative_number(numerator) or not _is_nonnegative_number(denominator):
         return NOT_MEASURED
     if denominator == 0:
         return NOT_MEASURED
@@ -59,6 +61,46 @@ def _unique_count(values: Any) -> Any:
     if not isinstance(values, list):
         return NOT_MEASURED
     return len({item for item in values if item not in (None, "", "abstain")})
+
+
+def _is_nonnegative_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0
+
+
+def _is_nonnegative_int(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0
+
+
+def _safe_id(value: Any) -> bool:
+    return isinstance(value, str) and ID_PATTERN.fullmatch(value) is not None
+
+
+def _safe_missing_actions(value: Any) -> Any:
+    if value == NOT_MEASURED or value is None:
+        return NOT_MEASURED
+    if not isinstance(value, Mapping):
+        return NOT_MEASURED
+    result: dict[str, list[str]] = {}
+    for node_id, action_ids in value.items():
+        if not _safe_id(node_id) or not isinstance(action_ids, list):
+            return NOT_MEASURED
+        if not all(_safe_id(action_id) for action_id in action_ids):
+            return NOT_MEASURED
+        result[node_id] = list(action_ids)
+    return result
+
+
+def _safe_technology_delays(value: Any) -> Any:
+    if value == NOT_MEASURED or value is None:
+        return NOT_MEASURED
+    if not isinstance(value, Mapping):
+        return NOT_MEASURED
+    result: dict[str, int] = {}
+    for node_id, delay in value.items():
+        if not _safe_id(node_id) or not _is_nonnegative_int(delay):
+            return NOT_MEASURED
+        result[node_id] = delay
+    return result
 
 
 def relative_source_path(path: Path | None, repo_root: Path | None) -> Any:
@@ -95,16 +137,23 @@ def execution_identity(
         "model": model if model not in (None, "") else NOT_MEASURED,
         "runtime_revision": document.get("runtime_revision", NOT_MEASURED),
         "seed": document.get("seed", NOT_MEASURED),
-        "result_sha256": document.get("result_sha256", file_sha256 or NOT_MEASURED),
+        "artifact_sha256": file_sha256 or NOT_MEASURED,
+        "declared_result_sha256": document.get("result_sha256", NOT_MEASURED),
         "event_stream_sha256": document.get(
             "event_stream_sha256", document.get("final_event_hash", NOT_MEASURED)
         ),
         "source_path": relative_source_path(path, repo_root),
     }
-    if identity["result_sha256"] in (None, ""):
-        identity["result_sha256"] = file_sha256 or NOT_MEASURED
+    if identity["declared_result_sha256"] in (None, ""):
+        identity["declared_result_sha256"] = NOT_MEASURED
     if identity["event_stream_sha256"] in (None, ""):
         identity["event_stream_sha256"] = NOT_MEASURED
+    identity["declared_result_sha256_matches_artifact"] = (
+        identity["declared_result_sha256"] == identity["artifact_sha256"]
+        if measured(identity["declared_result_sha256"])
+        and measured(identity["artifact_sha256"])
+        else NOT_MEASURED
+    )
     return identity
 
 
@@ -114,7 +163,7 @@ def identity_key(identity: Mapping[str, Any]) -> tuple[Any, ...]:
         identity.get("provider", NOT_MEASURED),
         identity.get("model", NOT_MEASURED),
         identity.get("runtime_revision", NOT_MEASURED),
-        identity.get("result_sha256", NOT_MEASURED),
+        identity.get("artifact_sha256", NOT_MEASURED),
         identity.get("event_stream_sha256", NOT_MEASURED),
     )
 
@@ -161,19 +210,26 @@ def _stance_counts(actions: list[Mapping[str, Any]] | None) -> dict[str, Any]:
     }
 
 
-def _action_ids(document: Mapping[str, Any]) -> Any:
+def _valid_action_ids(document: Mapping[str, Any]) -> Any:
     if "turns" in document and isinstance(document["turns"], list):
-        return [
-            item.get("action_id", NOT_MEASURED)
-            for item in document["turns"]
-            if isinstance(item, Mapping)
-        ]
+        items = document["turns"]
+        if not items or not all(
+            isinstance(item, Mapping) and isinstance(item.get("valid"), bool)
+            for item in items
+        ):
+            return NOT_MEASURED
+        return [item.get("action_id", NOT_MEASURED) for item in items if item["valid"]]
     actions = document.get("actions")
     if not isinstance(actions, list):
         return NOT_MEASURED
+    if not actions or not all(
+        isinstance(item, Mapping) and isinstance(item.get("valid"), bool)
+        for item in actions
+    ):
+        return NOT_MEASURED
     ids = []
     for item in actions:
-        if not isinstance(item, Mapping):
+        if not item["valid"]:
             continue
         action = item.get("action", item)
         if isinstance(action, Mapping):
@@ -183,19 +239,20 @@ def _action_ids(document: Mapping[str, Any]) -> Any:
 
 def _valid_flags(document: Mapping[str, Any]) -> Any:
     if "turns" in document and isinstance(document["turns"], list):
-        flags = []
-        for item in document["turns"]:
-            if isinstance(item, Mapping) and "valid" in item:
-                flags.append(bool(item["valid"]))
-        return flags or NOT_MEASURED
+        items = document["turns"]
+        if not items or not all(
+            isinstance(item, Mapping) and isinstance(item.get("valid"), bool)
+            for item in items
+        ):
+            return NOT_MEASURED
+        return [item["valid"] for item in items]
     actions = document.get("actions")
-    if not isinstance(actions, list):
+    if not isinstance(actions, list) or not actions or not all(
+        isinstance(item, Mapping) and isinstance(item.get("valid"), bool)
+        for item in actions
+    ):
         return NOT_MEASURED
-    flags = []
-    for item in actions:
-        if isinstance(item, Mapping) and "valid" in item:
-            flags.append(bool(item["valid"]))
-    return flags or NOT_MEASURED
+    return [item["valid"] for item in actions]
 
 
 def _world_fields(document: Mapping[str, Any]) -> dict[str, Any]:
@@ -211,8 +268,10 @@ def _world_fields(document: Mapping[str, Any]) -> dict[str, Any]:
         "activation_year": fork.get("activation_year", document.get("activation_year", NOT_MEASURED)),
         "collapse_year": fork.get("collapse_year", document.get("collapse_year", NOT_MEASURED)),
         "collapsed": fork.get("collapsed", document.get("collapsed", NOT_MEASURED)),
-        "missing_actions_by_node": document.get("missing_actions_by_node", NOT_MEASURED),
-        "technology_delays": (
+        "missing_actions_by_node": _safe_missing_actions(
+            document.get("missing_actions_by_node", NOT_MEASURED)
+        ),
+        "technology_delays": _safe_technology_delays(
             document.get("technology_delays")
             if isinstance(document.get("technology_delays"), Mapping)
             else fork.get("technology_delays", NOT_MEASURED)
@@ -223,12 +282,13 @@ def _world_fields(document: Mapping[str, Any]) -> dict[str, Any]:
 def _interaction_density(edge_count: Any, role_count: Any, turn_count: Any) -> Any:
     if not all(measured(value) for value in (edge_count, role_count, turn_count)):
         return NOT_MEASURED
-    if not all(isinstance(value, int) for value in (edge_count, role_count, turn_count)):
+    if not all(_is_nonnegative_int(value) for value in (edge_count, role_count, turn_count)):
         return NOT_MEASURED
     possible = role_count * max(role_count - 1, 0) * turn_count
     if possible == 0:
         return NOT_MEASURED
-    return round(edge_count / possible, 4)
+    density = edge_count / possible
+    return round(density, 4) if density <= 1 else NOT_MEASURED
 
 
 def summarize_document(
@@ -242,11 +302,12 @@ def summarize_document(
         document, path=path, file_sha256=file_sha256, repo_root=repo_root
     )
     metrics = document.get("metrics") if isinstance(document.get("metrics"), Mapping) else {}
-    action_ids = _action_ids(document)
+    action_ids = _valid_action_ids(document)
     valid_flags = _valid_flags(document)
     event_count = document.get("event_count", metrics.get("action_count", NOT_MEASURED))
-    if event_count == NOT_MEASURED and isinstance(action_ids, list):
-        event_count = len(action_ids)
+    source_actions = document.get("turns", document.get("actions"))
+    if event_count == NOT_MEASURED and isinstance(source_actions, list):
+        event_count = len(source_actions)
     valid_count = document.get("valid_action_count", metrics.get("valid_action_count", NOT_MEASURED))
     invalid_count = document.get(
         "invalid_action_count", metrics.get("invalid_action_count", NOT_MEASURED)
@@ -254,12 +315,17 @@ def summarize_document(
     if valid_count == NOT_MEASURED and isinstance(valid_flags, list):
         valid_count = sum(1 for flag in valid_flags if flag)
         invalid_count = len(valid_flags) - valid_count
+    counts = (event_count, valid_count, invalid_count)
+    if not all(_is_nonnegative_int(value) for value in counts) or valid_count + invalid_count != event_count:
+        event_count = valid_count = invalid_count = NOT_MEASURED
     edge_count = document.get(
         "interaction_edge_count", metrics.get("interaction_edge_count", NOT_MEASURED)
     )
     if edge_count == NOT_MEASURED and isinstance(document.get("interaction_edges"), list):
         edge_count = len(document["interaction_edges"])
     capability_coverage = metrics.get("capability_coverage", NOT_MEASURED)
+    if not _is_nonnegative_number(capability_coverage):
+        capability_coverage = NOT_MEASURED
     role_count = len(document["roles"]) if isinstance(document.get("roles"), list) else NOT_MEASURED
     turn_count = document.get("turn_count", NOT_MEASURED)
     if turn_count == NOT_MEASURED and isinstance(document.get("turns"), list):
@@ -298,7 +364,10 @@ def summarize_document(
 
 
 def _mean(values: list[Any]) -> Any:
-    numbers = [value for value in values if isinstance(value, (int, float))]
+    numbers = [
+        value for value in values
+        if isinstance(value, (int, float)) and not isinstance(value, bool)
+    ]
     if not numbers:
         return NOT_MEASURED
     return round(sum(numbers) / len(numbers), 4)
@@ -476,7 +545,7 @@ def render_markdown(report: Mapping[str, Any]) -> str:
                 seed=identity["seed"],
                 activation=row["activation_year"],
                 collapsed=row["collapsed"],
-                sha=str(identity["result_sha256"])[:12],
+                sha=str(identity["artifact_sha256"])[:12],
             )
         )
     lines.extend(["", "## 分離集計", ""])
@@ -504,7 +573,7 @@ def render_markdown(report: Mapping[str, Any]) -> str:
             "- interaction density: `interaction_edge_count / (roles × (roles-1) × turns)`。欠けた項があれば `not_measured`。",
             "- fail-closed rate: invalid / event_count。分母が無ければ `not_measured`。",
             "- collapse rate: `collapsed` が真偽値として測定できた実行だけの割合。未知は分母に入れない。",
-            "- 実行の区別: `run_id` は世界入力ID。実行差は provider / model / runtime_revision / result SHA / event SHA。",
+            "- 実行の区別: `run_id` は世界入力ID。実行差は provider / model / runtime_revision / 実artifact SHA / event SHA。",
         ]
     )
     return "\n".join(lines) + "\n"

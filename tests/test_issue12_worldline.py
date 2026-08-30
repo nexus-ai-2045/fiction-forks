@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -121,6 +122,37 @@ class Issue12WorldlineCandidateTests(unittest.TestCase):
             self.assertTrue(receipt["action"]["text_redacted"])
             self.assertNotIn("text", receipt["action"])
             self.assertNotIn("conditions", receipt["action"])
+
+    def test_committed_outputs_match_runtime_recalculation(self) -> None:
+        comparison = compare_worlds(self.scenario, self.intervention, seed=2036)
+        delayed = compare_worlds(
+            self.scenario,
+            self.intervention,
+            seed=2036,
+            technology_delays={"child-consent-and-airspace-charter": 5},
+        )
+        social = run_social_simulation(
+            self.scenario,
+            self.intervention,
+            self.social_config,
+            FixtureProvider.from_jsonl(self.fixture_path),
+            seed=2036,
+        )
+        committed = ROOT / "evaluation/outputs"
+        stored_comparison = json.loads(
+            committed.joinpath("issue12-comparison.json").read_text(encoding="utf-8")
+        )
+        stored_delayed = json.loads(
+            committed.joinpath("issue12-child-consent-delay.json").read_text(encoding="utf-8")
+        )
+        stored_social = json.loads(
+            committed.joinpath("issue12-fixture-social.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(comparison, stored_comparison)
+        self.assertEqual(delayed, stored_delayed)
+        self.assertEqual(social, stored_social)
+        self.assertEqual(social["run_id"], stored_social["run_id"])
+        self.assertEqual(social["final_event_hash"], stored_social["final_event_hash"])
 
 
 if __name__ == "__main__":

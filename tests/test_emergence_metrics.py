@@ -22,6 +22,95 @@ from evaluation.emergence_metrics import (  # noqa: E402
 
 
 class EmergenceMetricsTests(unittest.TestCase):
+    def test_action_diversity_counts_only_valid_non_abstain_actions(self) -> None:
+        row = summarize_document(
+            {
+                "schema_version": "fiction_forks_live_run_summary.v1",
+                "event_count": 3,
+                "valid_action_count": 2,
+                "invalid_action_count": 1,
+                "turns": [
+                    {"turn": 1, "action_id": "keep", "valid": True},
+                    {"turn": 1, "action_id": "invalid-must-not-count", "valid": False},
+                    {"turn": 2, "action_id": "abstain", "valid": True},
+                ],
+            }
+        )
+        self.assertEqual(["keep", "abstain"], row["action_ids"])
+        self.assertEqual(1, row["action_diversity"])
+
+        missing_valid = summarize_document(
+            {
+                "schema_version": "fiction_forks_live_run_summary.v1",
+                "turns": [{"turn": 1, "action_id": "unknown"}],
+            }
+        )
+        self.assertEqual(NOT_MEASURED, missing_valid["action_ids"])
+        self.assertEqual(NOT_MEASURED, missing_valid["action_diversity"])
+
+    def test_actual_artifact_sha_is_identity_and_declared_sha_is_provenance(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            common = {
+                "schema_version": "fiction_forks_live_run_summary.v1",
+                "run_id": "same-run",
+                "provider": "vertex",
+                "result_sha256": "same-declared-value",
+            }
+            first = root / "first.json"
+            second = root / "second.json"
+            first.write_text(json.dumps({**common, "seed": 1}), encoding="utf-8")
+            second.write_text(json.dumps({**common, "seed": 2}), encoding="utf-8")
+            report = build_report([root], repo_root=root)
+            self.assertEqual(2, report["n_executions"])
+            identities = [row["identity"] for row in report["executions"]]
+            self.assertEqual(
+                {"same-declared-value"},
+                {identity["declared_result_sha256"] for identity in identities},
+            )
+            self.assertEqual(2, len({identity["artifact_sha256"] for identity in identities}))
+            self.assertEqual(
+                {False},
+                {
+                    identity["declared_result_sha256_matches_artifact"]
+                    for identity in identities
+                },
+            )
+
+    def test_untrusted_world_shapes_and_numeric_inconsistency_fail_closed(self) -> None:
+        row = summarize_document(
+            {
+                "schema_version": "fiction_forks_social_result.v1",
+                "event_count": 2,
+                "valid_action_count": True,
+                "invalid_action_count": -1,
+                "interaction_edge_count": 3,
+                "roles": ["a", "b"],
+                "turn_count": 1,
+                "missing_actions_by_node": {"safe-node": ["safe-action", "raw prose secret"]},
+                "technology_delays": {"safe-node": False},
+            }
+        )
+        self.assertEqual(NOT_MEASURED, row["event_count"])
+        self.assertEqual(NOT_MEASURED, row["valid_action_count"])
+        self.assertEqual(NOT_MEASURED, row["invalid_action_count"])
+        self.assertEqual(NOT_MEASURED, row["fail_closed_rate"])
+        self.assertEqual(NOT_MEASURED, row["interaction_density"])
+        self.assertEqual(NOT_MEASURED, row["missing_actions_by_node"])
+        self.assertEqual(NOT_MEASURED, row["technology_delays"])
+
+    def test_count_mismatch_fails_closed(self) -> None:
+        row = summarize_document(
+            {
+                "schema_version": "fiction_forks_live_run_summary.v1",
+                "event_count": 3,
+                "valid_action_count": 1,
+                "invalid_action_count": 1,
+            }
+        )
+        self.assertEqual(NOT_MEASURED, row["event_count"])
+        self.assertEqual(NOT_MEASURED, row["fail_closed_rate"])
+
     def test_same_run_id_is_split_by_provider_and_hashes(self) -> None:
         fixture = summarize_document(
             {

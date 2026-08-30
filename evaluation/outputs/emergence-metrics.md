@@ -12,8 +12,8 @@
 | deterministic_comparison | `not_measured` | not_measured | not_measured | 2036 | 2037 | True | `122a8fb540bc` |
 | fixture | `ff-c705e4136e2fce00` | fixture | not_measured | 2036 | 2032 | False | `12b1a98cbd0d` |
 | fixture | `ff-b74f4c768380c732` | fixture | not_measured | 2036 | 2032 | False | `a062aba60111` |
-| live | `ff-c705e4136e2fce00` | ollama | qwen2.5vl:3b | 2036 | not_measured | not_measured | `90a426aad6f2` |
-| live | `ff-c705e4136e2fce00` | vertex | gemini-2.5-flash | 2036 | 2037 | True | `47c715588686` |
+| live | `ff-c705e4136e2fce00` | ollama | qwen2.5vl:3b | 2036 | not_measured | not_measured | `68069c51cb9b` |
+| live | `ff-c705e4136e2fce00` | vertex | gemini-2.5-flash | 2036 | 2037 | True | `d1a758b63c61` |
 
 ## 分離集計
 
@@ -54,4 +54,4 @@
 - interaction density: `interaction_edge_count / (roles × (roles-1) × turns)`。欠けた項があれば `not_measured`。
 - fail-closed rate: invalid / event_count。分母が無ければ `not_measured`。
 - collapse rate: `collapsed` が真偽値として測定できた実行だけの割合。未知は分母に入れない。
-- 実行の区別: `run_id` は世界入力ID。実行差は provider / model / runtime_revision / result SHA / event SHA。
+- 実行の区別: `run_id` は世界入力ID。実行差は provider / model / runtime_revision / 実artifact SHA / event SHA。
