@@ -70,6 +70,34 @@ class MalformedProvider:
         }
 
 
+class OppositionOnlyProvider:
+    """t2 の反対だけを差し込み、t3 の同一 action_id 再提案は fixture のまま通す。"""
+
+    name = "opposition-only"
+    model = None
+
+    def __init__(self, inner: FixtureProvider) -> None:
+        self.inner = inner
+
+    def choose(self, observation: dict) -> dict:
+        action = dict(self.inner.choose(observation))
+        key = (observation["turn"], observation["role"]["id"])
+        if key == (2, "threat_analyst"):
+            action.update(
+                {
+                    "action_id": "abstain",
+                    "stance": "oppose",
+                    "responds_to": ["t1:infra_engineer"],
+                    "target_ids": ["infra_engineer"],
+                    "evidence_ids": ["public-technology-tree"],
+                    "confidence": 0.8,
+                    "conditions": [],
+                    "text": "未検証の依存があるため、この提案へ反対します。",
+                }
+            )
+        return action
+
+
 class OppositionProvider:
     name = "opposition"
     model = None
@@ -259,6 +287,22 @@ class SocialSimulationTests(unittest.TestCase):
             self.intervention,
             self.social_config,
             OppositionProvider(FixtureProvider.from_jsonl(self.fixture_path)),
+            seed=2036,
+        )
+        self.assertEqual(1, result["metrics"]["opposed_intent_count"])
+        self.assertNotIn("prototype-repair-network", result["selected_action_ids"])
+        self.assertEqual(
+            ["prototype-repair-network"],
+            result["missing_actions_by_node"]["regional-fabrication-cells"],
+        )
+        self.assertTrue(result["world_comparison"]["fork"]["collapsed"])
+
+    def test_opposition_survives_duplicate_action_reproposal(self) -> None:
+        result = run_social_simulation(
+            self.scenario,
+            self.intervention,
+            self.social_config,
+            OppositionOnlyProvider(FixtureProvider.from_jsonl(self.fixture_path)),
             seed=2036,
         )
         self.assertEqual(1, result["metrics"]["opposed_intent_count"])
