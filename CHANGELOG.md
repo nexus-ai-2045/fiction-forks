@@ -4,6 +4,7 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 ## [Unreleased]
 
+- 既存social resultを正本に保ち、run request・event stream・replay・evidenceを同一`run_id`へ束縛する`meta-security-run-bundle/v1` adapterを追加した
 - 既存Idea Builderを維持したまま、通常世界線と制度5年遅延を比較し、費用・副作用・provenanceを読めるReact Result Workbench縦切りを追加した
 - workbench build前にcanonical manifestのpath・SHA-256・engine/scenario/intervention/seedを検証し、artifact driftをfail closedで拒否するようにした
 

@@ -181,9 +181,33 @@ python -m pip install --require-hashes -r requirements-agents.txt
 python -m pip install -e . --no-deps
 ```
 
-そのうえで、モデル、API key、費用発生への明示確認がある場合だけ `--provider openai --model gpt-5.4-mini --confirm-live` で実行します。CIは外部APIを呼びません。生成したartifactは `--provider replay --replay run.json` で再検証できます。
+そのうえで、`python -m pip install --require-hashes -r requirements-runtime.txt`を実行し、モデル、API key、費用発生への明示確認がある場合だけ `--provider openai --model gpt-5.4-mini --confirm-live` で実行します。CIは外部APIを呼びません。生成したartifactは `--provider replay --replay run.json` で再検証できます。
 
 従来の年次比較だけを行う場合は `python -m fiction_forks compare --scenario scenarios/japan-2036/scenario.json --intervention interventions/doraemon-public-tools.json --seed 2036` です。
+
+### Meta-Security Studioへ渡すrun bundle
+
+社会シミュレーションの正本artifactを変えず、同じ実行から交換形式
+`meta-security-run-bundle/v1`を別ファイルへ出力できます。`run_request`、event stream、
+replay、evidenceは社会シミュレーションが決定論的に導出した同じ`run_id`を共有します。
+
+```powershell
+$revision = git rev-parse HEAD
+python -m fiction_forks social `
+  --scenario scenarios/japan-2036/scenario.json `
+  --intervention interventions/doraemon-public-tools.json `
+  --social-config scenarios/japan-2036/social.json `
+  --provider fixture `
+  --fixture fixtures/social/japan-2036-cooperation.jsonl `
+  --seed 2036 `
+  --output artifacts/local/social-result.json `
+  --bundle-output artifacts/local/meta-security-run-bundle.json `
+  --source-revision $revision
+```
+
+event streamは既存のaction receipt順を`sequence=0..N-1`へ射影し、RFC 8785で
+正規化した各eventとLFをSHA-256へ入力します。時刻はexecution evidenceであり、
+seed決定論の対象は既存domain result、event順序、固定時刻でのevent digestです。
 
 世界観測介入は、介入・social config・fixtureを差し替えて実行できます。
 
