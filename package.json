@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --config web/workbench-src/vite.config.ts",
+    "dev": "vite --config web/workbench-src/vite.config.ts --host 127.0.0.1 --port 5173 --strictPort",
+    "preview": "npm run build && vite preview --config web/workbench-src/vite.config.ts --host 127.0.0.1 --port 4173 --strictPort",
     "verify:assets": "node tools/verify_workbench_assets.mjs",
     "build": "npm run verify:assets && tsc -p web/workbench-src/tsconfig.json --noEmit && vite build --config web/workbench-src/vite.config.ts",
     "test": "node --test tools/verify_workbench_assets.test.mjs && vitest run --config web/workbench-src/vitest.config.ts",

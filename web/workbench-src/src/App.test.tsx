@@ -5,6 +5,11 @@ import { comparison, describeActivationDelay, intervention } from "./data";
 describe("workbench projection", () => {
   it("switches only between canonical named profiles", () => {
     render(<App />);
+    expect(screen.getByRole("heading", { name: "想像力で、破滅ルートをひっくり返せ。" })).toBeInTheDocument();
+    expect(screen.getByText("アニメや物語のアイデアを、再現できる世界線シミュレーションへ。")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "世界線をプレイする" })).toHaveAttribute("href", "#comparison");
+    expect(screen.getByRole("link", { name: "自分のアイデアを持ち込む" })).toHaveAttribute("href", "../");
+    expect(screen.getByText(/破滅条件を倒すまで、世界線を何度でも組み替える/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "同じ2036年、二つの世界" })).toBeInTheDocument();
     expect(screen.getByText("2036年に修復不能条件へ到達。")).toBeInTheDocument();
     expect(screen.getByText(/生活基盤は通常介入で5ポイント悪化/)).toBeInTheDocument();
@@ -14,6 +19,11 @@ describe("workbench projection", () => {
     fireEvent.click(screen.getByLabelText(/証拠来歴と対立仮説の公開検証手続を5年遅延/));
     expect(screen.getByText("発動が2037年となり、2036年の破滅条件に間に合いません。")).toBeInTheDocument();
     expect(screen.getAllByText("◆ 修復不能条件")).toHaveLength(3);
+  });
+
+  it("frames the verified Vertex miss as the next worldline to beat", () => {
+    render(<App />);
+    expect(screen.getByText(/破滅条件というビッグボスには1年間に合わなかった/)).toHaveTextContent("次の世界線で倒すべき相手です");
   });
 
   it("opens provenance and exposes fixture metadata", () => {

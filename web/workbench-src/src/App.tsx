@@ -86,7 +86,7 @@ function LiveRunEvidence() {
       <label><input type="radio" name="live-provider" checked={provider === "vertex"} onChange={() => setProvider("vertex")} />Google Cloud / Gemini 2.5 Flash</label>
       <label><input type="radio" name="live-provider" checked={provider === "ollama"} onChange={() => setProvider("ollama")} />ローカル / Ollama</label>
     </fieldset>
-    {isVertex && <p className="live-outcome">2037年に発動。2036年の破滅条件には1年間に合わなかった――次に倒すべき世界線です。</p>}
+    {isVertex && <p className="live-outcome">2037年に発動。2036年の破滅条件というビッグボスには1年間に合わなかった――次の世界線で倒すべき相手です。</p>}
     <div className="live-run-stats">
       <div><strong>{liveRun.event_count}</strong><span>生成行動</span></div><div><strong>{liveRun.valid_action_count}</strong><span>契約を通過</span></div><div><strong>{liveRun.invalid_action_count}</strong><span>安全に棄却</span></div><div><strong>{liveRun.interaction_edge_count}</strong><span>応答関係</span></div>
     </div>
@@ -154,8 +154,16 @@ export function App() {
     </header>
     <main>
       <section className="hero">
-        <div><span className="fixture-label">FIXTURE / {artifact.comparison_year}</span><h1>分岐する時間軸を読む。</h1><p>{intervention.extracted_function}</p></div>
-        <div className="hero-status"><span>JAPAN {artifact.comparison_year}</span><StateMark collapsed={artifact.fork.collapsed} /><strong>{forkOutcome.status}</strong></div>
+        <div>
+          <span className="fixture-label">FIXTURE / {artifact.comparison_year}</span>
+          <h1>想像力で、破滅ルートをひっくり返せ。</h1>
+          <p>アニメや物語のアイデアを、再現できる世界線シミュレーションへ。</p>
+          <div className="hero-actions">
+            <a href="#comparison" onClick={focusComparison}>世界線をプレイする</a>
+            <a href="../">自分のアイデアを持ち込む</a>
+          </div>
+        </div>
+        <div className="hero-status"><span>JAPAN {artifact.comparison_year} / BIG BOSS</span><StateMark collapsed={artifact.fork.collapsed} /><strong>{forkOutcome.status}</strong><small>破滅条件を倒すまで、世界線を何度でも組み替える。</small></div>
       </section>
 
       <section className="workflow" aria-label="作戦卓の流れ">
@@ -190,7 +198,7 @@ export function App() {
         <button ref={explainButtonRef} type="button" onClick={() => setDrawerOpen(true)}>根拠と限界を開く <span aria-hidden="true">→</span></button>
       </section>
     </main>
-    <footer><span>FIXTURE PROJECTION — ENGINE LOGIC IS NOT IMPLEMENTED IN THIS UI</span><a href="../">自分のアイデアをIdea Builderで話す →</a></footer>
+    <footer><span>CANONICAL ARTIFACT — 同じseedで再現できる世界線比較</span><a href="../">自分のアイデアをIdea Builderで話す →</a></footer>
     <ProvenanceDrawer open={drawerOpen} onClose={() => { setDrawerOpen(false); requestAnimationFrame(() => explainButtonRef.current?.focus()); }} artifact={artifact} replayVerified={!delayed} />
   </>;
 }

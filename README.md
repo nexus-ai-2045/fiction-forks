@@ -174,6 +174,16 @@ python -m fiction_forks social `
   --output run.json
 ```
 
+画面を目視確認する場合は、依存関係を導入してproduction buildを`web/`から配信します。表示URLは **`/workbench/`** です。
+
+```powershell
+npm ci
+npm run preview
+# http://127.0.0.1:4173/workbench/
+```
+
+`npm run dev`はUI開発専用で、`http://127.0.0.1:5173/`を開きます。開発時だけViteのstyle injectionを許可し、production buildのContent Security Policyは緩めません。
+
 live providerの依存関係は、hash固定済みlockから導入します。
 
 ```powershell

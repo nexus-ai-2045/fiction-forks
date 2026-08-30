@@ -2,7 +2,13 @@ import { expect, test } from "@playwright/test";
 
 test("Observe → Fork → Stress → Explain", async ({ page }) => {
   await page.goto("./");
-  await expect(page.getByRole("heading", { name: "分岐する時間軸を読む。" })).toBeVisible();
+  await expect(page.locator('link[rel="stylesheet"]')).toHaveCount(1);
+  await expect(page.locator("body")).not.toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+  await expect(page.locator('meta[http-equiv="Content-Security-Policy"]')).not.toHaveAttribute(
+    "content",
+    /unsafe-inline/,
+  );
+  await expect(page.getByRole("heading", { name: "想像力で、破滅ルートをひっくり返せ。" })).toBeVisible();
   await expect(page.getByText("2032年に発動し、2036年の比較時点で破滅条件を回避。", { exact: true })).toBeVisible();
   await page.getByLabel(/証拠来歴と対立仮説の公開検証手続を5年遅延/).check();
   await expect(page.getByText("発動が2037年となり、2036年の破滅条件に間に合いません。", { exact: true })).toBeVisible();
