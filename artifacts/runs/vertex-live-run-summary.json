@@ -1,0 +1,16 @@
+{"schema_version":"fiction_forks_live_run_summary.v1","run_id":"ff-c705e4136e2fce00","provider":"vertex","model":"gemini-2.5-flash","seed":2036,"runtime_revision":"2f5b91e43cf303e88898a171d0e381f05854c9da","result_sha256":"47c715588686a6934c26966088b21ee69ce5f5f8c83d0bad19964af7e72d9c8b","event_stream_sha256":"cb7a5f714d21eb27cb2eb1d31010be5479c19fb10a9f9553a343dacc10c00293","event_count":15,"valid_action_count":12,"invalid_action_count":3,"interaction_edge_count":9,"activation_year":2037,"collapse_year":2036,"collapsed":true,"replay_verified":true,"bundle_contract_verified":true,"turns":[
+{"turn":1,"agent_id":"civic_challenger","action_id":"establish-contestation-rights","valid":true,"response_count":0},
+{"turn":1,"agent_id":"distributed_observer","action_id":"deploy-observation-mesh","valid":true,"response_count":0},
+{"turn":1,"agent_id":"evidence_steward","action_id":"publish-provenance-ledger","valid":true,"response_count":0},
+{"turn":1,"agent_id":"failure_analyst","action_id":"audit-common-cause-failure","valid":true,"response_count":0},
+{"turn":1,"agent_id":"operations_coordinator","action_id":"exercise-anomaly-handoff","valid":true,"response_count":0},
+{"turn":2,"agent_id":"civic_challenger","action_id":"establish-contestation-rights","valid":true,"response_count":1},
+{"turn":2,"agent_id":"distributed_observer","action_id":"calibrate-local-labs","valid":true,"response_count":1},
+{"turn":2,"agent_id":"evidence_steward","action_id":"publish-provenance-ledger","valid":true,"response_count":1},
+{"turn":2,"agent_id":"failure_analyst","action_id":"audit-common-cause-failure","valid":true,"response_count":1},
+{"turn":2,"agent_id":"operations_coordinator","action_id":"exercise-anomaly-handoff","valid":true,"response_count":2},
+{"turn":3,"agent_id":"civic_challenger","action_id":"abstain","valid":false,"response_count":0},
+{"turn":3,"agent_id":"distributed_observer","action_id":"calibrate-local-labs","valid":true,"response_count":1},
+{"turn":3,"agent_id":"evidence_steward","action_id":"abstain","valid":false,"response_count":0},
+{"turn":3,"agent_id":"failure_analyst","action_id":"abstain","valid":false,"response_count":0},
+{"turn":3,"agent_id":"operations_coordinator","action_id":"exercise-anomaly-handoff","valid":true,"response_count":2}]}

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import os
+import re
 import shutil
 import subprocess
 import urllib.error
+import urllib.parse
 import urllib.request
 from collections.abc import Mapping
 from pathlib import Path
@@ -166,7 +169,7 @@ class ReplayProvider:
         if not isinstance(actions, list):
             raise ContractError("replay artifact actions must be a list")
         parsed: dict[tuple[int, str], dict[str, Any]] = {}
-        invalid_keys: set[tuple[int, str]] = set()
+        invalid_reasons: dict[tuple[int, str], str] = {}
         previous_hash = digest({"input_digest": self._input_digest})
         receipt_keys = {
             "intent_id",
@@ -197,7 +200,14 @@ class ReplayProvider:
                 previous_hash = event_hash
                 parsed[key] = dict(action)
                 if item["valid"] is False:
-                    invalid_keys.add(key)
+                    invalid_reason = item["invalid_reason"]
+                    if invalid_reason not in {"contract_error", "provider_error"}:
+                        raise ContractError(
+                            "replay artifact invalid_reason is unsupported"
+                        )
+                    invalid_reasons[key] = invalid_reason
+                elif item["valid"] is not True or item["invalid_reason"] is not None:
+                    raise ContractError("replay artifact validity fields are inconsistent")
         except ContractError:
             raise
         except (KeyError, TypeError, ValueError) as error:
@@ -207,7 +217,7 @@ class ReplayProvider:
         if artifact.get("final_event_hash") != previous_hash:
             raise ContractError("replay final_event_hash mismatch")
         self._actions = parsed
-        self._invalid_keys = invalid_keys
+        self._invalid_reasons = invalid_reasons
         if len(self._actions) != len(actions):
             raise ContractError("replay artifact contains duplicate actions")
 
@@ -232,7 +242,12 @@ class ReplayProvider:
             raise ProviderError("replay action is not a public receipt projection")
         recorded["conditions"] = ["replayed condition"] * condition_count
         recorded["text"] = "replayed redacted action"
-        if key in self._invalid_keys:
+        invalid_reason = self._invalid_reasons.get(key)
+        if invalid_reason == "provider_error":
+            # Re-enter the provider failure path so the fail-closed receipt and
+            # event hash retain the original reason exactly.
+            raise ProviderError("replayed provider failure")
+        if invalid_reason == "contract_error":
             # The engine must take the same fail-closed path as the original
             # run. An explicit unknown field deterministically triggers the
             # action contract without inventing a different valid decision.
@@ -337,7 +352,28 @@ class OllamaProvider:
             raise ProviderError("live provider requires explicit confirmation")
         if not model:
             raise ProviderError("live provider requires an explicit model")
-        if not endpoint.startswith(("http://127.0.0.1:", "http://localhost:")):
+        parsed_endpoint: urllib.parse.SplitResult | None = None
+        try:
+            parsed_endpoint = urllib.parse.urlsplit(endpoint)
+            hostname = parsed_endpoint.hostname
+            port = parsed_endpoint.port
+            is_loopback = hostname == "localhost" or (
+                hostname is not None and ipaddress.ip_address(hostname).is_loopback
+            )
+        except (ValueError, UnicodeError):
+            is_loopback = False
+            port = None
+        if (
+            parsed_endpoint is None
+            or parsed_endpoint.scheme != "http"
+            or not is_loopback
+            or port is None
+            or parsed_endpoint.username is not None
+            or parsed_endpoint.password is not None
+            or parsed_endpoint.path not in {"", "/"}
+            or parsed_endpoint.query
+            or parsed_endpoint.fragment
+        ):
             raise ProviderError("ollama endpoint must be loopback HTTP")
         self.model = model
         self.endpoint = endpoint.rstrip("/")
@@ -395,6 +431,14 @@ class VertexProvider:
             raise ProviderError("live provider requires explicit confirmation")
         if not project or not location or not model:
             raise ProviderError("vertex provider requires project, location, and model")
+        if re.fullmatch(r"[a-z][a-z0-9-]{4,28}[a-z0-9]", project) is None:
+            raise ProviderError("vertex project is invalid")
+        if re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", location) is None:
+            raise ProviderError("vertex location is invalid")
+        if len(location) > 63:
+            raise ProviderError("vertex location is invalid")
+        if re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}", model) is None:
+            raise ProviderError("vertex model is invalid")
         if access_token is None:
             executable = shutil.which("gcloud.cmd" if os.name == "nt" else "gcloud")
             if executable is None:

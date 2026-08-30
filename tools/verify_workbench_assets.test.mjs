@@ -50,7 +50,52 @@ test("asset verifier rejects content drift against the manifest", async () => {
   };
   const manifestPath = join(runs, "haruhi-world-observation-fixture.manifest.json");
   await writeFile(manifestPath, JSON.stringify(manifest));
+  const makeLiveSummary = (provider, model) => ({
+    schema_version: "fiction_forks_live_run_summary.v1",
+    run_id: "ff-0123456789abcdef",
+    provider,
+    model,
+    seed: 2036,
+    runtime_revision: "1".repeat(40),
+    result_sha256: "2".repeat(64),
+    event_stream_sha256: "3".repeat(64),
+    event_count: 1,
+    valid_action_count: 1,
+    invalid_action_count: 0,
+    interaction_edge_count: 0,
+    replay_verified: true,
+    bundle_contract_verified: true,
+    turns: [{ turn: 1, agent_id: "observer", action_id: "observe", valid: true, response_count: 0 }],
+  });
+  const liveEntries = [];
+  for (const [provider, model] of [["ollama", "local-model"], ["vertex", "cloud-model"]]) {
+    const artifactPath = `artifacts/runs/${provider}-live-run-summary.json`;
+    const bytes = Buffer.from(JSON.stringify(makeLiveSummary(provider, model)));
+    await writeFile(join(runs, `${provider}-live-run-summary.json`), bytes);
+    liveEntries.push({
+      artifact_path: artifactPath,
+      artifact_sha256: createHash("sha256").update(bytes).digest("hex"),
+      run_id: "ff-0123456789abcdef",
+      provider,
+      model,
+      seed: 2036,
+      runtime_revision: "1".repeat(40),
+      result_sha256: "2".repeat(64),
+      event_stream_sha256: "3".repeat(64),
+    });
+  }
+  await writeFile(join(runs, "live-run-summaries.manifest.json"), JSON.stringify({
+    schema_version: "fiction_forks_live_run_manifest.v1",
+    summaries: liveEntries,
+  }));
   await verifyWorkbenchAssets(root);
+  await writeFile(join(runs, "vertex-live-run-summary.json"), JSON.stringify({
+    ...makeLiveSummary("vertex", "cloud-model"),
+    event_count: 2,
+  }));
+  await assert.rejects(verifyWorkbenchAssets(root), /SHA-256/);
+  const vertexBytes = Buffer.from(JSON.stringify(makeLiveSummary("vertex", "cloud-model")));
+  await writeFile(join(runs, "vertex-live-run-summary.json"), vertexBytes);
   await writeFile(delayPath, JSON.stringify({ ...artifact, seed: 2037 }));
   await assert.rejects(verifyWorkbenchAssets(root), /SHA-256/);
   await writeFile(delayPath, delayBytes);

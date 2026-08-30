@@ -49,3 +49,13 @@ test("keyboard focus, profile announcement, and dialog containment", async ({ pa
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
 });
+
+test("mobile live-run table keeps every column header accessible", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./");
+
+  const table = page.getByRole("table", { name: "実モデルの行動一覧" });
+  for (const name of ["TURN", "ROLE", "ACTION", "判定"]) {
+    await expect(table.getByRole("columnheader", { name })).toHaveCount(1);
+  }
+});

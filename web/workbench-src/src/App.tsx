@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
-import liveRun from "../../../artifacts/runs/ollama-live-run-summary.json";
+import ollamaLiveRun from "../../../artifacts/runs/ollama-live-run-summary.json";
+import vertexLiveRun from "../../../artifacts/runs/vertex-live-run-summary.json";
 import { comparison, contestationDelay, contestationDelayHeading, contestationDelayLabel, intervention, manifest } from "./data";
 import { metricKeys, type ComparisonArtifact, type MetricKey, type TechnologyNode } from "./types";
 
@@ -18,6 +19,7 @@ const kindLabels: Record<TechnologyNode["kind"], string> = {
 };
 
 type Profile = "normal" | "delay";
+type LiveProvider = "ollama" | "vertex";
 
 export function describeForkOutcome(artifact: ComparisonArtifact): { summary: string; status: string } {
   if (!artifact.fork.collapsed) {
@@ -75,8 +77,16 @@ function TechnologyTree({ artifact }: { artifact: ComparisonArtifact }) {
 }
 
 function LiveRunEvidence() {
+  const [provider, setProvider] = useState<LiveProvider>("vertex");
+  const liveRun = provider === "vertex" ? vertexLiveRun : ollamaLiveRun;
+  const isVertex = provider === "vertex";
   return <section className="live-run" aria-labelledby="live-run-title">
-    <div className="section-heading"><div><span>LIVE AI / LOCAL OLLAMA</span><h2 id="live-run-title">5役が3ターン、実際に選んだ。</h2></div><p>fixtureではなく、ローカル実モデルの検証済み実行です。</p></div>
+    <div className="section-heading"><div><span>LIVE AI / {isVertex ? "GOOGLE CLOUD VERTEX AI" : "LOCAL OLLAMA"}</span><h2 id="live-run-title">5役が3ターン、実際に選んだ。</h2></div><p>fixtureではなく、同じseedとaction契約で実モデルを動かした検証済み結果です。</p></div>
+    <fieldset className="live-provider-picker"><legend>実行環境</legend>
+      <label><input type="radio" name="live-provider" checked={provider === "vertex"} onChange={() => setProvider("vertex")} />Google Cloud / Gemini 2.5 Flash</label>
+      <label><input type="radio" name="live-provider" checked={provider === "ollama"} onChange={() => setProvider("ollama")} />ローカル / Ollama</label>
+    </fieldset>
+    {isVertex && <p className="live-outcome">2037年に発動。2036年の破滅条件には1年間に合わなかった――次に倒すべき世界線です。</p>}
     <div className="live-run-stats">
       <div><strong>{liveRun.event_count}</strong><span>生成行動</span></div><div><strong>{liveRun.valid_action_count}</strong><span>契約を通過</span></div><div><strong>{liveRun.invalid_action_count}</strong><span>安全に棄却</span></div><div><strong>{liveRun.interaction_edge_count}</strong><span>応答関係</span></div>
     </div>

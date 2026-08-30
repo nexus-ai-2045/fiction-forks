@@ -351,6 +351,37 @@ class SocialSimulationTests(unittest.TestCase):
         self.assertEqual(15, original["metrics"]["invalid_action_count"])
         self.assertTrue(replay_equivalent(original, replayed))
 
+    def test_replay_preserves_provider_error_receipts_and_event_hashes(self) -> None:
+        class FailingProvider:
+            name = "failing"
+            model = None
+
+            def choose(self, observation):
+                raise ProviderError("upstream unavailable")
+
+        original = run_social_simulation(
+            self.scenario,
+            self.intervention,
+            self.social_config,
+            FailingProvider(),
+            seed=2036,
+        )
+        replayed = run_social_simulation(
+            self.scenario,
+            self.intervention,
+            self.social_config,
+            ReplayProvider(original),
+            seed=2036,
+        )
+        self.assertTrue(
+            all(
+                receipt["invalid_reason"] == "provider_error"
+                for receipt in original["actions"]
+            )
+        )
+        self.assertEqual(original["final_event_hash"], replayed["final_event_hash"])
+        self.assertTrue(replay_equivalent(original, replayed))
+
     def test_openai_boundary_uses_structured_output_and_disables_storage(self) -> None:
         fake_client = FakeClient()
         provider = OpenAIProvider(
@@ -404,6 +435,31 @@ class SocialSimulationTests(unittest.TestCase):
                 endpoint="https://example.com",
             )
 
+    def test_ollama_endpoint_rejects_authority_and_path_confusion(self) -> None:
+        invalid_endpoints = (
+            "http://127.0.0.1:11434@example.com",
+            "http://localhost:11434@example.com",
+            "http://user@127.0.0.1:11434",
+            "http://127.0.0.1:11434/api/chat",
+            "http://127.0.0.1:11434?target=example.com",
+            "http://127.0.0.1",
+        )
+        for endpoint in invalid_endpoints:
+            with self.subTest(endpoint=endpoint):
+                with self.assertRaisesRegex(ProviderError, "loopback"):
+                    OllamaProvider(
+                        model="qwen2.5vl:7b",
+                        confirm_live=True,
+                        endpoint=endpoint,
+                    )
+
+        provider = OllamaProvider(
+            model="qwen2.5vl:7b",
+            confirm_live=True,
+            endpoint="http://[::1]:11434/",
+        )
+        self.assertEqual("http://[::1]:11434", provider.endpoint)
+
     def test_vertex_boundary_uses_controlled_json_and_same_seed(self) -> None:
         calls = []
 
@@ -442,6 +498,30 @@ class SocialSimulationTests(unittest.TestCase):
             schema["properties"]["run_id"]["enum"],
         )
         self.assertEqual("Bearer test-token", calls[0][2]["headers"]["Authorization"])
+
+    def test_vertex_resource_identifiers_are_validated_before_token_use(self) -> None:
+        invalid_values = (
+            {"project": "nexus-ai-2045/locations/evil"},
+            {"project": "UPPERCASE-project"},
+            {"location": "us-central1@evil.example/x"},
+            {"location": "us-central1/../global"},
+            {"model": "gemini-2.5-flash:generateContent"},
+            {"model": "../models/evil"},
+        )
+        defaults = {
+            "project": "nexus-ai-2045",
+            "location": "us-central1",
+            "model": "gemini-2.5-flash",
+        }
+        for override in invalid_values:
+            arguments = {**defaults, **override}
+            with self.subTest(**override):
+                with self.assertRaisesRegex(ProviderError, "invalid"):
+                    VertexProvider(
+                        **arguments,
+                        confirm_live=True,
+                        access_token="test-token",
+                    )
 
     def test_vertex_resolves_the_windows_gcloud_launcher(self) -> None:
         completed = type("Completed", (), {"stdout": "token\n"})()
