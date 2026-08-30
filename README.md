@@ -183,6 +183,40 @@ python -m pip install -e . --no-deps
 
 そのうえで、`python -m pip install --require-hashes -r requirements-runtime.txt`を実行し、モデル、API key、費用発生への明示確認がある場合だけ `--provider openai --model gpt-5.4-mini --confirm-live` で実行します。CIは外部APIを呼びません。生成したartifactは `--provider replay --replay run.json` で再検証できます。
 
+API keyや外部送信なしで実モデルを動かす場合は、Ollamaを起動してモデルを取得したうえで、loopback endpointだけを許可するlocal providerを使います。
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m fiction_forks social `
+  --scenario scenarios/japan-2036/scenario.json `
+  --intervention interventions/haruhi-world-observation.json `
+  --social-config scenarios/japan-2036/social-haruhi-world-observation.json `
+  --provider ollama `
+  --model qwen2.5vl:3b `
+  --confirm-live `
+  --seed 2036 `
+  --output artifacts/local/ollama-live-result.json
+```
+
+Google Cloud Vertex AIでは同じaction schemaとseedを使います。実行には、課金対象project・location・modelを明示し、`gcloud auth print-access-token`が成功する必要があります。
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m fiction_forks social `
+  --scenario scenarios/japan-2036/scenario.json `
+  --intervention interventions/haruhi-world-observation.json `
+  --social-config scenarios/japan-2036/social-haruhi-world-observation.json `
+  --provider vertex `
+  --project nexus-ai-2045 `
+  --location us-central1 `
+  --model gemini-2.5-flash `
+  --confirm-live `
+  --seed 2036 `
+  --output artifacts/local/vertex-live-result.json
+```
+
+どちらのlive providerも既存runtimeへ構造化actionを返す境界だけを所有し、world stateや効果量は変更しません。Ollamaは追加Python依存なし、Vertex AIは既存の`gcloud`認証と標準ライブラリだけを使います。
+
 従来の年次比較だけを行う場合は `python -m fiction_forks compare --scenario scenarios/japan-2036/scenario.json --intervention interventions/doraemon-public-tools.json --seed 2036` です。
 
 ### Meta-Security Studioへ渡すrun bundle
