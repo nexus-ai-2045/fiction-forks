@@ -18,6 +18,7 @@ agents = ["openai==2.37.0"]
 
 [project.scripts]
 fiction-forks = "fiction_forks.cli:main"
+fiction-forks-local = "fiction_forks.local_adapter:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
