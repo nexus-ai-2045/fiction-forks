@@ -1,0 +1,222 @@
+from __future__ import annotations
+
+import json
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from evaluation.emergence_metrics import (  # noqa: E402
+    NOT_MEASURED,
+    build_report,
+    contains_prose,
+    identity_key,
+    main,
+    summarize_document,
+)
+
+
+class EmergenceMetricsTests(unittest.TestCase):
+    def test_same_run_id_is_split_by_provider_and_hashes(self) -> None:
+        fixture = summarize_document(
+            {
+                "schema_version": "fiction_forks_social_result.v1",
+                "run_id": "ff-c705e4136e2fce00",
+                "seed": 2036,
+                "provider": {"name": "fixture", "model": None},
+                "metrics": {
+                    "action_count": 15,
+                    "valid_action_count": 15,
+                    "invalid_action_count": 0,
+                    "capability_coverage": 7,
+                    "interaction_edge_count": 10,
+                },
+                "roles": ["a", "b", "c", "d", "e"],
+                "turn_count": 3,
+                "actions": [
+                    {
+                        "valid": True,
+                        "action": {"action_id": "deploy-observation-mesh", "stance": "condition"},
+                    }
+                ],
+                "world_comparison": {
+                    "fork": {"activation_year": 2032, "collapsed": False}
+                },
+                "result_sha256": "aaa",
+                "event_stream_sha256": "event-a",
+            }
+        )
+        live = summarize_document(
+            {
+                "schema_version": "fiction_forks_live_run_summary.v1",
+                "run_id": "ff-c705e4136e2fce00",
+                "provider": "vertex",
+                "model": "gemini-2.5-flash",
+                "runtime_revision": "2f5b91e4",
+                "seed": 2036,
+                "event_count": 15,
+                "valid_action_count": 12,
+                "invalid_action_count": 3,
+                "interaction_edge_count": 9,
+                "activation_year": 2037,
+                "collapsed": True,
+                "result_sha256": "bbb",
+                "event_stream_sha256": "event-b",
+                "turns": [
+                    {"turn": 1, "agent_id": "civic_challenger", "action_id": "establish-contestation-rights", "valid": True}
+                ],
+            }
+        )
+        self.assertEqual(fixture["identity"]["run_id"], live["identity"]["run_id"])
+        self.assertNotEqual(identity_key(fixture["identity"]), identity_key(live["identity"]))
+        self.assertEqual("fixture", fixture["source_class"])
+        self.assertEqual("live", live["source_class"])
+
+    def test_missing_worldline_fields_are_not_filled_with_zero(self) -> None:
+        row = summarize_document(
+            {
+                "schema_version": "fiction_forks_live_run_summary.v1",
+                "run_id": "ff-c705e4136e2fce00",
+                "provider": "ollama",
+                "model": "qwen2.5vl:3b",
+                "seed": 2036,
+                "event_count": 15,
+                "valid_action_count": 14,
+                "invalid_action_count": 1,
+                "interaction_edge_count": 16,
+                "turns": [],
+            }
+        )
+        self.assertEqual(NOT_MEASURED, row["activation_year"])
+        self.assertEqual(NOT_MEASURED, row["collapsed"])
+        self.assertEqual(NOT_MEASURED, row["capability_coverage"])
+        self.assertEqual(NOT_MEASURED, row["stances"]["support"])
+        self.assertEqual(NOT_MEASURED, row["interaction_density"])
+        self.assertNotEqual(0, row["collapsed"])
+        self.assertNotEqual(0, row["capability_coverage"])
+
+    def test_report_separates_fixture_and_live_and_omits_prose(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "fixture.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "fiction_forks_social_result.v1",
+                        "run_id": "ff-fixture",
+                        "seed": 2036,
+                        "provider": {"name": "fixture", "model": None},
+                        "metrics": {
+                            "action_count": 2,
+                            "valid_action_count": 2,
+                            "invalid_action_count": 0,
+                            "capability_coverage": 2,
+                            "interaction_edge_count": 1,
+                        },
+                        "roles": ["a", "b"],
+                        "turn_count": 1,
+                        "actions": [
+                            {
+                                "valid": True,
+                                "action": {
+                                    "action_id": "publish-provenance-ledger",
+                                    "stance": "condition",
+                                },
+                            },
+                            {
+                                "valid": True,
+                                "action": {
+                                    "action_id": "compare-rival-hypotheses",
+                                    "stance": "support",
+                                },
+                            },
+                        ],
+                        "world_comparison": {
+                            "fork": {"activation_year": 2032, "collapsed": False}
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            (root / "live.json").write_text(
+                json.dumps(
+                    {
+                        "schema_version": "fiction_forks_live_run_summary.v1",
+                        "run_id": "ff-fixture",
+                        "provider": "vertex",
+                        "model": "gemini-2.5-flash",
+                        "runtime_revision": "abc",
+                        "seed": 2036,
+                        "event_count": 2,
+                        "valid_action_count": 1,
+                        "invalid_action_count": 1,
+                        "interaction_edge_count": 0,
+                        "activation_year": 2037,
+                        "collapsed": True,
+                        "result_sha256": "live-sha",
+                        "event_stream_sha256": "live-event",
+                        "turns": [
+                            {
+                                "turn": 1,
+                                "agent_id": "civic_challenger",
+                                "action_id": "establish-contestation-rights",
+                                "valid": True,
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            report = build_report([root], repo_root=root)
+            self.assertFalse(contains_prose(report))
+            self.assertEqual(2, report["n_executions"])
+            self.assertIn("fixture", report["aggregates"]["by_source_class"])
+            self.assertIn("live", report["aggregates"]["by_source_class"])
+            self.assertEqual(
+                1.0, report["aggregates"]["by_source_class"]["live"]["collapse_rate"]
+            )
+            self.assertEqual(
+                0.0, report["aggregates"]["by_source_class"]["fixture"]["collapse_rate"]
+            )
+
+    def test_cli_writes_json_and_markdown(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            artifact = root / "vertex.json"
+            artifact.write_text(
+                (ROOT / "artifacts/runs/vertex-live-run-summary.json").read_text(
+                    encoding="utf-8"
+                ),
+                encoding="utf-8",
+            )
+            json_out = root / "out.json"
+            md_out = root / "out.md"
+            self.assertEqual(
+                0,
+                main(
+                    [
+                        "--input",
+                        str(artifact),
+                        "--output-json",
+                        str(json_out),
+                        "--output-md",
+                        str(md_out),
+                        "--repo-root",
+                        str(root),
+                    ]
+                ),
+            )
+            payload = json.loads(json_out.read_text(encoding="utf-8"))
+            markdown = md_out.read_text(encoding="utf-8")
+            self.assertEqual("live", payload["executions"][0]["source_class"])
+            self.assertEqual(2037, payload["executions"][0]["activation_year"])
+            self.assertIn("創発性の断定ではない", markdown)
+            self.assertNotIn("C:\\Users", json_out.read_text(encoding="utf-8"))
+
+
+if __name__ == "__main__":
+    unittest.main()

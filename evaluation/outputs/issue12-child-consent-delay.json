@@ -1,0 +1,78 @@
+{
+  "baseline": {
+    "collapse_year": 2036,
+    "collapsed": true,
+    "final_state": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    },
+    "state_at_comparison_year": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    }
+  },
+  "comparison_year": 2036,
+  "declared_costs": [
+    "空域監視、保険、修理拠点、訓練を平時から維持する費用",
+    "子ども利用の同意確認と保護者代理に要する人員"
+  ],
+  "declared_failure_modes": [
+    "安全手続が追いつく前に機体だけが普及する",
+    "子ども向けを理由に同意、禁止空域、停止権を省略する",
+    "公開設計に見える機体が単一事業者の部品と通信へ依存する",
+    "事故後に捜索救助より責任回避が優先される"
+  ],
+  "declared_side_effects": [
+    "騒音、落下物、覗き込みによる生活妨害",
+    "低空監視が目的外の所在把握へ転用される危険",
+    "維持費が短期の生活基盤投資を圧迫する",
+    "利用できる地域とできない地域の移動格差"
+  ],
+  "engine_version": "0.3.0",
+  "fork": {
+    "activation_year": 2037,
+    "collapse_year": 2036,
+    "collapsed": true,
+    "final_state": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    },
+    "state_at_comparison_year": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    },
+    "technology_delays": {
+      "child-consent-and-airspace-charter": 5
+    },
+    "technology_schedule": {
+      "child-consent-and-airspace-charter": 2035,
+      "joint-search-rescue-drills": 2037,
+      "neighborhood-repair-bays": 2031,
+      "nuisance-and-fall-redress": 2036,
+      "open-low-altitude-platform": 2030
+    }
+  },
+  "intervention_id": "low-altitude-public-mobility",
+  "scenario_id": "japan-2036-centralization",
+  "schema_version": "fiction_forks_comparison.v1",
+  "seed": 2036,
+  "state_delta_at_comparison_year": {
+    "cognitive_sovereignty": 0.0,
+    "legitimacy": 0.0,
+    "living_systems": 0.0,
+    "repair_capacity": 0.0,
+    "strategic_autonomy": 0.0
+  }
+}

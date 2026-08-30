@@ -1,0 +1,616 @@
+{
+  "actions": [
+    {
+      "action": {
+        "action_id": "establish-child-consent-and-nofly",
+        "agent_id": "child_safety_steward",
+        "condition_count": 1,
+        "confidence": 0.81,
+        "evidence_ids": [
+          "public-mobility-contract",
+          "public-ip-boundary"
+        ],
+        "responds_to": [],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "neighborhood_interpreter"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "4a469332556c7fbf9b3316aab6b38d615d4449ebc5f0f32aa4ca3122e018bc82",
+      "intent_id": "t1:child_safety_steward",
+      "invalid_reason": null,
+      "previous_event_hash": "9fe799b032ae48555659b9cf1aded20412db801397f5888d5b823dc01107f6b7",
+      "state_after_hash": "e9ff75d4bb204456d665ecb7c600ad11ef995fba56f72da58515333795b21e03",
+      "state_before_hash": "28d40af01a1b415988ee4a454c46a70447155ceaa4d689957761d9f6797482d0",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "audit-vendor-lock-and-misuse",
+        "agent_id": "misuse_analyst",
+        "condition_count": 1,
+        "confidence": 0.7,
+        "evidence_ids": [
+          "public-mobility-contract"
+        ],
+        "responds_to": [],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "open_vehicle_engineer"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "3806642c65b65c0f64a1920f031addb167c087eddd53fdc6cdc2d5f8913ad973",
+      "intent_id": "t1:misuse_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "4a469332556c7fbf9b3316aab6b38d615d4449ebc5f0f32aa4ca3122e018bc82",
+      "state_after_hash": "52da59e8da3a51c2698b252dd59a1950c06826dba55fa9d975a91eca5e1aa301",
+      "state_before_hash": "e9ff75d4bb204456d665ecb7c600ad11ef995fba56f72da58515333795b21e03",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "file-noise-and-fall-complaints",
+        "agent_id": "neighborhood_interpreter",
+        "condition_count": 1,
+        "confidence": 0.78,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "child_safety_steward"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "d381842822b1851bcd115574c077f0445b48d79f8ee02fd010c66f92769bdd40",
+      "intent_id": "t1:neighborhood_interpreter",
+      "invalid_reason": null,
+      "previous_event_hash": "3806642c65b65c0f64a1920f031addb167c087eddd53fdc6cdc2d5f8913ad973",
+      "state_after_hash": "695b1b54c0aa5df14604ab34083e7265664759af82a1905c484571b5b283479a",
+      "state_before_hash": "52da59e8da3a51c2698b252dd59a1950c06826dba55fa9d975a91eca5e1aa301",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "publish-open-vehicle-design",
+        "agent_id": "open_vehicle_engineer",
+        "condition_count": 1,
+        "confidence": 0.74,
+        "evidence_ids": [
+          "public-mobility-contract"
+        ],
+        "responds_to": [],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "rescue_logistics_operator"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "7bb2a026ee76ed90decac890a5bd7d2e42c5eb57ba8cdd7a9a6feab893c4c089",
+      "intent_id": "t1:open_vehicle_engineer",
+      "invalid_reason": null,
+      "previous_event_hash": "d381842822b1851bcd115574c077f0445b48d79f8ee02fd010c66f92769bdd40",
+      "state_after_hash": "ce873ee744bcd19d2b4cec57ebdae3e5eca872d05ed807df274a6c1aa6d5a04f",
+      "state_before_hash": "695b1b54c0aa5df14604ab34083e7265664759af82a1905c484571b5b283479a",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "stand-up-local-repair-bays",
+        "agent_id": "rescue_logistics_operator",
+        "condition_count": 1,
+        "confidence": 0.72,
+        "evidence_ids": [
+          "public-mobility-contract"
+        ],
+        "responds_to": [],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "open_vehicle_engineer"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "0bb30706c56827c9ca084f9747a8b644aff5e3e2369af14d99b48f8f1e0a66f0",
+      "intent_id": "t1:rescue_logistics_operator",
+      "invalid_reason": null,
+      "previous_event_hash": "7bb2a026ee76ed90decac890a5bd7d2e42c5eb57ba8cdd7a9a6feab893c4c089",
+      "state_after_hash": "e4aa0e21f9bde5c94a5570d788008966b48526bc31b4dd54f18a56772b7b3bdc",
+      "state_before_hash": "ce873ee744bcd19d2b4cec57ebdae3e5eca872d05ed807df274a6c1aa6d5a04f",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "run-search-rescue-drills",
+        "agent_id": "child_safety_steward",
+        "condition_count": 1,
+        "confidence": 0.76,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t1:rescue_logistics_operator"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "rescue_logistics_operator"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "575b6c7ce1a564fc933975c73e0be4cdfa31939c491710c3b2317a4aae038de2",
+      "intent_id": "t2:child_safety_steward",
+      "invalid_reason": null,
+      "previous_event_hash": "0bb30706c56827c9ca084f9747a8b644aff5e3e2369af14d99b48f8f1e0a66f0",
+      "state_after_hash": "e33fbc61fd8eb28620fcda357ebad217b24a190d215c3bba22a630e3a8230db5",
+      "state_before_hash": "e4aa0e21f9bde5c94a5570d788008966b48526bc31b4dd54f18a56772b7b3bdc",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "audit-vendor-lock-and-misuse",
+        "agent_id": "misuse_analyst",
+        "condition_count": 1,
+        "confidence": 0.68,
+        "evidence_ids": [
+          "public-mobility-contract"
+        ],
+        "responds_to": [
+          "t1:open_vehicle_engineer"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "open_vehicle_engineer"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "b68b5439d682d77a18b2f3f71edf5b716a9c8e49d71dad2e7cb483a5862cd55b",
+      "intent_id": "t2:misuse_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "575b6c7ce1a564fc933975c73e0be4cdfa31939c491710c3b2317a4aae038de2",
+      "state_after_hash": "0568c77d6d0d8f68035088c4542f9285454d0a02ee0a04ca38a9ed78624562bf",
+      "state_before_hash": "e33fbc61fd8eb28620fcda357ebad217b24a190d215c3bba22a630e3a8230db5",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "establish-child-consent-and-nofly",
+        "agent_id": "neighborhood_interpreter",
+        "condition_count": 1,
+        "confidence": 0.77,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [
+          "t1:child_safety_steward"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "child_safety_steward"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "f15559209072b3b3b7f6620e85b7f178ba0a563d5e547afc0ff0ebc81f0ac4a4",
+      "intent_id": "t2:neighborhood_interpreter",
+      "invalid_reason": null,
+      "previous_event_hash": "b68b5439d682d77a18b2f3f71edf5b716a9c8e49d71dad2e7cb483a5862cd55b",
+      "state_after_hash": "5c58c5f67579feab485ed59258c380a50f5dc33122547a4e5577c50b7e09f266",
+      "state_before_hash": "0568c77d6d0d8f68035088c4542f9285454d0a02ee0a04ca38a9ed78624562bf",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "audit-vendor-lock-and-misuse",
+        "agent_id": "open_vehicle_engineer",
+        "condition_count": 1,
+        "confidence": 0.71,
+        "evidence_ids": [],
+        "responds_to": [
+          "t1:misuse_analyst"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "misuse_analyst"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "8ec21f8be2f8010d0e2a30630f36eaed74ad47e3f2675993aca4c6b54e3e11ac",
+      "intent_id": "t2:open_vehicle_engineer",
+      "invalid_reason": null,
+      "previous_event_hash": "f15559209072b3b3b7f6620e85b7f178ba0a563d5e547afc0ff0ebc81f0ac4a4",
+      "state_after_hash": "f74be4c9fac0b458d0b44e0b06c677dcb542b8e76dbef51c2c37d515e7897b37",
+      "state_before_hash": "5c58c5f67579feab485ed59258c380a50f5dc33122547a4e5577c50b7e09f266",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "run-search-rescue-drills",
+        "agent_id": "rescue_logistics_operator",
+        "condition_count": 1,
+        "confidence": 0.73,
+        "evidence_ids": [
+          "public-mobility-contract"
+        ],
+        "responds_to": [
+          "t1:child_safety_steward"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "child_safety_steward"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "e3a97ac0fbf47df08f3fc2765b7b92cf2ac52d936f86f7f4fcb3e23f07cbc008",
+      "intent_id": "t2:rescue_logistics_operator",
+      "invalid_reason": null,
+      "previous_event_hash": "8ec21f8be2f8010d0e2a30630f36eaed74ad47e3f2675993aca4c6b54e3e11ac",
+      "state_after_hash": "b77f6da2a0c3fc1112054f3c6ab89239bbed950f5ad06c8c97ff38809495fc92",
+      "state_before_hash": "f74be4c9fac0b458d0b44e0b06c677dcb542b8e76dbef51c2c37d515e7897b37",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "file-noise-and-fall-complaints",
+        "agent_id": "child_safety_steward",
+        "condition_count": 1,
+        "confidence": 0.8,
+        "evidence_ids": [
+          "public-mobility-contract"
+        ],
+        "responds_to": [
+          "t2:neighborhood_interpreter"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "support",
+        "target_ids": [
+          "neighborhood_interpreter"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "33c7bd7befe85ded54ef62b831369359daf7aac99067e8667e2686aab35ca996",
+      "intent_id": "t3:child_safety_steward",
+      "invalid_reason": null,
+      "previous_event_hash": "e3a97ac0fbf47df08f3fc2765b7b92cf2ac52d936f86f7f4fcb3e23f07cbc008",
+      "state_after_hash": "3bcfb5d1274d060b7b1255dc0f65f6d6a4b66108c4e125b44a425bc68e0ee89d",
+      "state_before_hash": "b77f6da2a0c3fc1112054f3c6ab89239bbed950f5ad06c8c97ff38809495fc92",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "abstain",
+        "agent_id": "misuse_analyst",
+        "condition_count": 1,
+        "confidence": 0.64,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [
+          "t2:open_vehicle_engineer"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "abstain",
+        "target_ids": [],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "65f3512b68b3348624ab0a0bc7fe259c7327cc1a9e0547fe9cf4a7022d9218c5",
+      "intent_id": "t3:misuse_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "33c7bd7befe85ded54ef62b831369359daf7aac99067e8667e2686aab35ca996",
+      "state_after_hash": "800323454d7ef32bc6fa43a2923214b989e742aaca06139d506cafa53e318a7e",
+      "state_before_hash": "3bcfb5d1274d060b7b1255dc0f65f6d6a4b66108c4e125b44a425bc68e0ee89d",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "run-search-rescue-drills",
+        "agent_id": "neighborhood_interpreter",
+        "condition_count": 1,
+        "confidence": 0.75,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [
+          "t2:rescue_logistics_operator"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "rescue_logistics_operator"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "c2a3072262b329b497ad76b4f86dc20545e084f045aaefac19c8782b4d4154f5",
+      "intent_id": "t3:neighborhood_interpreter",
+      "invalid_reason": null,
+      "previous_event_hash": "65f3512b68b3348624ab0a0bc7fe259c7327cc1a9e0547fe9cf4a7022d9218c5",
+      "state_after_hash": "2e0bf717e4778f0ce5a9f245bef7d0e36092df3c3fa886e41bf6a83de347c21a",
+      "state_before_hash": "800323454d7ef32bc6fa43a2923214b989e742aaca06139d506cafa53e318a7e",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "stand-up-local-repair-bays",
+        "agent_id": "open_vehicle_engineer",
+        "condition_count": 1,
+        "confidence": 0.69,
+        "evidence_ids": [
+          "public-mobility-contract"
+        ],
+        "responds_to": [
+          "t2:rescue_logistics_operator"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "rescue_logistics_operator"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "8c5a4a664f8245cd099388278116b1dc5d055526f9c7f80b6aa7ce53288ae302",
+      "intent_id": "t3:open_vehicle_engineer",
+      "invalid_reason": null,
+      "previous_event_hash": "c2a3072262b329b497ad76b4f86dc20545e084f045aaefac19c8782b4d4154f5",
+      "state_after_hash": "4d41135e9ffbb1ff5382435d68a75253475a5e6a8fa7f5ce398b2c12a3b4938d",
+      "state_before_hash": "2e0bf717e4778f0ce5a9f245bef7d0e36092df3c3fa886e41bf6a83de347c21a",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "publish-open-vehicle-design",
+        "agent_id": "rescue_logistics_operator",
+        "condition_count": 1,
+        "confidence": 0.7,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t2:open_vehicle_engineer"
+        ],
+        "run_id": "ff-b526029fed958793",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "open_vehicle_engineer"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "1bc43bc0aebfb8de24fed77ecdd34450dad8856f0be4dad8368288306f704b6d",
+      "intent_id": "t3:rescue_logistics_operator",
+      "invalid_reason": null,
+      "previous_event_hash": "8c5a4a664f8245cd099388278116b1dc5d055526f9c7f80b6aa7ce53288ae302",
+      "state_after_hash": "6e4097457c486c73e38155f6c1de994574448fb71128666648b18806e7c6edf5",
+      "state_before_hash": "4d41135e9ffbb1ff5382435d68a75253475a5e6a8fa7f5ce398b2c12a3b4938d",
+      "valid": true
+    }
+  ],
+  "assumption_notice": "これは近距離低空移動を公共インフラとして成立させる条件を検査するfixtureであり、未来予測、政策助言、作品世界や人物の再現ではない。",
+  "engine_version": "0.3.0",
+  "final_event_hash": "1bc43bc0aebfb8de24fed77ecdd34450dad8856f0be4dad8368288306f704b6d",
+  "input_digest": "b526029fed95879350704298f609b345294215dbf2af3d65a304809eb676c61a",
+  "interaction_edges": [
+    {
+      "from_intent_id": "t2:child_safety_steward",
+      "stance": "condition",
+      "to_intent_id": "t1:rescue_logistics_operator"
+    },
+    {
+      "from_intent_id": "t2:misuse_analyst",
+      "stance": "condition",
+      "to_intent_id": "t1:open_vehicle_engineer"
+    },
+    {
+      "from_intent_id": "t2:neighborhood_interpreter",
+      "stance": "condition",
+      "to_intent_id": "t1:child_safety_steward"
+    },
+    {
+      "from_intent_id": "t2:open_vehicle_engineer",
+      "stance": "condition",
+      "to_intent_id": "t1:misuse_analyst"
+    },
+    {
+      "from_intent_id": "t2:rescue_logistics_operator",
+      "stance": "condition",
+      "to_intent_id": "t1:child_safety_steward"
+    },
+    {
+      "from_intent_id": "t3:child_safety_steward",
+      "stance": "support",
+      "to_intent_id": "t2:neighborhood_interpreter"
+    },
+    {
+      "from_intent_id": "t3:misuse_analyst",
+      "stance": "abstain",
+      "to_intent_id": "t2:open_vehicle_engineer"
+    },
+    {
+      "from_intent_id": "t3:neighborhood_interpreter",
+      "stance": "condition",
+      "to_intent_id": "t2:rescue_logistics_operator"
+    },
+    {
+      "from_intent_id": "t3:open_vehicle_engineer",
+      "stance": "condition",
+      "to_intent_id": "t2:rescue_logistics_operator"
+    },
+    {
+      "from_intent_id": "t3:rescue_logistics_operator",
+      "stance": "condition",
+      "to_intent_id": "t2:open_vehicle_engineer"
+    }
+  ],
+  "intervention_id": "low-altitude-public-mobility",
+  "metrics": {
+    "abstention_count": 1,
+    "action_count": 15,
+    "capability_coverage": 6,
+    "conditioned_intent_count": 13,
+    "interaction_edge_count": 10,
+    "invalid_action_count": 0,
+    "opposed_intent_count": 0,
+    "referenced_evidence_count": 3,
+    "reversible_action_ratio": 1.0,
+    "valid_action_count": 15
+  },
+  "missing_actions_by_node": {
+    "child-consent-and-airspace-charter": [],
+    "joint-search-rescue-drills": [],
+    "neighborhood-repair-bays": [],
+    "nuisance-and-fall-redress": [],
+    "open-low-altitude-platform": []
+  },
+  "protocol_version": "1.1.0",
+  "provider": {
+    "model": null,
+    "name": "fixture"
+  },
+  "roles": [
+    "child_safety_steward",
+    "open_vehicle_engineer",
+    "rescue_logistics_operator",
+    "neighborhood_interpreter",
+    "misuse_analyst"
+  ],
+  "run_id": "ff-b526029fed958793",
+  "scenario_id": "japan-2036-centralization",
+  "schema_version": "fiction_forks_social_result.v1",
+  "seed": 2036,
+  "selected_action_ids": [
+    "audit-vendor-lock-and-misuse",
+    "establish-child-consent-and-nofly",
+    "file-noise-and-fall-complaints",
+    "publish-open-vehicle-design",
+    "run-search-rescue-drills",
+    "stand-up-local-repair-bays"
+  ],
+  "technology_delays": {
+    "child-consent-and-airspace-charter": 0,
+    "joint-search-rescue-drills": 0,
+    "neighborhood-repair-bays": 0,
+    "nuisance-and-fall-redress": 0,
+    "open-low-altitude-platform": 0
+  },
+  "turn_count": 3,
+  "world_comparison": {
+    "baseline": {
+      "collapse_year": 2036,
+      "collapsed": true,
+      "final_state": {
+        "cognitive_sovereignty": 6.0,
+        "legitimacy": 38.0,
+        "living_systems": 43.0,
+        "repair_capacity": 33.0,
+        "strategic_autonomy": 17.0
+      },
+      "state_at_comparison_year": {
+        "cognitive_sovereignty": 6.0,
+        "legitimacy": 38.0,
+        "living_systems": 43.0,
+        "repair_capacity": 33.0,
+        "strategic_autonomy": 17.0
+      }
+    },
+    "comparison_year": 2036,
+    "declared_costs": [
+      "空域監視、保険、修理拠点、訓練を平時から維持する費用",
+      "子ども利用の同意確認と保護者代理に要する人員"
+    ],
+    "declared_failure_modes": [
+      "安全手続が追いつく前に機体だけが普及する",
+      "子ども向けを理由に同意、禁止空域、停止権を省略する",
+      "公開設計に見える機体が単一事業者の部品と通信へ依存する",
+      "事故後に捜索救助より責任回避が優先される"
+    ],
+    "declared_side_effects": [
+      "騒音、落下物、覗き込みによる生活妨害",
+      "低空監視が目的外の所在把握へ転用される危険",
+      "維持費が短期の生活基盤投資を圧迫する",
+      "利用できる地域とできない地域の移動格差"
+    ],
+    "engine_version": "0.3.0",
+    "fork": {
+      "activation_year": 2032,
+      "collapse_year": null,
+      "collapsed": false,
+      "final_state": {
+        "cognitive_sovereignty": 11.0,
+        "legitimacy": 44.0,
+        "living_systems": 38.0,
+        "repair_capacity": 51.0,
+        "strategic_autonomy": 29.0
+      },
+      "state_at_comparison_year": {
+        "cognitive_sovereignty": 11.0,
+        "legitimacy": 44.0,
+        "living_systems": 38.0,
+        "repair_capacity": 51.0,
+        "strategic_autonomy": 29.0
+      },
+      "technology_delays": {
+        "child-consent-and-airspace-charter": 0,
+        "joint-search-rescue-drills": 0,
+        "neighborhood-repair-bays": 0,
+        "nuisance-and-fall-redress": 0,
+        "open-low-altitude-platform": 0
+      },
+      "technology_schedule": {
+        "child-consent-and-airspace-charter": 2030,
+        "joint-search-rescue-drills": 2032,
+        "neighborhood-repair-bays": 2031,
+        "nuisance-and-fall-redress": 2031,
+        "open-low-altitude-platform": 2030
+      }
+    },
+    "intervention_id": "low-altitude-public-mobility",
+    "scenario_id": "japan-2036-centralization",
+    "schema_version": "fiction_forks_comparison.v1",
+    "seed": 2036,
+    "state_delta_at_comparison_year": {
+      "cognitive_sovereignty": 5.0,
+      "legitimacy": 6.0,
+      "living_systems": -5.0,
+      "repair_capacity": 18.0,
+      "strategic_autonomy": 12.0
+    }
+  }
+}
