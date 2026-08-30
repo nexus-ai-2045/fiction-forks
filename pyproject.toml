@@ -11,7 +11,7 @@ requires-python = ">=3.11,<3.14"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "nexus_ai"}]
-dependencies = []
+dependencies = ["rfc8785==0.1.4"]
 
 [project.optional-dependencies]
 agents = ["openai==2.37.0"]

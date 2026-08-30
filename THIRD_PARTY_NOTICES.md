@@ -23,3 +23,10 @@
 - [actions/setup-python](https://github.com/actions/setup-python) — workflowでcommit SHA固定
 
 これらのツールをソースコードへ複製せず、GitHub Actionsまたは開発用依存として参照します。
+
+## Runtime依存
+
+- [rfc8785 0.1.4](https://github.com/trailofbits/rfc8785.py) — Apache License 2.0。Meta-Security Studio交換契約のevent streamをRFC 8785準拠で正規化するために使用
+
+Three.js、GSAP、Hyperframes、Godotは現在の2D Result Workbenchとrun bundle交換境界には
+不要なため導入していません。

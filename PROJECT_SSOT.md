@@ -11,6 +11,7 @@
 | アーキテクチャと設計判断 | `docs/architecture.md` と `docs/adr/` |
 | シナリオ契約 | `scenarios/` と `docs/simulation-contract.md` |
 | 社会エージェント契約 | `scenarios/*/social*.json`、`src/fiction_forks/agent_protocol.py`、`docs/social-simulation.md` |
+| Meta-Security Studio交換形式 | `src/fiction_forks/run_bundle.py`は既存social resultを`meta-security-run-bundle/v1`へ射影する薄いadapter。domain resultとrun_idの正本は`src/fiction_forks/social.py`、交換schemaの正本は`nexus-ai-2045/meta-security-sim`、外部実行transportの正本は`nexus-ai-2045/cloud-autopilot` |
 | Web参加面 | `web/`。静的Idea Builderを維持し、`web/workbench-src/`がcurated fixtureを投影するResult Workbench縦切りを所有する。状態遷移と破滅判定はPython engine、値とprovenanceは`artifacts/runs/`のartifact・manifestが正本。Doom Map・Idea Chat・公式Result Browser全体は0.4残務 |
 | 対話草案 | `src/fiction_forks/participation.py`のversion付き`IdeaDraft` schema。会話全文ではなく本人確認済みprojectionだけを受理する |
 | 暫定simulation | `src/fiction_forks/participation.py`の`ProvisionalRunRequest`／`RunSummary`と`catalogs/intervention-templates.v1.json`。`preview_allowed`な固定templateへの完全写像だけを許し、公式結果と分離する |

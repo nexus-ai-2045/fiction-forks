@@ -3,13 +3,18 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import subprocess
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
 
 from .engine import ContractError, compare_worlds, load_json, simulate
 from .providers import FixtureProvider, OpenAIProvider, ProviderError, ReplayProvider
 from .participation import load_template_catalog, prepare_provisional_request
+from .run_bundle import build_run_bundle
 from .social import run_social_simulation
 
 
@@ -20,9 +25,7 @@ def _technology_delays(values: Sequence[str]) -> dict[str, int]:
             node_id, raw_years = value.rsplit("=", 1)
             years = int(raw_years)
         except ValueError as error:
-            raise ContractError(
-                "--delay-node must use NODE_ID=YEARS"
-            ) from error
+            raise ContractError("--delay-node must use NODE_ID=YEARS") from error
         if not node_id or years < 0:
             raise ContractError("--delay-node years must be a non-negative integer")
         delays[node_id] = years
@@ -55,7 +58,9 @@ def build_parser() -> argparse.ArgumentParser:
     _add_delay_option(simulate_parser)
     _add_output_options(simulate_parser)
 
-    compare_parser = subparsers.add_parser("compare", help="基準世界と介入世界を比較する")
+    compare_parser = subparsers.add_parser(
+        "compare", help="基準世界と介入世界を比較する"
+    )
     compare_parser.add_argument("--scenario", required=True)
     compare_parser.add_argument("--intervention", required=True)
     compare_parser.add_argument("--seed", type=int, default=2036)
@@ -76,6 +81,8 @@ def build_parser() -> argparse.ArgumentParser:
     social_parser.add_argument("--model")
     social_parser.add_argument("--confirm-live", action="store_true")
     social_parser.add_argument("--seed", type=int, default=2036)
+    social_parser.add_argument("--bundle-output")
+    social_parser.add_argument("--source-revision")
     _add_output_options(social_parser)
     preview_parser = subparsers.add_parser(
         "prepare-preview", help="確認済みIdeaDraftを暫定run requestへ変換する"
@@ -122,9 +129,87 @@ def _write_output(path_value: str, rendered: str, *, overwrite: bool) -> None:
     temporary.replace(path)
 
 
-def main(argv: Sequence[str] | None = None) -> int:
-    args = build_parser().parse_args(argv)
+def _write_stdout_bytes(payload: bytes) -> None:
+    """Write auditable UTF-8/LF bytes while preserving StringIO-based tests."""
+
+    buffer = getattr(sys.stdout, "buffer", None)
+    if buffer is None:
+        sys.stdout.write(payload.decode("utf-8"))
+        return
+    buffer.write(payload)
+    buffer.flush()
+
+
+def _verified_source_revision(expected: str) -> str:
+    """Bind live evidence to the exact, clean runtime source checkout."""
+
+    root = Path(__file__).resolve().parents[2]
     try:
+        head = subprocess.run(
+            ["git", "-C", str(root), "rev-parse", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+        status = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "status",
+                "--porcelain=v1",
+                "--untracked-files=all",
+                "--",
+                "src",
+                "pyproject.toml",
+                "requirements-runtime.txt",
+            ],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError) as error:
+        raise ContractError(
+            "bundle evidence requires a readable Git checkout"
+        ) from error
+    if expected != head:
+        raise ContractError("--source-revision must match the executing Git HEAD")
+    if status:
+        raise ContractError("bundle evidence requires clean runtime source files")
+    return head
+
+
+def _preflight_social_outputs(args: argparse.Namespace) -> None:
+    paths = [
+        Path(value).resolve() for value in (args.output, args.bundle_output) if value
+    ]
+    if len(paths) == 2:
+        if paths[0] == paths[1]:
+            raise ContractError("--output and --bundle-output must be different paths")
+    if not args.overwrite:
+        existing = [str(path) for path in paths if path.exists()]
+        if existing:
+            raise ContractError(
+                "output already exists; pass --overwrite to replace it: "
+                + ", ".join(existing)
+            )
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    effective_argv = list(argv) if argv is not None else sys.argv[1:]
+    args = build_parser().parse_args(effective_argv)
+    requested_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    started_at = requested_at
+    source_revision: str | None = None
+    try:
+        if args.command == "social":
+            _preflight_social_outputs(args)
+            if bool(args.bundle_output) != bool(args.source_revision):
+                raise ContractError(
+                    "--bundle-output and --source-revision must be specified together"
+                )
+            if args.bundle_output:
+                source_revision = _verified_source_revision(args.source_revision)
         if args.command == "prepare-preview":
             result = prepare_provisional_request(
                 load_json(args.idea_draft),
@@ -152,7 +237,31 @@ def main(argv: Sequence[str] | None = None) -> int:
             rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)
             if args.output:
                 _write_output(args.output, rendered, overwrite=args.overwrite)
-            print(rendered)
+            if args.bundle_output:
+                if source_revision is None:  # narrowed by the preflight contract above
+                    raise ContractError("bundle source revision was not verified")
+                completed_at = (
+                    datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+                )
+                stdout_bytes = (rendered + "\n").encode("utf-8")
+                bundle = build_run_bundle(
+                    result,
+                    command=[sys.executable, "-m", "fiction_forks", *effective_argv],
+                    requested_at=requested_at,
+                    started_at=started_at,
+                    completed_at=completed_at,
+                    generated_at=completed_at,
+                    source_revision=source_revision,
+                    stdout_sha256=hashlib.sha256(stdout_bytes).hexdigest(),
+                )
+                _write_output(
+                    args.bundle_output,
+                    json.dumps(bundle, ensure_ascii=False, indent=2, sort_keys=True),
+                    overwrite=args.overwrite,
+                )
+                _write_stdout_bytes(stdout_bytes)
+            else:
+                print(rendered)
             return 0
         delays = _technology_delays(args.delay_node)
         if delays and intervention is None:
@@ -172,14 +281,18 @@ def main(argv: Sequence[str] | None = None) -> int:
                 technology_delays=delays,
             )
     except (ContractError, ProviderError, OSError, json.JSONDecodeError) as error:
-        print(json.dumps({"status": "error", "message": str(error)}, ensure_ascii=False))
+        print(
+            json.dumps({"status": "error", "message": str(error)}, ensure_ascii=False)
+        )
         return 2
     rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)
     try:
         if args.output:
             _write_output(args.output, rendered, overwrite=args.overwrite)
     except (ContractError, OSError) as error:
-        print(json.dumps({"status": "error", "message": str(error)}, ensure_ascii=False))
+        print(
+            json.dumps({"status": "error", "message": str(error)}, ensure_ascii=False)
+        )
         return 2
     print(rendered)
     return 0
