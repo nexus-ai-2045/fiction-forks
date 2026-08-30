@@ -508,7 +508,7 @@
     "execution": {
       "adapter_id": "fiction-forks/social-result-v1",
       "command": [
-        "C:\\Users\\yas\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "python",
         "-m",
         "fiction_forks",
         "social",

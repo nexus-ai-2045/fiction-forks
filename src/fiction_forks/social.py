@@ -278,13 +278,42 @@ def run_social_simulation(
         {action_catalog[action_id]["capability"] for action_id in selected}
     )
     missing_by_node: dict[str, list[str]] = {}
-    technology_delays: dict[str, int] = {}
     for node_id, requirements in social_config["node_requirements"].items():
         missing = sorted(set(requirements) - selected)
         missing_by_node[node_id] = missing
-        technology_delays[node_id] = (
-            len(missing) * int(social_config["missing_action_delay_years"])
+
+    # A missing action is charged once along a dependency chain.  Keeping the
+    # raw per-node omissions is useful evidence, but charging the same omission
+    # again at every descendant would turn one five-year failure into an
+    # accidental cumulative delay.
+    node_ids = set(missing_by_node)
+    parents = {
+        node["id"]: {parent for parent in node["depends_on"] if parent in node_ids}
+        for node in intervention["technology_tree"]["nodes"]
+    }
+    ancestor_cache: dict[str, set[str]] = {}
+
+    def ancestors(node_id: str) -> set[str]:
+        if node_id not in ancestor_cache:
+            direct = parents[node_id]
+            ancestor_cache[node_id] = direct | {
+                ancestor
+                for parent in direct
+                for ancestor in ancestors(parent)
+            }
+        return ancestor_cache[node_id]
+
+    technology_delays = {
+        node_id: sum(
+            int(social_config["missing_action_delay_years"])
+            for action_id in missing
+            if not any(
+                action_id in missing_by_node[ancestor]
+                for ancestor in ancestors(node_id)
+            )
         )
+        for node_id, missing in missing_by_node.items()
+    }
 
     world_comparison = compare_worlds(
         scenario,

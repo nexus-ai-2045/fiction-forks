@@ -130,6 +130,9 @@ class RunBundleTests(unittest.TestCase):
                 json.loads(output.read_text(encoding="utf-8"))["run_id"],
                 bundle["run_request"]["run_id"],
             )
+            self.assertEqual(
+                "python", bundle["evidence"]["execution"]["command"][0]
+            )
 
     def test_cli_rejects_colliding_output_paths_before_writing(self) -> None:
         from fiction_forks.cli import main as cli_main
