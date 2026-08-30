@@ -86,7 +86,9 @@ function LiveRunEvidence() {
       <label><input type="radio" name="live-provider" checked={provider === "vertex"} onChange={() => setProvider("vertex")} />Google Cloud / Gemini 2.5 Flash</label>
       <label><input type="radio" name="live-provider" checked={provider === "ollama"} onChange={() => setProvider("ollama")} />ローカル / Ollama</label>
     </fieldset>
-    {isVertex && <p className="live-outcome">2037年に発動。2036年の破滅条件というビッグボスには1年間に合わなかった――次の世界線で倒すべき相手です。</p>}
+    <p className="live-outcome">{isVertex
+      ? "AIの選択 → 3行動を安全に棄却 → 必要行動が不足 → 発動2037年 → 2036年のBIG BOSSに1年遅れ。"
+      : "AIの選択と契約判定は実測済み。公開summaryには世界線判定を収録していないため、破滅回避との接続は表示しません。"}</p>
     <div className="live-run-stats">
       <div><strong>{liveRun.event_count}</strong><span>生成行動</span></div><div><strong>{liveRun.valid_action_count}</strong><span>契約を通過</span></div><div><strong>{liveRun.invalid_action_count}</strong><span>安全に棄却</span></div><div><strong>{liveRun.interaction_edge_count}</strong><span>応答関係</span></div>
     </div>
@@ -159,7 +161,7 @@ export function App() {
           <h1>想像力で、破滅ルートをひっくり返せ。</h1>
           <p>アニメや物語のアイデアを、再現できる世界線シミュレーションへ。</p>
           <div className="hero-actions">
-            <a href="#comparison" onClick={focusComparison}>世界線をプレイする</a>
+            <a href="#comparison" onClick={focusComparison}>検証済み世界線を比較する</a>
             <a href="../">自分のアイデアを持ち込む</a>
           </div>
         </div>
@@ -169,6 +171,19 @@ export function App() {
       <section className="workflow" aria-label="作戦卓の流れ">
         {[["01", "OBSERVE", "放置世界を見る"], ["02", "FORK", "介入世界を比べる"], ["03", "STRESS", "制度を遅らせる"], ["04", "EXPLAIN", "根拠と限界を読む"]].map(([number, name, text]) => <div key={name}><span>{number}</span><strong>{name}</strong><small>{text}</small></div>)}
       </section>
+
+      <section className="story-translation" aria-labelledby="story-translation-title">
+        <div><span>STORY</span><strong>{intervention.fiction_reference}</strong><small>世界の異変を、仲間と観測する着想</small></div>
+        <b aria-hidden="true">→</b>
+        <div><span>POWER</span><strong>複数観測者の照合</strong><small>単一の権威だけに頼らず異常を見つける</small></div>
+        <b aria-hidden="true">→</b>
+        <div><span>FORK</span><strong id="story-translation-title">分散観測と公開検証</strong><small>物語そのものではなく、抽出した機能を社会介入へ翻訳</small></div>
+      </section>
+
+      <aside className="evidence-boundary" aria-label="シミュレーターと画面の役割">
+        <strong>この画面は検証済みrunのexplorerです。</strong>
+        <span>上段は決定論fixtureによる同seed比較、下段は実AIが選んだ行動証拠。新規runはPythonのcanonical simulatorで実行します。</span>
+      </aside>
 
       <section className="comparison" id="comparison" aria-labelledby="comparison-title" tabIndex={-1}>
         <div className="section-heading"><div><span>OBSERVE → FORK</span><h2 id="comparison-title">同じ{artifact.comparison_year}年、二つの世界</h2></div><p>未来予測ではなく、同じseedのモデル結果を比較しています。</p></div>

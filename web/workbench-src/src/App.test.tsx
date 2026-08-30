@@ -7,7 +7,7 @@ describe("workbench projection", () => {
     render(<App />);
     expect(screen.getByRole("heading", { name: "想像力で、破滅ルートをひっくり返せ。" })).toBeInTheDocument();
     expect(screen.getByText("アニメや物語のアイデアを、再現できる世界線シミュレーションへ。")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "世界線をプレイする" })).toHaveAttribute("href", "#comparison");
+    expect(screen.getByRole("link", { name: "検証済み世界線を比較する" })).toHaveAttribute("href", "#comparison");
     expect(screen.getByRole("link", { name: "自分のアイデアを持ち込む" })).toHaveAttribute("href", "../");
     expect(screen.getByText(/破滅条件を倒すまで、世界線を何度でも組み替える/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "同じ2036年、二つの世界" })).toBeInTheDocument();
@@ -23,7 +23,7 @@ describe("workbench projection", () => {
 
   it("frames the verified Vertex miss as the next worldline to beat", () => {
     render(<App />);
-    expect(screen.getByText(/破滅条件というビッグボスには1年間に合わなかった/)).toHaveTextContent("次の世界線で倒すべき相手です");
+    expect(screen.getByText(/AIの選択 → 3行動を安全に棄却/)).toHaveTextContent("発動2037年");
   });
 
   it("opens provenance and exposes fixture metadata", () => {
