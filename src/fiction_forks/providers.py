@@ -165,6 +165,7 @@ class ReplayProvider:
         if not isinstance(actions, list):
             raise ContractError("replay artifact actions must be a list")
         parsed: dict[tuple[int, str], dict[str, Any]] = {}
+        invalid_keys: set[tuple[int, str]] = set()
         previous_hash = digest({"input_digest": self._input_digest})
         receipt_keys = {
             "intent_id",
@@ -194,6 +195,8 @@ class ReplayProvider:
                     raise ContractError("replay event_hash mismatch")
                 previous_hash = event_hash
                 parsed[key] = dict(action)
+                if item["valid"] is False:
+                    invalid_keys.add(key)
         except ContractError:
             raise
         except (KeyError, TypeError, ValueError) as error:
@@ -203,6 +206,7 @@ class ReplayProvider:
         if artifact.get("final_event_hash") != previous_hash:
             raise ContractError("replay final_event_hash mismatch")
         self._actions = parsed
+        self._invalid_keys = invalid_keys
         if len(self._actions) != len(actions):
             raise ContractError("replay artifact contains duplicate actions")
 
@@ -227,6 +231,11 @@ class ReplayProvider:
             raise ProviderError("replay action is not a public receipt projection")
         recorded["conditions"] = ["replayed condition"] * condition_count
         recorded["text"] = "replayed redacted action"
+        if key in self._invalid_keys:
+            # The engine must take the same fail-closed path as the original
+            # run. An explicit unknown field deterministically triggers the
+            # action contract without inventing a different valid decision.
+            recorded["replay_invalid_receipt"] = True
         return recorded
 
     def verify_result(self, result: Mapping[str, Any]) -> None:

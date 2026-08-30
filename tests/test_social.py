@@ -288,6 +288,24 @@ class SocialSimulationTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractError, "event_hash mismatch"):
             ReplayProvider(artifact)
 
+    def test_replay_preserves_a_fail_closed_live_receipt(self) -> None:
+        original = run_social_simulation(
+            self.scenario,
+            self.intervention,
+            self.social_config,
+            MalformedProvider(),
+            seed=2036,
+        )
+        replayed = run_social_simulation(
+            self.scenario,
+            self.intervention,
+            self.social_config,
+            ReplayProvider(original),
+            seed=2036,
+        )
+        self.assertEqual(15, original["metrics"]["invalid_action_count"])
+        self.assertTrue(replay_equivalent(original, replayed))
+
     def test_openai_boundary_uses_structured_output_and_disables_storage(self) -> None:
         fake_client = FakeClient()
         provider = OpenAIProvider(
