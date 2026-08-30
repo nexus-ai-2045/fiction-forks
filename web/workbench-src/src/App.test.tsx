@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { App, describeForkOutcome, interventionDisplayName } from "./App";
+import ollamaLiveRun from "../../../artifacts/runs/ollama-live-run-summary.json";
+import { App, describeForkOutcome, describeLiveRunOutcome, interventionDisplayName } from "./App";
 import { comparison, describeActivationDelay, intervention } from "./data";
 
 describe("workbench projection", () => {
@@ -29,6 +30,15 @@ describe("workbench projection", () => {
   it("frames the verified Vertex miss as the next worldline to beat", () => {
     render(<App />);
     expect(screen.getByText(/AIの選択 → 3行動を安全に棄却/)).toHaveTextContent("発動2037年");
+  });
+
+  it("derives the Ollama verdict from the verified summary", () => {
+    expect(describeLiveRunOutcome(ollamaLiveRun)).toBe(
+      "AIの選択 → 1行動を安全に棄却 → 必要行動が不足 → 発動2047年 → 2036年のBIG BOSSに11年遅れ。",
+    );
+    render(<App />);
+    fireEvent.click(screen.getByLabelText("ローカル / Ollama"));
+    expect(screen.getByText(/発動2047年/)).toHaveTextContent("11年遅れ");
   });
 
   it("opens provenance and exposes fixture metadata", () => {

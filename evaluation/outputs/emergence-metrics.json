@@ -57,13 +57,11 @@
       "n": 6,
       "provider_model": {
         "counts": {
-          "fixture/not_measured": 2,
-          "not_measured/not_measured": 2,
           "ollama/qwen2.5vl:3b": 1,
           "vertex/gemini-2.5-flash": 1
         },
-        "measured": 6,
-        "not_measured": 0
+        "measured": 2,
+        "not_measured": 4
       },
       "stances": {
         "abstain": {
@@ -133,11 +131,9 @@
         },
         "n": 2,
         "provider_model": {
-          "counts": {
-            "not_measured/not_measured": 2
-          },
-          "measured": 2,
-          "not_measured": 0
+          "counts": {},
+          "measured": 0,
+          "not_measured": 2
         },
         "stances": {
           "abstain": {
@@ -209,11 +205,9 @@
         },
         "n": 2,
         "provider_model": {
-          "counts": {
-            "fixture/not_measured": 2
-          },
-          "measured": 2,
-          "not_measured": 0
+          "counts": {},
+          "measured": 0,
+          "not_measured": 2
         },
         "stances": {
           "abstain": {

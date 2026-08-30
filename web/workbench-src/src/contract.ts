@@ -122,16 +122,54 @@ export function parseRunManifest(value: unknown): RunManifest {
   return value as unknown as RunManifest;
 }
 
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+function canonicalNumber(value: number): string {
+  if (!Number.isFinite(value)) throw new Error("canonical JSON does not accept non-finite numbers");
+  return JSON.stringify(value);
+}
+
+/** RFC 8785/JCS serialization used by meta-security-run-bundle event streams. */
+export function canonicalizeRfc8785(value: unknown): string {
+  if (typeof value === "number") return canonicalNumber(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalizeRfc8785).join(",")}]`;
   if (isRecord(value)) {
-    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalizeRfc8785(value[key])}`).join(",")}}`;
   }
   return JSON.stringify(value);
 }
 
-async function sha256(value: unknown): Promise<string> {
-  const bytes = new TextEncoder().encode(canonicalJson(value));
+const pythonFloatMarker = Symbol("python-float");
+type PythonFloat = { [pythonFloatMarker]: number };
+
+function pythonFloat(value: number): PythonFloat {
+  return { [pythonFloatMarker]: value };
+}
+
+export function pythonFloatRepr(value: number): string {
+  if (!Number.isFinite(value)) throw new Error("canonical event JSON does not accept non-finite numbers");
+  if (Object.is(value, -0)) return "-0.0";
+  if (value === 0) return "0.0";
+  const exponent = Math.floor(Math.log10(Math.abs(value)));
+  if (exponent < -4 || exponent >= 16) {
+    return value.toExponential().replace(/e([+-])(\d+)$/, (_match, sign: string, digits: string) => `e${sign}${digits.padStart(2, "0")}`);
+  }
+  const rendered = value.toString();
+  return rendered.includes(".") ? rendered : `${rendered}.0`;
+}
+
+function canonicalizePythonEvent(value: unknown): string {
+  if (typeof value === "object" && value !== null && pythonFloatMarker in value) {
+    return pythonFloatRepr((value as PythonFloat)[pythonFloatMarker]);
+  }
+  if (typeof value === "number") return canonicalNumber(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalizePythonEvent).join(",")}]`;
+  if (isRecord(value)) {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalizePythonEvent(value[key])}`).join(",")}}`;
+  }
+  return JSON.stringify(value);
+}
+
+async function sha256PythonEvent(value: unknown): Promise<string> {
+  const bytes = new TextEncoder().encode(canonicalizePythonEvent(value));
   const hash = await crypto.subtle.digest("SHA-256", bytes);
   return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
@@ -183,16 +221,30 @@ export async function parseReplayRun(value: unknown): Promise<ReplayRun> {
     if (previousEventHash !== null && entry.previous_event_hash !== previousEventHash) {
       throw new Error(`event ${index} previous_event_hash breaks the hash chain`);
     }
-    const receipt = {
+    const receiptAction = { ...entry.action };
+    if (typeof receiptAction.confidence !== "number" || !Number.isFinite(receiptAction.confidence)) {
+      throw new Error(`event ${index} confidence must be a finite number`);
+    }
+    const confidence = receiptAction.confidence;
+    const receiptFor = (canonicalConfidence: unknown) => ({
       intent_id: entry.intent_id,
-      action: entry.action,
+      action: { ...receiptAction, confidence: canonicalConfidence },
       valid: entry.valid,
       invalid_reason: entry.invalid_reason,
       state_before_hash: entry.state_before_hash,
       state_after_hash: entry.state_after_hash,
-    };
-    const expectedHash = await sha256({ previous_event_hash: entry.previous_event_hash, receipt });
-    if (entry.event_hash !== expectedHash) throw new Error(`event ${index} event_hash mismatch`);
+    });
+    // JSON.parse cannot distinguish Python's `1` from `1.0`. Rebuild every
+    // representation that could have produced this numeric value and require
+    // the stored digest to match one of them. This also preserves -0.0 and
+    // Python's padded exponent spelling without trusting the declared hash.
+    const confidenceCandidates: unknown[] = [pythonFloat(confidence)];
+    if (Number.isInteger(confidence)) confidenceCandidates.push(confidence);
+    const expectedHashes = await Promise.all(confidenceCandidates.map((candidate) => sha256PythonEvent({
+      previous_event_hash: entry.previous_event_hash,
+      receipt: receiptFor(candidate),
+    })));
+    if (!expectedHashes.includes(entry.event_hash)) throw new Error(`event ${index} event_hash mismatch`);
     const parsed: ReplayEvent = {
       sequence: index + 1,
       intent_id: entry.intent_id,

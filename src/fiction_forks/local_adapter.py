@@ -9,6 +9,7 @@ at startup.
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
 import hmac
@@ -23,6 +24,8 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+
+import rfc8785
 
 from .engine import ContractError
 
@@ -161,6 +164,15 @@ class LocalRunService:
                 raise ContractError("simulation did not produce valid artifacts") from error
         result_sha = hashlib.sha256(result_bytes).hexdigest()
         bundle_sha = hashlib.sha256(bundle_bytes).hexdigest()
+        event_stream_bytes = b"".join(
+            rfc8785.dumps(event) + b"\n" for event in bundle["events"]
+        )
+        event_stream_sha = hashlib.sha256(event_stream_bytes).hexdigest()
+        if (
+            bundle.get("replay", {}).get("event_stream_sha256") != event_stream_sha
+            or bundle.get("evidence", {}).get("event_stream_sha256") != event_stream_sha
+        ):
+            raise ContractError("bundle event stream digest mismatch")
         execution_id = f"ffx-{uuid.uuid4().hex}"
         return {
             "schema_version": RESPONSE_SCHEMA,
@@ -170,6 +182,9 @@ class LocalRunService:
             "source_revision": self.source_revision,
             "result_sha256": result_sha,
             "bundle_sha256": bundle_sha,
+            "result_artifact_base64": base64.b64encode(result_bytes).decode("ascii"),
+            "bundle_artifact_base64": base64.b64encode(bundle_bytes).decode("ascii"),
+            "event_stream_base64": base64.b64encode(event_stream_bytes).decode("ascii"),
             "result": result,
             "bundle": bundle,
         }

@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
 
 from evaluation.emergence_metrics import (  # noqa: E402
     NOT_MEASURED,
+    aggregate,
     build_report,
     contains_prose,
     identity_key,
@@ -22,6 +23,38 @@ from evaluation.emergence_metrics import (  # noqa: E402
 
 
 class EmergenceMetricsTests(unittest.TestCase):
+    def test_provider_model_requires_both_identity_fields(self) -> None:
+        rows = [
+            {"identity": {"provider": NOT_MEASURED, "model": NOT_MEASURED}},
+            {"identity": {"provider": "fixture", "model": NOT_MEASURED}},
+            {"identity": {"provider": NOT_MEASURED, "model": "model-only"}},
+            {"identity": {"provider": "vertex", "model": "gemini-2.5-flash"}},
+        ]
+        for row in rows:
+            row.update(
+                {
+                    "action_diversity": NOT_MEASURED,
+                    "capability_coverage": NOT_MEASURED,
+                    "interaction_edge_count": NOT_MEASURED,
+                    "interaction_density": NOT_MEASURED,
+                    "stances": {
+                        "support": NOT_MEASURED,
+                        "condition": NOT_MEASURED,
+                        "oppose": NOT_MEASURED,
+                        "abstain": NOT_MEASURED,
+                    },
+                    "fail_closed_rate": NOT_MEASURED,
+                    "activation_year": NOT_MEASURED,
+                    "collapsed": NOT_MEASURED,
+                }
+            )
+
+        distribution = aggregate(rows)["provider_model"]
+
+        self.assertEqual(1, distribution["measured"])
+        self.assertEqual(3, distribution["not_measured"])
+        self.assertEqual({"vertex/gemini-2.5-flash": 1}, distribution["counts"])
+
     def test_action_diversity_counts_only_valid_non_abstain_actions(self) -> None:
         row = summarize_document(
             {

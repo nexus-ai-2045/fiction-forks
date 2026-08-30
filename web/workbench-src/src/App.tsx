@@ -22,6 +22,7 @@ const kindLabels: Record<TechnologyNode["kind"], string> = {
 
 type Profile = "normal" | "delay";
 type LiveProvider = "ollama" | "vertex";
+type LiveRunSummary = typeof ollamaLiveRun;
 
 // 前面に出す短い日本語名。正式なextracted_functionは根拠ドロワーに残す。
 const interventionDisplayNames: Record<string, string> = {
@@ -48,6 +49,17 @@ export function describeForkOutcome(artifact: ComparisonArtifact): { summary: st
     status: "介入後も破滅条件に到達",
     summary: `${artifact.fork.activation_year}年に発動しましたが、${collapseYear}年に修復不能条件へ到達。`,
   };
+}
+
+export function describeLiveRunOutcome(run: LiveRunSummary): string {
+  const decision = `AIの選択 → ${run.invalid_action_count}行動を安全に棄却`;
+  if (!run.collapsed) {
+    return `${decision} → 発動${run.activation_year}年 → ${run.collapse_year}年の破滅条件を回避。`;
+  }
+  if (run.activation_year > run.collapse_year) {
+    return `${decision} → 必要行動が不足 → 発動${run.activation_year}年 → ${run.collapse_year}年のBIG BOSSに${run.activation_year - run.collapse_year}年遅れ。`;
+  }
+  return `${decision} → 発動${run.activation_year}年 → 介入後も${run.collapse_year}年に修復不能条件へ到達。`;
 }
 
 function StateMark({ collapsed }: { collapsed: boolean }) {
@@ -95,9 +107,7 @@ function LiveRunEvidence() {
       <label><input type="radio" name="live-provider" checked={provider === "vertex"} onChange={() => setProvider("vertex")} />Google Cloud / Gemini 2.5 Flash</label>
       <label><input type="radio" name="live-provider" checked={provider === "ollama"} onChange={() => setProvider("ollama")} />ローカル / Ollama</label>
     </fieldset>
-    <p className="live-outcome">{isVertex
-      ? "AIの選択 → 3行動を安全に棄却 → 必要行動が不足 → 発動2037年 → 2036年のBIG BOSSに1年遅れ。"
-      : "AIの選択と契約判定は実測済み。公開summaryには世界線判定を収録していないため、破滅回避との接続は表示しません。"}</p>
+    <p className="live-outcome">{describeLiveRunOutcome(liveRun)}</p>
     <div className="live-run-stats">
       <div><strong>{liveRun.event_count}</strong><span>生成行動</span></div><div><strong>{liveRun.valid_action_count}</strong><span>契約を通過</span></div><div><strong>{liveRun.invalid_action_count}</strong><span>安全に棄却</span></div><div><strong>{liveRun.interaction_edge_count}</strong><span>応答関係</span></div>
     </div>

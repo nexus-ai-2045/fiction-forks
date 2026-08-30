@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { createHash } from "node:crypto";
 import fixture from "../../../artifacts/runs/haruhi-world-observation-fixture.json" with { type: "json" };
 
 test("Observe → Fork → Stress → Explain", async ({ page }) => {
@@ -110,16 +111,28 @@ test("network fixture: exact local adapter response is verified and double submi
     requests += 1;
     await new Promise((resolve) => setTimeout(resolve, 150));
     const runId = fixture.run_id;
+    const events = fixture.actions.map((receipt, sequence) => ({ run_id: runId, sequence, payload: { receipt } }));
+    const eventStream = Buffer.from(events.map((event) => JSON.stringify(event)).join("\n") + "\n");
+    const eventStreamDigest = createHash("sha256").update(eventStream).digest("hex");
+    const bundle = {
+      schema: "meta-security-run-bundle/v1", run_request: { run_id: runId },
+      events,
+      replay: { run_id: runId, seed: fixture.seed, event_count: fixture.actions.length, event_stream_sha256: eventStreamDigest },
+      evidence: { run_id: runId, event_stream_sha256: eventStreamDigest },
+    };
+    const resultBytes = Buffer.from(JSON.stringify(fixture));
+    const bundleBytes = Buffer.from(JSON.stringify(bundle));
     await route.fulfill({ json: {
       schema_version: "fiction_forks_local_run_response.v1", run_id: runId,
       execution_id: `ffx-${"1".repeat(32)}`, provider: { name: "fixture", model: null },
-      source_revision: "2".repeat(40), result_sha256: "3".repeat(64), bundle_sha256: "4".repeat(64),
+      source_revision: "2".repeat(40),
+      result_sha256: createHash("sha256").update(resultBytes).digest("hex"),
+      bundle_sha256: createHash("sha256").update(bundleBytes).digest("hex"),
+      result_artifact_base64: resultBytes.toString("base64"),
+      bundle_artifact_base64: bundleBytes.toString("base64"),
+      event_stream_base64: eventStream.toString("base64"),
       result: fixture,
-      bundle: {
-        schema: "meta-security-run-bundle/v1", run_request: { run_id: runId },
-        events: fixture.actions.map((receipt, sequence) => ({ run_id: runId, sequence, payload: { receipt } })),
-        replay: { run_id: runId, seed: fixture.seed, event_count: fixture.actions.length }, evidence: { run_id: runId },
-      },
+      bundle,
     } });
   });
   await page.goto("./");

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import base64
+import hashlib
 import json
 import subprocess
 import tempfile
@@ -19,6 +21,7 @@ from fiction_forks.local_adapter import (
     _exact_request,
     _handler,
 )
+from fiction_forks.run_bundle import event_stream_sha256
 from http.server import ThreadingHTTPServer
 
 
@@ -68,6 +71,9 @@ class LocalAdapterContractTests(unittest.TestCase):
                 "replay": {"run_id": "ff-test"},
                 "evidence": {"run_id": "ff-test"},
             }
+            stream_digest = event_stream_sha256(bundle["events"])
+            bundle["replay"]["event_stream_sha256"] = stream_digest
+            bundle["evidence"]["event_stream_sha256"] = stream_digest
             output.write_text(json.dumps(result), encoding="utf-8")
             bundle_output.write_text(json.dumps(bundle), encoding="utf-8")
             self.assertIn("scenarios/japan-2036/scenario.json", command)
@@ -81,6 +87,8 @@ class LocalAdapterContractTests(unittest.TestCase):
         self.assertNotEqual(first["execution_id"], second["execution_id"])
         self.assertRegex(first["execution_id"], r"^ffx-[0-9a-f]{32}$")
         self.assertEqual("meta-security-run-bundle/v1", first["bundle"]["schema"])
+        self.assertEqual(first["result_sha256"], hashlib.sha256(base64.b64decode(first["result_artifact_base64"])).hexdigest())
+        self.assertEqual(first["bundle_sha256"], hashlib.sha256(base64.b64decode(first["bundle_artifact_base64"])).hexdigest())
 
 
 class LocalAdapterHttpTests(unittest.TestCase):

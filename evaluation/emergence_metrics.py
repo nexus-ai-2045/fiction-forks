@@ -391,6 +391,14 @@ def _collapse_rate(values: list[Any]) -> Any:
     return round(sum(1 for value in booleans if value) / len(booleans), 4)
 
 
+def _provider_model(identity: Mapping[str, Any]) -> Any:
+    provider = identity.get("provider", NOT_MEASURED)
+    model = identity.get("model", NOT_MEASURED)
+    if not measured(provider) or not measured(model):
+        return NOT_MEASURED
+    return f"{provider}/{model}"
+
+
 def aggregate(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
     return {
         "n": len(rows),
@@ -433,10 +441,7 @@ def aggregate(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
         "collapse_rate": _collapse_rate([row["collapsed"] for row in rows]),
         "collapsed": _distribution([row["collapsed"] for row in rows]),
         "provider_model": _distribution(
-            [
-                f"{row['identity']['provider']}/{row['identity']['model']}"
-                for row in rows
-            ]
+            [_provider_model(row["identity"]) for row in rows]
         ),
     }
 

@@ -3,7 +3,7 @@ import delayJson from "../../../artifacts/runs/haruhi-world-observation-contesta
 import fixtureJson from "../../../artifacts/runs/haruhi-world-observation-fixture.json";
 import interventionJson from "../../../interventions/haruhi-world-observation.json";
 import manifestJson from "../../../artifacts/runs/haruhi-world-observation-fixture.manifest.json";
-import { parseComparisonArtifact, parseInterventionArtifact, parseReplayRun, parseRunManifest, validateWorkbenchRelationships } from "./contract";
+import { canonicalizeRfc8785, parseComparisonArtifact, parseInterventionArtifact, parseReplayRun, parseRunManifest, pythonFloatRepr, validateWorkbenchRelationships } from "./contract";
 
 describe("canonical comparison artifacts", () => {
   it("accepts the normal and named-delay fixtures", () => {
@@ -95,6 +95,13 @@ describe("canonical comparison artifacts", () => {
 });
 
 describe("canonical replay events", () => {
+  it("keeps RFC 8785 bundle numbers distinct from Python event float spelling", () => {
+    expect(canonicalizeRfc8785({ z: -0, a: 1.0, exponent: 1e-7 })).toBe('{"a":1,"exponent":1e-7,"z":0}');
+    expect([1.0, -0.0, 1e-7, 1e-6, 1e15, 1e16].map(pythonFloatRepr)).toEqual([
+      "1.0", "-0.0", "1e-07", "1e-06", "1000000000000000.0", "1e+16",
+    ]);
+  });
+
   it("keeps the stored event order and numbers the sequence from 1", async () => {
     const run = await parseReplayRun(fixtureJson);
     expect(run.run_id).toBe(fixtureJson.run_id);
