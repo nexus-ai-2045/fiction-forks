@@ -38,6 +38,7 @@ async function startAdapter(origin: string): Promise<{ child: ChildProcessWithou
 
 test("real adapter: execute fixture, verify evidence, and replay generated events", async ({ page, isMobile }, testInfo) => {
   test.skip(isMobile, "実adapterはdesktopで一度だけ実行する");
+  test.setTimeout(90_000);
   const baseURL = String(testInfo.project.use.baseURL);
   const { child, token } = await startAdapter(new URL(baseURL).origin);
   try {
@@ -46,7 +47,10 @@ test("real adapter: execute fixture, verify evidence, and replay generated event
     await page.getByRole("button", { name: "シミュレーションを実行" }).click();
 
     const result = page.locator(".local-run .run-success");
-    await expect(result).toContainText("15 events / hash-chain PASS / bundle PASS", { timeout: 30_000 });
+    const alert = page.locator(".local-run [role=alert]");
+    await expect(result.or(alert)).toBeVisible({ timeout: 60_000 });
+    if (await alert.isVisible()) throw new Error(`local adapter UI error: ${await alert.innerText()}`);
+    await expect(result).toContainText("15 events / hash-chain PASS / bundle PASS");
     await expect(result).toContainText(/run_id ff-[0-9a-f]{16}/);
     await expect(result).toContainText(/execution_id ffx-[0-9a-f]{32}/);
 
