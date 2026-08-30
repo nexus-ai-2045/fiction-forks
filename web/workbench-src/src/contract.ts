@@ -1,4 +1,4 @@
-import { metricKeys, type ComparisonArtifact, type InterventionArtifact, type RunManifest } from "./types";
+import { metricKeys, replayStances, type ComparisonArtifact, type InterventionArtifact, type ReplayEvent, type ReplayRun, type RunManifest } from "./types";
 
 const sha256Pattern = /^[0-9a-f]{64}$/;
 const commitPattern = /^[0-9a-f]{40}$/;
@@ -120,6 +120,70 @@ export function parseRunManifest(value: unknown): RunManifest {
     if (typeof value[key] !== "string" || !sha256Pattern.test(value[key])) throw new Error(`invalid ${key}`);
   }
   return value as unknown as RunManifest;
+}
+
+export function parseReplayRun(value: unknown): ReplayRun {
+  if (!isRecord(value)) throw new Error("fixture run must be an object");
+  assertString(value, "run_id");
+  assertInteger(value, "seed");
+  assertInteger(value, "turn_count");
+  if (typeof value.final_event_hash !== "string" || !sha256Pattern.test(value.final_event_hash)) {
+    throw new Error("invalid final_event_hash");
+  }
+  if (!Array.isArray(value.actions) || value.actions.length === 0) throw new Error("fixture actions must be a non-empty array");
+  // 保存順をそのまま採用する。並べ替え・再計算はしない。
+  const events: ReplayEvent[] = value.actions.map((entry, index) => {
+    if (!isRecord(entry) || !isRecord(entry.action)) throw new Error(`event ${index} must contain an action`);
+    const action = entry.action;
+    if (action.schema_version !== "fiction_forks_action.v1") throw new Error(`event ${index} has an unsupported action schema`);
+    if (action.run_id !== value.run_id) throw new Error(`event ${index} does not belong to this run`);
+    ["agent_id", "action_id"].forEach((key) => assertString(action, key));
+    assertInteger(action, "turn");
+    if (typeof action.turn !== "number" || action.turn < 1 || action.turn > (value.turn_count as number)) {
+      throw new Error(`event ${index} turn is out of range`);
+    }
+    if (!replayStances.includes(action.stance as (typeof replayStances)[number])) {
+      throw new Error(`event ${index} has an unknown stance`);
+    }
+    for (const key of ["responds_to", "target_ids"] as const) {
+      if (!Array.isArray(action[key]) || !(action[key] as unknown[]).every((item) => typeof item === "string" && item.length > 0)) {
+        throw new Error(`event ${index} ${key} must be a string array`);
+      }
+    }
+    if (typeof entry.valid !== "boolean") throw new Error(`event ${index} valid must be boolean`);
+    if (entry.invalid_reason !== null && typeof entry.invalid_reason !== "string") {
+      throw new Error(`event ${index} invalid_reason must be a string or null`);
+    }
+    if (entry.valid !== (entry.invalid_reason === null)) throw new Error(`event ${index} validity is inconsistent`);
+    if (typeof entry.intent_id !== "string" || entry.intent_id.length === 0) throw new Error(`event ${index} intent_id is required`);
+    if (typeof entry.event_hash !== "string" || !sha256Pattern.test(entry.event_hash)) {
+      throw new Error(`event ${index} event_hash must be a SHA-256 hex digest`);
+    }
+    return {
+      sequence: index + 1,
+      intent_id: entry.intent_id,
+      action: {
+        schema_version: "fiction_forks_action.v1",
+        run_id: action.run_id as string,
+        turn: action.turn as number,
+        agent_id: action.agent_id as string,
+        action_id: action.action_id as string,
+        stance: action.stance as ReplayEvent["action"]["stance"],
+        responds_to: action.responds_to as string[],
+        target_ids: action.target_ids as string[],
+      },
+      valid: entry.valid,
+      invalid_reason: entry.invalid_reason,
+      event_hash: entry.event_hash,
+    };
+  });
+  return {
+    run_id: value.run_id as string,
+    seed: value.seed as number,
+    turn_count: value.turn_count as number,
+    final_event_hash: value.final_event_hash,
+    events,
+  };
 }
 
 export function validateWorkbenchRelationships(

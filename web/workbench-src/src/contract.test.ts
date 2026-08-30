@@ -1,8 +1,9 @@
 import comparisonJson from "../../../artifacts/runs/haruhi-world-observation-comparison.json";
 import delayJson from "../../../artifacts/runs/haruhi-world-observation-contestation-delay.json";
+import fixtureJson from "../../../artifacts/runs/haruhi-world-observation-fixture.json";
 import interventionJson from "../../../interventions/haruhi-world-observation.json";
 import manifestJson from "../../../artifacts/runs/haruhi-world-observation-fixture.manifest.json";
-import { parseComparisonArtifact, parseInterventionArtifact, parseRunManifest, validateWorkbenchRelationships } from "./contract";
+import { parseComparisonArtifact, parseInterventionArtifact, parseReplayRun, parseRunManifest, validateWorkbenchRelationships } from "./contract";
 
 describe("canonical comparison artifacts", () => {
   it("accepts the normal and named-delay fixtures", () => {
@@ -90,5 +91,30 @@ describe("canonical comparison artifacts", () => {
       intervention,
       manifest,
     )).toThrow(/normal activation year/);
+  });
+});
+
+describe("canonical replay events", () => {
+  it("keeps the stored event order and numbers the sequence from 1", () => {
+    const run = parseReplayRun(fixtureJson);
+    expect(run.run_id).toBe(fixtureJson.run_id);
+    expect(run.events).toHaveLength(fixtureJson.actions.length);
+    expect(run.events.map((event) => event.sequence)).toEqual(run.events.map((_, index) => index + 1));
+    expect(run.events.map((event) => event.intent_id)).toEqual(fixtureJson.actions.map((entry) => entry.intent_id));
+    expect(run.events[run.events.length - 1].event_hash).toBe(run.final_event_hash);
+  });
+
+  it("fails closed for tampered replay events", () => {
+    const tamper = (mutate: (clone: typeof fixtureJson) => void) => {
+      const clone = structuredClone(fixtureJson);
+      mutate(clone);
+      return () => parseReplayRun(clone);
+    };
+    expect(tamper((clone) => { clone.actions[0].action.stance = "maybe"; })).toThrow(/stance/);
+    expect(tamper((clone) => { clone.actions[0].action.run_id = "ff-other"; })).toThrow(/belong/);
+    expect(tamper((clone) => { clone.actions[0].valid = false; })).toThrow(/inconsistent/);
+    expect(tamper((clone) => { clone.actions[0].event_hash = "short"; })).toThrow(/SHA-256/);
+    expect(tamper((clone) => { clone.actions[0].action.turn = 99; })).toThrow(/turn/);
+    expect(tamper((clone) => { clone.actions.length = 0; })).toThrow(/non-empty/);
   });
 });

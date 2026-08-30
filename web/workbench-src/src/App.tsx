@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import ollamaLiveRun from "../../../artifacts/runs/ollama-live-run-summary.json";
 import vertexLiveRun from "../../../artifacts/runs/vertex-live-run-summary.json";
-import { comparison, contestationDelay, contestationDelayHeading, contestationDelayLabel, intervention, manifest } from "./data";
+import { comparison, contestationDelay, contestationDelayHeading, contestationDelayLabel, intervention, manifest, replayRun } from "./data";
+import { ReplaySection } from "./Replay";
 import { metricKeys, type ComparisonArtifact, type MetricKey, type TechnologyNode } from "./types";
 
 const metricLabels: Record<MetricKey, string> = {
@@ -20,6 +21,13 @@ const kindLabels: Record<TechnologyNode["kind"], string> = {
 
 type Profile = "normal" | "delay";
 type LiveProvider = "ollama" | "vertex";
+
+// 前面に出す短い日本語名。正式なextracted_functionは根拠ドロワーに残す。
+const interventionDisplayNames: Record<string, string> = {
+  "haruhi-world-observation": "みんなで世界を観測する力",
+};
+export const interventionDisplayName =
+  interventionDisplayNames[intervention.id] ?? `${intervention.fiction_reference}から借りた力`;
 
 export function describeForkOutcome(artifact: ComparisonArtifact): { summary: string; status: string } {
   if (!artifact.fork.collapsed) {
@@ -118,7 +126,7 @@ function ProvenanceDrawer({ open, onClose, artifact, replayVerified }: { open: b
     }}>
       <button ref={closeRef} className="drawer-close" type="button" onClick={onClose} aria-label="根拠を閉じる">×</button>
       <span>EXPLAIN / PROVENANCE</span><h2 id="drawer-title">この比較の根拠と限界</h2>
-      <dl className="provenance"><div><dt>artifact</dt><dd>{manifest.run_kind.toUpperCase()} / AI実測ではない</dd></div><div><dt>schema</dt><dd>{artifact.schema_version}</dd></div><div><dt>engine</dt><dd>{artifact.engine_version}</dd></div><div><dt>engine commit</dt><dd>{manifest.engine_commit}</dd></div><div><dt>scenario</dt><dd>{artifact.scenario_id}</dd></div><div><dt>intervention</dt><dd>{artifact.intervention_id}</dd></div><div><dt>seed</dt><dd>{artifact.seed}</dd></div><div><dt>comparison SHA-256</dt><dd>{manifest.comparison_artifact_sha256}</dd></div><div><dt>delay SHA-256</dt><dd>{manifest.delay_artifact_sha256}</dd></div><div><dt>intervention SHA-256</dt><dd>{manifest.intervention_artifact_sha256}</dd></div><div><dt>evidence</dt><dd>{replayVerified ? "fixture replay同値検証済み" : "canonical digest検証済み（replay未検証）"}</dd></div></dl>
+      <dl className="provenance"><div><dt>artifact</dt><dd>{manifest.run_kind.toUpperCase()} / AI実測ではない</dd></div><div><dt>schema</dt><dd>{artifact.schema_version}</dd></div><div><dt>engine</dt><dd>{artifact.engine_version}</dd></div><div><dt>engine commit</dt><dd>{manifest.engine_commit}</dd></div><div><dt>scenario</dt><dd>{artifact.scenario_id}</dd></div><div><dt>intervention</dt><dd>{artifact.intervention_id}</dd></div><div><dt>抽出機能（正式）</dt><dd>{intervention.extracted_function}</dd></div><div><dt>seed</dt><dd>{artifact.seed}</dd></div><div><dt>comparison SHA-256</dt><dd>{manifest.comparison_artifact_sha256}</dd></div><div><dt>delay SHA-256</dt><dd>{manifest.delay_artifact_sha256}</dd></div><div><dt>intervention SHA-256</dt><dd>{manifest.intervention_artifact_sha256}</dd></div><div><dt>evidence</dt><dd>{replayVerified ? "fixture replay同値検証済み" : "canonical digest検証済み（replay未検証）"}</dd></div></dl>
       <h3>費用</h3><ul>{artifact.declared_costs.map((item) => <li key={item}>{item}</li>)}</ul>
       <h3>副作用</h3><ul>{artifact.declared_side_effects.map((item) => <li key={item}>{item}</li>)}</ul>
       <h3>失敗条件</h3><ul>{artifact.declared_failure_modes.map((item) => <li key={item}>{item}</li>)}</ul>
@@ -158,6 +166,7 @@ export function App() {
       <section className="hero">
         <div>
           <span className="fixture-label">FIXTURE / {artifact.comparison_year}</span>
+          <small className="fixture-note">FIXTURE = 台本入力による決定論比較。AIの生成ではありません。</small>
           <h1>想像力で、破滅ルートをひっくり返せ。</h1>
           <p>アニメや物語のアイデアを、再現できる世界線シミュレーションへ。</p>
           <div className="hero-actions">
@@ -190,13 +199,13 @@ export function App() {
         <div className="worldline-summary">
           <article><span>BASELINE / 無介入</span><strong>{artifact.comparison_year}</strong><StateMark collapsed={artifact.baseline.collapsed} /><p>{baselineSummary}</p></article>
           <div className="fork-line" aria-hidden="true"><span></span></div>
-          <article aria-label="介入世界" className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / {intervention.extracted_function}</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{forkOutcome.summary}</p></article>
+          <article aria-label="介入世界" className={delayed ? "fork-world is-late" : "fork-world"}><span>FORK / {interventionDisplayName}</span><strong>{artifact.fork.activation_year}</strong><StateMark collapsed={artifact.fork.collapsed} /><p>{forkOutcome.summary}</p></article>
         </div>
         <MetricRows artifact={artifact} />
       </section>
 
       <section className="stress" aria-labelledby="stress-title">
-        <div><span>STRESS / NAMED PROFILE</span><h2 id="stress-title">{contestationDelayHeading}</h2><p>自由な数値入力ではなく、検証済みartifactに対応するnamed profileだけを切り替えます。</p></div>
+        <div><span>STRESS / NAMED PROFILE</span><h2 id="stress-title">{contestationDelayHeading}</h2><p>named profile（検証済み遅延条件）だけを切り替えます。自由な数値入力はできず、どの条件も検証済みartifactに対応します。</p></div>
         <fieldset><legend>遅延条件</legend>
           <label className={profile === "normal" ? "selected" : ""}><input type="radio" name="profile" value="normal" checked={profile === "normal"} onChange={() => setProfile("normal")} /><span><strong>遅延なし</strong>発動 {comparison.fork.activation_year} / {comparison.fork.collapsed ? "間に合わない" : "回避"}</span></label>
           <label className={profile === "delay" ? "selected" : ""}><input type="radio" name="profile" value="delay" checked={profile === "delay"} onChange={() => setProfile("delay")} /><span><strong>{contestationDelayLabel}</strong>発動 {contestationDelay.fork.activation_year} / {contestationDelay.fork.collapsed ? "間に合わない" : "回避"}</span></label>
@@ -205,6 +214,8 @@ export function App() {
       </section>
 
       <TechnologyTree artifact={artifact} />
+
+      <ReplaySection run={replayRun} />
 
       <LiveRunEvidence />
 

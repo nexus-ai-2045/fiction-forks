@@ -56,6 +56,42 @@ test("keyboard focus, profile announcement, and dialog containment", async ({ pa
   await expect(trigger).toBeFocused();
 });
 
+test("replay steps through stored events with keyboard-operable controls", async ({ page }) => {
+  await page.goto("./");
+
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute("href", /favicon\.svg/);
+  await expect(page.getByText("これは検証済みrunのreplayです。いまAIが生成しているのではなく、保存済みeventを保存順のまま表示します。")).toBeVisible();
+  await expect(page.getByText("行動 1 / 15", { exact: true })).toBeVisible();
+
+  const first = page.getByRole("button", { name: "最初" });
+  const previous = page.getByRole("button", { name: "前へ" });
+  const next = page.getByRole("button", { name: "次へ" });
+  const play = page.getByRole("button", { name: "自動再生" });
+  const stop = page.getByRole("button", { name: "停止" });
+
+  await expect(first).toBeDisabled();
+  await expect(previous).toBeDisabled();
+  await expect(stop).toBeDisabled();
+
+  await next.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("行動 2 / 15", { exact: true })).toBeVisible();
+
+  await play.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("行動 3 / 15", { exact: true })).toBeVisible({ timeout: 8000 });
+  await stop.focus();
+  await page.keyboard.press("Enter");
+  await expect(play).toBeEnabled();
+
+  await page.getByRole("button", { name: /^行動15:/ }).click();
+  await expect(page.getByText("行動 15 / 15", { exact: true })).toBeVisible();
+  await expect(next).toBeDisabled();
+  await first.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.getByText("行動 1 / 15", { exact: true })).toBeVisible();
+});
+
 test("mobile live-run table keeps every column header accessible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./");
