@@ -298,10 +298,36 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertIn("https://github.com/${REPOSITORY}", script)
         self.assertIn("state=all", script)
         self.assertNotIn("state=open&labels=idea", script)
-        for intervention_path in (ROOT / "interventions").glob("*.json"):
-            intervention = json.loads(intervention_path.read_text(encoding="utf-8"))
-            with self.subTest(intervention=intervention["id"]):
-                self.assertIn(f'data-worldline-id="{intervention["id"]}"', html)
+        implemented_items = re.findall(
+            r'<article\s+class="implemented-item"([^>]*)>', html
+        )
+        listed_worldline_ids = []
+        for attributes in implemented_items:
+            match = re.search(r'data-worldline-id="([^"]*)"', attributes)
+            self.assertIsNotNone(
+                match,
+                "implemented-itemにはdata-worldline-idが必要です",
+            )
+            worldline_id = match.group(1)
+            self.assertRegex(worldline_id, r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+            listed_worldline_ids.append(worldline_id)
+        listed_worldlines = set(listed_worldline_ids)
+        self.assertTrue(listed_worldlines)
+        self.assertEqual(len(listed_worldline_ids), len(listed_worldlines))
+        for worldline_id in listed_worldlines:
+            with self.subTest(worldline=worldline_id):
+                intervention_path = ROOT / "interventions" / f"{worldline_id}.json"
+                self.assertTrue(
+                    intervention_path.is_file(),
+                    f"Idea Builderの実装済みworldlineに対応する介入がありません: {worldline_id}",
+                )
+                intervention = json.loads(intervention_path.read_text(encoding="utf-8"))
+                self.assertEqual(intervention["id"], worldline_id)
+        self.assertIn("INTERVENTIONS_API_URL", script)
+        self.assertIn("contents/interventions?ref=main", script)
+        self.assertIn("application/vnd.github.raw+json", script)
+        self.assertIn("document.createElement", script)
+        self.assertIn("loadImplementedWorldlines();", script)
         self.assertIn("workflow_dispatch:", workflow)
         self.assertNotRegex(workflow, r"(?m)^\s+push:\s*$")
 

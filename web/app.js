@@ -3,6 +3,8 @@
 const REPOSITORY = "nexus-ai-2045/fiction-forks";
 const ISSUE_URL = `https://github.com/${REPOSITORY}/issues/new`;
 const API_URL = `https://api.github.com/repos/${REPOSITORY}/issues?state=all&labels=idea&sort=created&direction=desc&per_page=100`;
+const INTERVENTIONS_API_URL = `https://api.github.com/repos/${REPOSITORY}/contents/interventions?ref=main`;
+const INTERVENTION_API_PATH_PREFIX = `/repos/${REPOSITORY}/contents/interventions/`;
 const ISSUE_PATH_PREFIX = `/${REPOSITORY}/issues/`;
 
 const form = document.querySelector("#idea-form");
@@ -236,6 +238,82 @@ async function loadIdeaQueue() {
   }
 }
 
+function trustedInterventionApiUrl(candidate) {
+  try {
+    const url = new URL(String(candidate));
+    if (url.origin !== "https://api.github.com"
+      || !url.pathname.startsWith(INTERVENTION_API_PATH_PREFIX)) {
+      return null;
+    }
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function appendImplementedWorldline(container, intervention) {
+  const id = typeof intervention.id === "string" ? intervention.id : "";
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id)
+    || container.querySelector(`[data-worldline-id="${id}"]`)) {
+    return;
+  }
+
+  const article = document.createElement("article");
+  article.className = "implemented-item";
+  article.dataset.worldlineId = id;
+
+  const reference = document.createElement("span");
+  reference.textContent = `${String(intervention.fiction_reference ?? "作品")}から借りる`;
+  const title = document.createElement("h4");
+  title.textContent = String(intervention.extracted_function ?? "実装された世界線");
+  const description = document.createElement("p");
+  description.textContent = String(intervention.implementation_hypothesis ?? "詳細は実装JSONで確認できます。");
+  const link = document.createElement("a");
+  link.href = `https://github.com/${REPOSITORY}/blob/main/interventions/${id}.json`;
+  link.rel = "noreferrer";
+  link.textContent = "実装JSONを見る →";
+
+  article.append(reference, title, description, link);
+  container.append(article);
+}
+
+async function loadImplementedWorldlines() {
+  const container = document.querySelector(".implemented-list");
+  if (!container) return;
+  try {
+    const response = await fetch(INTERVENTIONS_API_URL, {
+      headers: { Accept: "application/vnd.github+json" },
+      referrerPolicy: "no-referrer",
+    });
+    if (!response.ok) throw new Error(`GitHub API: ${response.status}`);
+    const entries = await response.json();
+    if (!Array.isArray(entries)) throw new Error("GitHub API response is not an array");
+
+    const candidates = entries.filter((entry) => entry
+      && entry.type === "file"
+      && typeof entry.name === "string"
+      && /^[a-z0-9]+(?:-[a-z0-9]+)*\.json$/.test(entry.name));
+    const interventions = await Promise.all(candidates.map(async (entry) => {
+      try {
+        const url = trustedInterventionApiUrl(entry.url);
+        if (!url) return null;
+        const itemResponse = await fetch(url, {
+          headers: { Accept: "application/vnd.github.raw+json" },
+          referrerPolicy: "no-referrer",
+        });
+        if (!itemResponse.ok) return null;
+        const intervention = await itemResponse.json();
+        return intervention?.id === entry.name.slice(0, -5) ? intervention : null;
+      } catch {
+        return null;
+      }
+    }));
+    interventions.filter(Boolean).forEach((item) => appendImplementedWorldline(container, item));
+  } catch {
+    // API障害時はレビュー済みの静的カードをそのまま表示する。
+  }
+}
+
 document.querySelector("#idea-queue-list").addEventListener("click", (event) => {
   const button = event.target.closest('[data-action="copy-idea-prompt"]');
   if (!button) return;
@@ -269,3 +347,4 @@ function renderRunRequestStatus(state) {
 updateSummary();
 renderRunRequestStatus("pending");
 loadIdeaQueue();
+loadImplementedWorldlines();
