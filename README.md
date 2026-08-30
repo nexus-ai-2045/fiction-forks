@@ -298,4 +298,4 @@ python -m fiction_forks social `
 - [AIエージェント社会シミュレーションハッカソン Vol.2 公式サイト](https://hackathon.automata-lab.jp/)
 - [構想ペーパー「メタ安全保障 — 概念解説とハッカソン課題の発想集」](https://prtimes.jp/a/?f=d80352-184-caedebb354dd205d5811c599da74761b.pdf)（片山俊大氏 v1.0）
 
-この2点にない数値、シナリオ、破滅条件、フィクション介入はFiction Forks独自の仮説です。現在の版は `0.3.0`。Git tagとGitHub Releaseは未作成です。
+この2点にない数値、シナリオ、破滅条件、フィクション介入はFiction Forks独自の仮説です。現在の版は `0.3.1`。Git tagとGitHub Releaseは人間レビュー後にexact main commitへ作成します。

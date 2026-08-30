@@ -14,6 +14,7 @@ if str(SRC) not in sys.path:
 
 from fiction_forks import __version__
 from fiction_forks.engine import (
+    ENGINE_VERSION,
     ContractError,
     compare_worlds,
     load_json,
@@ -40,8 +41,8 @@ class SimulationContractTests(unittest.TestCase):
         result = simulate(self.scenario, seed=2036)
         comparison = compare_worlds(self.scenario, self.intervention, seed=2036)
         self.assertEqual(project_version, __version__)
-        self.assertEqual(project_version, result["engine_version"])
-        self.assertEqual(project_version, comparison["engine_version"])
+        self.assertEqual(ENGINE_VERSION, result["engine_version"])
+        self.assertEqual(ENGINE_VERSION, comparison["engine_version"])
 
     def test_baseline_collapses_from_declared_gate(self) -> None:
         result = simulate(self.scenario, seed=2036)

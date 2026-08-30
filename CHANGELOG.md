@@ -4,11 +4,15 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 ## [Unreleased]
 
+次のリリースに向けた変更をここへ記録します。
+
+## [0.3.1] - 2026-08-30
+
 - 既存social resultを正本に保ち、run request・event stream・replay・evidenceを同一`run_id`へ束縛する`meta-security-run-bundle/v1` adapterを追加した
 - 既存Idea Builderを維持したまま、通常世界線と制度5年遅延を比較し、費用・副作用・provenanceを読めるReact Result Workbench縦切りを追加した
 - workbench build前にcanonical manifestのpath・SHA-256・engine/scenario/intervention/seedを検証し、artifact driftをfail closedで拒否するようにした
-
-次のリリースに向けた変更をここへ記録します。
+- Issue #20の適応型セーフティ・エンベロープ、決定論fixture、Ollama live生ログ、replay、run bundle、解析データを公開した
+- 配布versionとsimulation engine versionを分離し、物理ロジック不変のpatch releaseで履歴artifactを書き換えない契約へ修正した
 
 ### Changed
 
