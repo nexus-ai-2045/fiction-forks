@@ -8,6 +8,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -440,6 +441,27 @@ class SocialSimulationTests(unittest.TestCase):
             schema["properties"]["run_id"]["enum"],
         )
         self.assertEqual("Bearer test-token", calls[0][2]["headers"]["Authorization"])
+
+    def test_vertex_resolves_the_windows_gcloud_launcher(self) -> None:
+        completed = type("Completed", (), {"stdout": "token\n"})()
+        with (
+            patch("fiction_forks.providers.os.name", "nt"),
+            patch(
+                "fiction_forks.providers.shutil.which",
+                return_value=r"C:\\gcloud\\gcloud.cmd",
+            ) as which,
+            patch(
+                "fiction_forks.providers.subprocess.run", return_value=completed
+            ) as run,
+        ):
+            VertexProvider(
+                project="nexus-ai-2045",
+                location="us-central1",
+                model="gemini-2.5-flash",
+                confirm_live=True,
+            )
+        which.assert_called_once_with("gcloud.cmd")
+        self.assertEqual(r"C:\\gcloud\\gcloud.cmd", run.call_args.args[0][0])
 
     def test_role_count_is_bounded_before_provider_calls(self) -> None:
         broken = json.loads(json.dumps(self.social_config))

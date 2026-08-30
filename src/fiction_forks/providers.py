@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 import urllib.error
 import urllib.request
@@ -395,9 +396,12 @@ class VertexProvider:
         if not project or not location or not model:
             raise ProviderError("vertex provider requires project, location, and model")
         if access_token is None:
+            executable = shutil.which("gcloud.cmd" if os.name == "nt" else "gcloud")
+            if executable is None:
+                raise ProviderError("vertex provider could not find gcloud CLI")
             try:
                 completed = subprocess.run(
-                    ["gcloud", "auth", "print-access-token"],
+                    [executable, "auth", "print-access-token"],
                     check=True,
                     capture_output=True,
                     text=True,
