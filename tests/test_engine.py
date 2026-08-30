@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-import os
+import re
 import sys
 import tomllib
 import unittest
@@ -21,6 +21,11 @@ from fiction_forks.engine import (
     simulate,
     validate_intervention,
     validate_scenario,
+)
+
+
+HOME_PATH_PATTERN = re.compile(
+    r"(?i)(?<![a-z0-9:/])(?:[a-z]:[\\/]+users[\\/]+|/(?:users|home)/)"
 )
 
 
@@ -139,21 +144,37 @@ class SimulationContractTests(unittest.TestCase):
             simulate(broken)
 
     def test_public_files_do_not_contain_windows_home_path(self) -> None:
-        forbidden = "C:" + os.sep + "Users" + os.sep
         for path in ROOT.rglob("*"):
-            if not path.is_file() or ".git" in path.parts:
+            if not path.is_file() or {
+                ".git",
+                "node_modules",
+                "test-results",
+                "playwright-report",
+            }.intersection(path.parts):
+                continue
+            if path.resolve() == Path(__file__).resolve():
                 continue
             if path.suffix.lower() not in {
                 ".md",
                 ".py",
                 ".json",
+                ".jsonl",
+                ".html",
+                ".js",
                 ".toml",
                 ".txt",
                 ".yml",
             }:
                 continue
             text = path.read_text(encoding="utf-8")
-            self.assertNotIn(forbidden, text, str(path))
+            # JSON escapes Windows separators, so normalize the serialized
+            # representation before checking all common home path forms.
+            normalized = text.replace("\\\\", "\\")
+            self.assertIsNone(HOME_PATH_PATTERN.search(normalized), str(path))
+
+    def test_home_path_detector_catches_json_escaped_windows_path(self) -> None:
+        rendered = json.dumps({"command": [r"C:\Users\alice\python.exe"]})
+        self.assertIsNotNone(HOME_PATH_PATTERN.search(rendered.replace("\\\\", "\\")))
 
 
 if __name__ == "__main__":

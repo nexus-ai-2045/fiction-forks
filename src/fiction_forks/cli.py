@@ -410,7 +410,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 stdout_bytes = (rendered + "\n").encode("utf-8")
                 bundle = build_run_bundle(
                     result,
-                    command=[sys.executable, "-m", "fiction_forks", *effective_argv],
+                    # Public provenance records the portable launcher, not the
+                    # operator's user-specific interpreter path.
+                    command=["python", "-m", "fiction_forks", *effective_argv],
                     requested_at=requested_at,
                     started_at=started_at,
                     completed_at=completed_at,

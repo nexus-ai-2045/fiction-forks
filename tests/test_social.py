@@ -138,6 +138,32 @@ class OppositionProvider:
         return action
 
 
+class MissingActionProvider:
+    name = "missing-action"
+    model = None
+
+    def __init__(self, inner: FixtureProvider, missing_action_id: str) -> None:
+        self.inner = inner
+        self.missing_action_id = missing_action_id
+
+    def choose(self, observation: dict) -> dict:
+        action = dict(self.inner.choose(observation))
+        if action["action_id"] == self.missing_action_id:
+            action.update(
+                {
+                    "action_id": "abstain",
+                    "stance": "abstain",
+                    "responds_to": [],
+                    "target_ids": [],
+                    "evidence_ids": [],
+                    "confidence": 0,
+                    "conditions": [],
+                    "text": "このactionを選択しない遅延回帰fixtureです。",
+                }
+            )
+        return action
+
+
 class FakeResponses:
     def __init__(self) -> None:
         self.kwargs: dict | None = None
@@ -197,6 +223,27 @@ class SocialSimulationTests(unittest.TestCase):
         self.assertFalse(result["world_comparison"]["fork"]["collapsed"])
         self.assertEqual(10, result["metrics"]["interaction_edge_count"])
         self.assertEqual(15, result["metrics"]["conditioned_intent_count"])
+
+    def test_missing_action_is_charged_once_along_dependency_chain(self) -> None:
+        intervention = load_json(
+            ROOT / "interventions/adaptive-safety-envelope.json"
+        )
+        social_config = load_json(
+            ROOT / "scenarios/japan-2036/social-adaptive-safety-envelope.json"
+        )
+        fixture = FixtureProvider.from_jsonl(
+            ROOT / "fixtures/social/adaptive-safety-envelope.jsonl"
+        )
+        result = run_social_simulation(
+            self.scenario,
+            intervention,
+            social_config,
+            MissingActionProvider(fixture, "establish-stop-rights"),
+            seed=2036,
+        )
+        self.assertEqual(5, result["technology_delays"]["layered-stop-charter"])
+        self.assertEqual(0, result["technology_delays"]["human-escape-corridors"])
+        self.assertEqual(2037, result["world_comparison"]["fork"]["activation_year"])
 
     def test_fixture_is_reproducible_and_replay_is_equivalent(self) -> None:
         first = self.run_fixture()

@@ -323,11 +323,10 @@ class DocumentationContractTests(unittest.TestCase):
                 )
                 intervention = json.loads(intervention_path.read_text(encoding="utf-8"))
                 self.assertEqual(intervention["id"], worldline_id)
-        self.assertIn("INTERVENTIONS_API_URL", script)
-        self.assertIn("contents/interventions?ref=main", script)
-        self.assertIn("application/vnd.github.raw+json", script)
-        self.assertIn("document.createElement", script)
-        self.assertIn("loadImplementedWorldlines();", script)
+        # REVIEWED cards are fail-closed: merely adding an intervention JSON
+        # must not publish an unverified worldline into this section.
+        self.assertNotIn("contents/interventions?ref=main", script)
+        self.assertNotIn("loadImplementedWorldlines", script)
         self.assertIn("workflow_dispatch:", workflow)
         self.assertNotRegex(workflow, r"(?m)^\s+push:\s*$")
 
