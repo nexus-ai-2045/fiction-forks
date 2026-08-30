@@ -298,7 +298,7 @@ class SocialSimulationTests(unittest.TestCase):
         )
         self.assertTrue(result["world_comparison"]["fork"]["collapsed"])
 
-    def test_opposition_survives_duplicate_action_reproposal(self) -> None:
+    def test_opposition_does_not_spill_into_a_later_intent(self) -> None:
         result = run_social_simulation(
             self.scenario,
             self.intervention,
@@ -307,12 +307,9 @@ class SocialSimulationTests(unittest.TestCase):
             seed=2036,
         )
         self.assertEqual(1, result["metrics"]["opposed_intent_count"])
-        self.assertNotIn("prototype-repair-network", result["selected_action_ids"])
-        self.assertEqual(
-            ["prototype-repair-network"],
-            result["missing_actions_by_node"]["regional-fabrication-cells"],
-        )
-        self.assertTrue(result["world_comparison"]["fork"]["collapsed"])
+        self.assertIn("prototype-repair-network", result["selected_action_ids"])
+        self.assertEqual([], result["missing_actions_by_node"]["regional-fabrication-cells"])
+        self.assertFalse(result["world_comparison"]["fork"]["collapsed"])
 
     def test_malformed_provider_files_fail_with_contract_errors(self) -> None:
         with self.assertRaisesRegex(ContractError, "fixture entries"):
