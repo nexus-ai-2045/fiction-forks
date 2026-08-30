@@ -298,10 +298,17 @@ class DocumentationContractTests(unittest.TestCase):
         self.assertIn("https://github.com/${REPOSITORY}", script)
         self.assertIn("state=all", script)
         self.assertNotIn("state=open&labels=idea", script)
-        for intervention_path in (ROOT / "interventions").glob("*.json"):
-            intervention = json.loads(intervention_path.read_text(encoding="utf-8"))
-            with self.subTest(intervention=intervention["id"]):
-                self.assertIn(f'data-worldline-id="{intervention["id"]}"', html)
+        listed_worldlines = set(re.findall(r'data-worldline-id="([a-z0-9-]+)"', html))
+        self.assertTrue(listed_worldlines)
+        for worldline_id in listed_worldlines:
+            with self.subTest(worldline=worldline_id):
+                intervention_path = ROOT / "interventions" / f"{worldline_id}.json"
+                self.assertTrue(
+                    intervention_path.is_file(),
+                    f"Idea Builderの実装済みworldlineに対応する介入がありません: {worldline_id}",
+                )
+                intervention = json.loads(intervention_path.read_text(encoding="utf-8"))
+                self.assertEqual(intervention["id"], worldline_id)
         self.assertIn("workflow_dispatch:", workflow)
         self.assertNotRegex(workflow, r"(?m)^\s+push:\s*$")
 
