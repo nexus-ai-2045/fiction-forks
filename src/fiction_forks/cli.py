@@ -7,6 +7,7 @@ import hashlib
 import json
 import subprocess
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
@@ -14,7 +15,6 @@ from typing import Sequence
 from .engine import ContractError, compare_worlds, load_json, simulate
 from .providers import FixtureProvider, OpenAIProvider, ProviderError, ReplayProvider
 from .participation import load_template_catalog, prepare_provisional_request
-from .run_bundle import build_run_bundle
 from .social import run_social_simulation
 
 
@@ -129,6 +129,121 @@ def _write_output(path_value: str, rendered: str, *, overwrite: bool) -> None:
     temporary.replace(path)
 
 
+def _write_output_pair(
+    first_path_value: str,
+    first_rendered: str,
+    second_path_value: str,
+    second_rendered: str,
+    *,
+    overwrite: bool,
+) -> None:
+    """Stage and commit a result/bundle pair, restoring the old pair on failure."""
+
+    entries = [
+        (Path(first_path_value), first_rendered),
+        (Path(second_path_value), second_rendered),
+    ]
+    staged: list[dict[str, object]] = []
+    try:
+        if not overwrite:
+            existing = [str(target) for target, _rendered in entries if target.exists()]
+            if existing:
+                raise ContractError(
+                    "output already exists; pass --overwrite to replace it: "
+                    + ", ".join(existing)
+                )
+        for target, rendered in entries:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            temporary = target.with_name(f".{target.name}.tmp")
+            backup = target.with_name(f".{target.name}.{uuid.uuid4().hex}.bak")
+            if temporary.exists():
+                raise ContractError(f"transaction file already exists: {temporary}")
+            entry: dict[str, object] = {
+                "target": target,
+                "temporary": temporary,
+                "backup": backup,
+                "existed": target.exists(),
+                "backed_up": False,
+                "backup_owned": False,
+                "installed": False,
+                "staged_identity": None,
+                "temporary_owned": False,
+            }
+            staged.append(entry)
+            with temporary.open("xb") as handle:
+                entry["temporary_owned"] = True
+                handle.write((rendered + "\n").encode("utf-8"))
+            stat = temporary.stat()
+            entry["staged_identity"] = (stat.st_dev, stat.st_ino)
+
+        for entry in staged:
+            target = entry["target"]
+            backup = entry["backup"]
+            if entry["existed"]:
+                target.replace(backup)
+                entry["backed_up"] = True
+                entry["backup_owned"] = True
+        for entry in staged:
+            target = entry["target"]
+            temporary = entry["temporary"]
+            if overwrite:
+                temporary.replace(target)
+                entry["installed"] = True
+                entry["temporary_owned"] = False
+            else:
+                # A hard link is an atomic no-replace install on the same
+                # volume. It closes the target.exists()/replace() race without
+                # taking ownership of a concurrently-created output.
+                target.hardlink_to(temporary)
+                entry["installed"] = True
+                temporary.unlink()
+                entry["temporary_owned"] = False
+    except (OSError, ContractError) as error:
+        rollback_errors: list[str] = []
+        for entry in reversed(staged):
+            target = entry["target"]
+            temporary = entry["temporary"]
+            backup = entry["backup"]
+            try:
+                if entry["temporary_owned"]:
+                    temporary.unlink(missing_ok=True)
+                restore_allowed = not target.exists()
+                if entry["installed"] and target.exists():
+                    stat = target.stat()
+                    if entry["staged_identity"] == (stat.st_dev, stat.st_ino):
+                        target.unlink()
+                        restore_allowed = True
+                    else:
+                        rollback_errors.append(
+                            f"target ownership changed during rollback: {target}"
+                        )
+                elif entry["backed_up"] and target.exists():
+                    rollback_errors.append(
+                        f"target was concurrently recreated during rollback: {target}"
+                    )
+                if entry["backed_up"] and entry["backup_owned"] and backup.exists():
+                    if restore_allowed:
+                        backup.replace(target)
+            except OSError as rollback_error:
+                rollback_errors.append(str(rollback_error))
+        if rollback_errors:
+            raise ContractError(
+                "output pair failed and rollback was incomplete: "
+                + "; ".join(rollback_errors)
+            ) from error
+        raise ContractError("output pair was not committed") from error
+    else:
+        # The pair is committed at this point. Backup cleanup is maintenance,
+        # so a transient unlink failure must not report a successful pair as
+        # uncommitted.
+        for entry in staged:
+            try:
+                if entry["backup_owned"]:
+                    entry["backup"].unlink(missing_ok=True)
+            except OSError:
+                pass
+
+
 def _write_stdout_bytes(payload: bytes) -> None:
     """Write auditable UTF-8/LF bytes while preserving StringIO-based tests."""
 
@@ -180,6 +295,8 @@ def _verified_source_revision(expected: str) -> str:
 
 
 def _preflight_social_outputs(args: argparse.Namespace) -> None:
+    if args.bundle_output and not args.output:
+        raise ContractError("--bundle-output requires --output")
     paths = [
         Path(value).resolve() for value in (args.output, args.bundle_output) if value
     ]
@@ -235,11 +352,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 seed=args.seed,
             )
             rendered = json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True)
-            if args.output:
-                _write_output(args.output, rendered, overwrite=args.overwrite)
             if args.bundle_output:
                 if source_revision is None:  # narrowed by the preflight contract above
                     raise ContractError("bundle source revision was not verified")
+                from .run_bundle import build_run_bundle
+
                 completed_at = (
                     datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
                 )
@@ -254,13 +371,20 @@ def main(argv: Sequence[str] | None = None) -> int:
                     source_revision=source_revision,
                     stdout_sha256=hashlib.sha256(stdout_bytes).hexdigest(),
                 )
-                _write_output(
+                bundle_rendered = json.dumps(
+                    bundle, ensure_ascii=False, indent=2, sort_keys=True
+                )
+                _write_output_pair(
+                    args.output,
+                    rendered,
                     args.bundle_output,
-                    json.dumps(bundle, ensure_ascii=False, indent=2, sort_keys=True),
+                    bundle_rendered,
                     overwrite=args.overwrite,
                 )
                 _write_stdout_bytes(stdout_bytes)
             else:
+                if args.output:
+                    _write_output(args.output, rendered, overwrite=args.overwrite)
                 print(rendered)
             return 0
         delays = _technology_delays(args.delay_node)

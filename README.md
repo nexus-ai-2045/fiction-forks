@@ -181,7 +181,7 @@ python -m pip install --require-hashes -r requirements-agents.txt
 python -m pip install -e . --no-deps
 ```
 
-そのうえで、モデル、API key、費用発生への明示確認がある場合だけ `--provider openai --model gpt-5.4-mini --confirm-live` で実行します。CIは外部APIを呼びません。生成したartifactは `--provider replay --replay run.json` で再検証できます。
+そのうえで、`python -m pip install --require-hashes -r requirements-runtime.txt`を実行し、モデル、API key、費用発生への明示確認がある場合だけ `--provider openai --model gpt-5.4-mini --confirm-live` で実行します。CIは外部APIを呼びません。生成したartifactは `--provider replay --replay run.json` で再検証できます。
 
 従来の年次比較だけを行う場合は `python -m fiction_forks compare --scenario scenarios/japan-2036/scenario.json --intervention interventions/doraemon-public-tools.json --seed 2036` です。
 
