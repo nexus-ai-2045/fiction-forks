@@ -449,6 +449,11 @@ class VertexProvider:
                     "temperature": 0,
                     "seed": _seed_from_observation(observation),
                     "maxOutputTokens": 600,
+                    # Gemini 2.5 can spend the entire bounded output budget on
+                    # internal thinking and truncate the required JSON. Action
+                    # selection is already bounded by the schema and existing
+                    # world physics, so reserve the budget for the JSON only.
+                    "thinkingConfig": {"thinkingBudget": 0},
                 },
             },
             headers={"Authorization": f"Bearer {self._access_token}"},

@@ -433,6 +433,7 @@ class SocialSimulationTests(unittest.TestCase):
         config = calls[0][1]["generationConfig"]
         self.assertEqual("application/json", config["responseMimeType"])
         self.assertEqual(0, config["temperature"])
+        self.assertEqual({"thinkingBudget": 0}, config["thinkingConfig"])
         self.assertIsInstance(config["seed"], int)
         schema = config["responseJsonSchema"]
         self.assertNotIn("const", json.dumps(schema))
