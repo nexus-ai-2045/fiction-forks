@@ -16,23 +16,24 @@
       "activation_year": {
         "counts": {
           "2032": 3,
-          "2037": 2
+          "2037": 2,
+          "2047": 1
         },
-        "measured": 5,
-        "not_measured": 1
+        "measured": 6,
+        "not_measured": 0
       },
       "capability_coverage": {
         "mean": 6.5,
         "not_measured": 4
       },
-      "collapse_rate": 0.4,
+      "collapse_rate": 0.5,
       "collapsed": {
         "counts": {
           "False": 3,
-          "True": 2
+          "True": 3
         },
-        "measured": 5,
-        "not_measured": 1
+        "measured": 6,
+        "not_measured": 0
       },
       "fail_closed_rate": {
         "mean": 0.0667,
@@ -45,14 +46,13 @@
       "interaction_edge_count": {
         "distribution": {
           "counts": {
-            "10": 2,
-            "16": 1,
+            "10": 3,
             "9": 1
           },
           "measured": 4,
           "not_measured": 2
         },
-        "mean": 11.25
+        "mean": 9.75
       },
       "n": 6,
       "provider_model": {
@@ -248,10 +248,11 @@
         },
         "activation_year": {
           "counts": {
-            "2037": 1
+            "2037": 1,
+            "2047": 1
           },
-          "measured": 1,
-          "not_measured": 1
+          "measured": 2,
+          "not_measured": 0
         },
         "capability_coverage": {
           "mean": "not_measured",
@@ -260,10 +261,10 @@
         "collapse_rate": 1.0,
         "collapsed": {
           "counts": {
-            "True": 1
+            "True": 2
           },
-          "measured": 1,
-          "not_measured": 1
+          "measured": 2,
+          "not_measured": 0
         },
         "fail_closed_rate": {
           "mean": 0.1333,
@@ -276,13 +277,13 @@
         "interaction_edge_count": {
           "distribution": {
             "counts": {
-              "16": 1,
+              "10": 1,
               "9": 1
             },
             "measured": 2,
             "not_measured": 0
           },
-          "mean": 12.5
+          "mean": 9.5
         },
         "n": 2,
         "provider_model": {
@@ -538,31 +539,31 @@
         "exercise-anomaly-handoff",
         "establish-contestation-rights",
         "abstain",
-        "establish-contestation-rights",
         "abstain",
-        "exercise-anomaly-handoff"
+        "abstain",
+        "abstain"
       ],
-      "activation_year": "not_measured",
+      "activation_year": 2047,
       "bundle_contract_verified": true,
       "capability_coverage": "not_measured",
-      "collapse_year": "not_measured",
-      "collapsed": "not_measured",
+      "collapse_year": 2036,
+      "collapsed": true,
       "event_count": 15,
       "fail_closed_rate": 0.0667,
       "identity": {
-        "artifact_sha256": "68069c51cb9b1df549bb7ef0f743f4cc0c8e96f0405f04bfddd8bf56c8b62a43",
-        "declared_result_sha256": "90a426aad6f2a39ecfd4fff51318c66d5567704f3320c99740410eec81e1372c",
+        "artifact_sha256": "2dcf5b0fc3eeaea3c051c27de621cba5017a6b7b53596fc30d7b286a1ed9dec5",
+        "declared_result_sha256": "6cab7fe6fa887a018bc4604103dfc68faac3eac20901885f167311dc42050e21",
         "declared_result_sha256_matches_artifact": false,
-        "event_stream_sha256": "a5f80bb5f00c4b905467c64378b30944b2ca5614a06a86b1eb1b1b6937c18be8",
+        "event_stream_sha256": "eeb30dd5569d37d29dccef86a552bc37b06243599fd2a29c2fa8a24625ad3b4d",
         "model": "qwen2.5vl:3b",
         "provider": "ollama",
         "run_id": "ff-c705e4136e2fce00",
-        "runtime_revision": "1fb1d97906501ca361a58337dc227ecdc83d359d",
+        "runtime_revision": "a530c2d5d2e03a49599b456bf58af6b9d56352de",
         "seed": 2036,
         "source_path": "artifacts/runs/ollama-live-run-summary.json"
       },
       "interaction_density": "not_measured",
-      "interaction_edge_count": 16,
+      "interaction_edge_count": 10,
       "invalid_action_count": 1,
       "missing_actions_by_node": "not_measured",
       "replay_verified": true,

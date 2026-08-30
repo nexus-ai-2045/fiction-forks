@@ -53,7 +53,7 @@ liveはVertexのまま。同じseed 2036。5役×3ターン、12件採用、3件
 30秒: 自由会話ではない。固定catalog、反対されたintentは不採用、不正出力はabstain。再現するのは生文ではなく構造化行動とhash chain。
 
 厳しい質問: OllamaとVertexは同じrunでは？
-30秒: `ff-c705e4136e2fce00` はscenario・介入・seedの入力ID。実行は別でSHAもcommitも違う。主証拠はVertex。Ollamaの世界線投影は未測定。
+30秒: `ff-c705e4136e2fce00` はscenario・介入・seedの入力ID。実行は別でSHAもcommitも違う。主証拠はVertex。最新Ollama実測も2047年発動・2036年破滅で、10回の棄権と1件の契約違反を観測した。
 
 ## fixture / live 境界
 
@@ -61,5 +61,5 @@ liveはVertexのまま。同じseed 2036。5役×3ターン、12件採用、3件
 |---|---|---|---|
 | 上部比較と遅延切替 | fixture | 同じseedの決定論比較 | AIが回避した |
 | Vertex live表 | live projection | 実モデルが選んだ構造化行動と敗北 | いま生成している |
-| Ollama切替 | live projection | ローカル経路の存在 | 世界線結果（未測定） |
+| Ollama切替 | live projection | ローカル実モデルの選択と敗北 | 一般的なモデル優劣 |
 | Issue #12 | fixture candidate | 未検証の翻訳候補 | デモの成功例 |
