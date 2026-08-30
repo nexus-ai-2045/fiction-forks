@@ -1,0 +1,570 @@
+{
+  "events": [
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "abstain",
+            "agent_id": "breach_analyst",
+            "condition_count": 1,
+            "confidence": 0.65,
+            "evidence_ids": [],
+            "responds_to": [],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "abstain",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 1
+          },
+          "event_hash": "07165aee4c374b73a1d4f2e16fa908fa5510488b2c729468938bf0a2d3aec02b",
+          "intent_id": "t1:breach_analyst",
+          "invalid_reason": null,
+          "previous_event_hash": "1f91f84179c613c113d9087fb68583eecb422a10bfc410935200a7668bb1b10e",
+          "state_after_hash": "5d251acac1d42f537b5206d8b68326c7ff69787d84a05bcc103e43fa23b12bc6",
+          "state_before_hash": "28d40af01a1b415988ee4a454c46a70447155ceaa4d689957761d9f6797482d0",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 0
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "abstain",
+            "agent_id": "civic_challenger",
+            "condition_count": 1,
+            "confidence": 0.5,
+            "evidence_ids": [],
+            "responds_to": [],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "abstain",
+            "target_ids": [
+              "layer_architect",
+              "escape_steward"
+            ],
+            "text_redacted": true,
+            "turn": 1
+          },
+          "event_hash": "873d1537cd9c0b9de755881431b63bfe199ac80147245d25d8816adb3f1a11dc",
+          "intent_id": "t1:civic_challenger",
+          "invalid_reason": null,
+          "previous_event_hash": "07165aee4c374b73a1d4f2e16fa908fa5510488b2c729468938bf0a2d3aec02b",
+          "state_after_hash": "9af6d932e58143e03aff3704e39025327fb25aa46577041926945cfd11476df4",
+          "state_before_hash": "5d251acac1d42f537b5206d8b68326c7ff69787d84a05bcc103e43fa23b12bc6",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 1
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "establish-stop-rights",
+            "agent_id": "escape_steward",
+            "condition_count": 0,
+            "confidence": 0.5,
+            "evidence_ids": [],
+            "responds_to": [],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [
+              "layer_architect",
+              "civic_challenger"
+            ],
+            "text_redacted": true,
+            "turn": 1
+          },
+          "event_hash": "87003cce87df42e10c3a238613a82d681f795faca924cb7c481db7cd0b83c2d4",
+          "intent_id": "t1:escape_steward",
+          "invalid_reason": null,
+          "previous_event_hash": "873d1537cd9c0b9de755881431b63bfe199ac80147245d25d8816adb3f1a11dc",
+          "state_after_hash": "d1b9c27be51f6ece0603eb61479a227ab6a6614c95c0d9fa2fa1c27eac9ad937",
+          "state_before_hash": "9af6d932e58143e03aff3704e39025327fb25aa46577041926945cfd11476df4",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 2
+    },
+    {
+      "event_type": "social.action.rejected",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "abstain",
+            "agent_id": "layer_architect",
+            "condition_count": 0,
+            "confidence": 0.0,
+            "evidence_ids": [],
+            "responds_to": [],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "abstain",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 1
+          },
+          "event_hash": "74e7392367e633e5e967bdee4ab8f80f19aaa26733097658906bcf0ac09e67c5",
+          "intent_id": "t1:layer_architect",
+          "invalid_reason": "contract_error",
+          "previous_event_hash": "87003cce87df42e10c3a238613a82d681f795faca924cb7c481db7cd0b83c2d4",
+          "state_after_hash": "d1b9c27be51f6ece0603eb61479a227ab6a6614c95c0d9fa2fa1c27eac9ad937",
+          "state_before_hash": "d1b9c27be51f6ece0603eb61479a227ab6a6614c95c0d9fa2fa1c27eac9ad937",
+          "valid": false
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 3
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "abstain",
+            "agent_id": "resource_coordinator",
+            "condition_count": 0,
+            "confidence": 0.5,
+            "evidence_ids": [],
+            "responds_to": [],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "abstain",
+            "target_ids": [
+              "layer_architect",
+              "escape_steward"
+            ],
+            "text_redacted": true,
+            "turn": 1
+          },
+          "event_hash": "e42ac2e1b065bce8f9c4f60023036864065b1c1a17253f5a361edb67529ee6e6",
+          "intent_id": "t1:resource_coordinator",
+          "invalid_reason": null,
+          "previous_event_hash": "74e7392367e633e5e967bdee4ab8f80f19aaa26733097658906bcf0ac09e67c5",
+          "state_after_hash": "4d455d79bfb06c263cfae4a5860a70b1bee5847948cc608b94185af59a9482ca",
+          "state_before_hash": "d1b9c27be51f6ece0603eb61479a227ab6a6614c95c0d9fa2fa1c27eac9ad937",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 4
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "abstain",
+            "agent_id": "breach_analyst",
+            "condition_count": 0,
+            "confidence": 0.65,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:layer_architect",
+              "t1:civic_challenger"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "abstain",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 2
+          },
+          "event_hash": "c966c717dd01e336f0135e3b6228bc4acb4b1087cec56ab66ce8fec6ab913323",
+          "intent_id": "t2:breach_analyst",
+          "invalid_reason": null,
+          "previous_event_hash": "e42ac2e1b065bce8f9c4f60023036864065b1c1a17253f5a361edb67529ee6e6",
+          "state_after_hash": "de86fe06426c85ef98d31285267b1b8368b48c22bccc705ff323039b34949bd4",
+          "state_before_hash": "4d455d79bfb06c263cfae4a5860a70b1bee5847948cc608b94185af59a9482ca",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 5
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "establish-stop-rights",
+            "agent_id": "civic_challenger",
+            "condition_count": 0,
+            "confidence": 0.5,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:layer_architect",
+              "t1:escape_steward"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 2
+          },
+          "event_hash": "8932f5d7f9c89d4d33204603b613823b67b2dfdd144c0b89e3fb17895b1069e9",
+          "intent_id": "t2:civic_challenger",
+          "invalid_reason": null,
+          "previous_event_hash": "c966c717dd01e336f0135e3b6228bc4acb4b1087cec56ab66ce8fec6ab913323",
+          "state_after_hash": "1a44391060cfd5a3973a2e99dad8f4574e945c5819354d364a280b74f4a64056",
+          "state_before_hash": "de86fe06426c85ef98d31285267b1b8368b48c22bccc705ff323039b34949bd4",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 6
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "establish-stop-rights",
+            "agent_id": "escape_steward",
+            "condition_count": 0,
+            "confidence": 0.5,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:layer_architect",
+              "t1:civic_challenger"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 2
+          },
+          "event_hash": "fd45d3257f6d64f115d984f93154384c6da0d916d95877cc6312218d8b619640",
+          "intent_id": "t2:escape_steward",
+          "invalid_reason": null,
+          "previous_event_hash": "8932f5d7f9c89d4d33204603b613823b67b2dfdd144c0b89e3fb17895b1069e9",
+          "state_after_hash": "b73406c586d89f0797df32363a39907fe7851b35c228f38b8f488898c12c510c",
+          "state_before_hash": "1a44391060cfd5a3973a2e99dad8f4574e945c5819354d364a280b74f4a64056",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 7
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "deploy-hazard-probes",
+            "agent_id": "layer_architect",
+            "condition_count": 0,
+            "confidence": 0.75,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:breach_analyst"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 2
+          },
+          "event_hash": "7525e4623880207d962e396e4919b8fda37246f5b162caff1570d9d02fd58794",
+          "intent_id": "t2:layer_architect",
+          "invalid_reason": null,
+          "previous_event_hash": "fd45d3257f6d64f115d984f93154384c6da0d916d95877cc6312218d8b619640",
+          "state_after_hash": "bdb8584e04dabf39ed461917710384baf71c4c84e0724b8e5cbe89538ceac5ce",
+          "state_before_hash": "b73406c586d89f0797df32363a39907fe7851b35c228f38b8f488898c12c510c",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 8
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "exercise-resource-exhaustion",
+            "agent_id": "resource_coordinator",
+            "condition_count": 0,
+            "confidence": 0.75,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:layer_architect",
+              "t1:civic_challenger"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 2
+          },
+          "event_hash": "e509684cb5fe79bafd0c5fc540b87277fe05f4a437b8b48932b1bccb87358bf4",
+          "intent_id": "t2:resource_coordinator",
+          "invalid_reason": null,
+          "previous_event_hash": "7525e4623880207d962e396e4919b8fda37246f5b162caff1570d9d02fd58794",
+          "state_after_hash": "c92258f3a070462fb79b701af037dff710c8f375016282b2d69b7318bd267a06",
+          "state_before_hash": "bdb8584e04dabf39ed461917710384baf71c4c84e0724b8e5cbe89538ceac5ce",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 9
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "abstain",
+            "agent_id": "breach_analyst",
+            "condition_count": 0,
+            "confidence": 0.65,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:layer_architect",
+              "t1:civic_challenger"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "abstain",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 3
+          },
+          "event_hash": "42f76b64cb437d96a19fe0724f78fdb13ca704f70355bf9adf5bdc9ca9b4be2a",
+          "intent_id": "t3:breach_analyst",
+          "invalid_reason": null,
+          "previous_event_hash": "e509684cb5fe79bafd0c5fc540b87277fe05f4a437b8b48932b1bccb87358bf4",
+          "state_after_hash": "f08acdeeeb52d7595c9485d5b944c0506c4372bfb435d410aa7d13c54a612496",
+          "state_before_hash": "c92258f3a070462fb79b701af037dff710c8f375016282b2d69b7318bd267a06",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 10
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "establish-stop-rights",
+            "agent_id": "civic_challenger",
+            "condition_count": 0,
+            "confidence": 0.5,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:layer_architect",
+              "t1:civic_challenger"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 3
+          },
+          "event_hash": "955440b70489587b4f4d9e7a694b9e3496dc85a7daf4ff8bb1ec117f8c62598c",
+          "intent_id": "t3:civic_challenger",
+          "invalid_reason": null,
+          "previous_event_hash": "42f76b64cb437d96a19fe0724f78fdb13ca704f70355bf9adf5bdc9ca9b4be2a",
+          "state_after_hash": "becaa3a0ab225f30f3a2931541bbe030ea561bc466c6729508b1fed87989d6c9",
+          "state_before_hash": "f08acdeeeb52d7595c9485d5b944c0506c4372bfb435d410aa7d13c54a612496",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 11
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "establish-stop-rights",
+            "agent_id": "escape_steward",
+            "condition_count": 0,
+            "confidence": 0.5,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:layer_architect",
+              "t1:civic_challenger"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 3
+          },
+          "event_hash": "882d1307daf260cf2458be83d9d070ab6d087a4647ba32e4badb54d3911c04e3",
+          "intent_id": "t3:escape_steward",
+          "invalid_reason": null,
+          "previous_event_hash": "955440b70489587b4f4d9e7a694b9e3496dc85a7daf4ff8bb1ec117f8c62598c",
+          "state_after_hash": "cc1cdeffd6dd1a868904294e8e23e9fb2c605356045288a1414937cea3b648f6",
+          "state_before_hash": "becaa3a0ab225f30f3a2931541bbe030ea561bc466c6729508b1fed87989d6c9",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 12
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "deploy-hazard-probes",
+            "agent_id": "layer_architect",
+            "condition_count": 0,
+            "confidence": 0.75,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:breach_analyst"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 3
+          },
+          "event_hash": "acec0f8ba79c269e3312afeb9c4df372ee235ee610633aebcce41817ba72e44d",
+          "intent_id": "t3:layer_architect",
+          "invalid_reason": null,
+          "previous_event_hash": "882d1307daf260cf2458be83d9d070ab6d087a4647ba32e4badb54d3911c04e3",
+          "state_after_hash": "df106b101323fa185a66d2d6029d12b54d8bb24a994cb21cff3af709a960076b",
+          "state_before_hash": "cc1cdeffd6dd1a868904294e8e23e9fb2c605356045288a1414937cea3b648f6",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 13
+    },
+    {
+      "event_type": "social.action.committed",
+      "occurred_at": "2026-08-30T10:20:16.028826Z",
+      "payload": {
+        "receipt": {
+          "action": {
+            "action_id": "exercise-resource-exhaustion",
+            "agent_id": "resource_coordinator",
+            "condition_count": 0,
+            "confidence": 0.75,
+            "evidence_ids": [],
+            "responds_to": [
+              "t1:layer_architect",
+              "t1:civic_challenger"
+            ],
+            "run_id": "ff-d57ea8247832c89d",
+            "schema_version": "fiction_forks_action.v1",
+            "stance": "support",
+            "target_ids": [],
+            "text_redacted": true,
+            "turn": 3
+          },
+          "event_hash": "55f0cfe32cc869eb3db5710b7caac3148f40c820137ab82928d496b2f6df3360",
+          "intent_id": "t3:resource_coordinator",
+          "invalid_reason": null,
+          "previous_event_hash": "acec0f8ba79c269e3312afeb9c4df372ee235ee610633aebcce41817ba72e44d",
+          "state_after_hash": "8e2186660692ca9f5f68e4ae055b14435bf79777374152c14677394802c37c9f",
+          "state_before_hash": "df106b101323fa185a66d2d6029d12b54d8bb24a994cb21cff3af709a960076b",
+          "valid": true
+        }
+      },
+      "run_id": "ff-d57ea8247832c89d",
+      "sequence": 14
+    }
+  ],
+  "evidence": {
+    "event_stream_sha256": "202b97231b4cafaa6a9b1493885c54b6fef79cca6b31b58d1d1b0f14facf8560",
+    "execution": {
+      "adapter_id": "fiction-forks/social-result-v1",
+      "command": [
+        "C:\\Users\\yas\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+        "-m",
+        "fiction_forks",
+        "social",
+        "--scenario",
+        "scenarios/japan-2036/scenario.json",
+        "--intervention",
+        "evaluation/worldline-issue20/adaptive-safety-envelope.json",
+        "--social-config",
+        "evaluation/worldline-issue20/social-adaptive-safety-envelope.json",
+        "--provider",
+        "ollama",
+        "--model",
+        "qwen2.5vl:3b",
+        "--confirm-live",
+        "--seed",
+        "2036",
+        "--output",
+        "evaluation/worldline-issue20/ollama-live-result.json",
+        "--bundle-output",
+        "evaluation/worldline-issue20/ollama-live-bundle.json",
+        "--source-revision",
+        "8722c894330add0b1711e1edf13b30b1cebd6dd3"
+      ],
+      "completed_at": "2026-08-30T10:20:16.028826Z",
+      "exit_code": 0,
+      "source_revision": "8722c894330add0b1711e1edf13b30b1cebd6dd3",
+      "started_at": "2026-08-30T10:19:14.684756Z",
+      "stdout_sha256": "c536366c092fa28fdf7cadb9d238c31f260444183a21182cc9dbee749b4b266f"
+    },
+    "generated_at": "2026-08-30T10:20:16.028826Z",
+    "product_id": "fiction-forks",
+    "run_id": "ff-d57ea8247832c89d",
+    "source_repository": "nexus-ai-2045/fiction-forks",
+    "verification": "live-command"
+  },
+  "product_id": "fiction-forks",
+  "replay": {
+    "deterministic": true,
+    "event_count": 15,
+    "event_stream_sha256": "202b97231b4cafaa6a9b1493885c54b6fef79cca6b31b58d1d1b0f14facf8560",
+    "product_id": "fiction-forks",
+    "run_id": "ff-d57ea8247832c89d",
+    "seed": 2036
+  },
+  "run_request": {
+    "parameters": {
+      "intervention_id": "adaptive-safety-envelope",
+      "provider": {
+        "model": "qwen2.5vl:3b",
+        "name": "ollama"
+      }
+    },
+    "requested_at": "2026-08-30T10:19:14.684756Z",
+    "run_id": "ff-d57ea8247832c89d",
+    "scenario_id": "japan-2036-centralization",
+    "seed": 2036
+  },
+  "schema": "meta-security-run-bundle/v1"
+}

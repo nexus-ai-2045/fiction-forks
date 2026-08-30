@@ -27,13 +27,14 @@
 | セキュリティ境界 | `SECURITY.md` と `docs/security-model.md` |
 | バージョン | `pyproject.toml` の `project.version`。同期規律は `VERSIONING.md`、変更履歴は `CHANGELOG.md` |
 | 公開curated run | `RESULTS.md` のmanifest記録と `artifacts/runs/` の対応artifact |
+| 提出用評価・生ログ | `evaluation/`。domain runtimeや公式結果の正本ではなく、同じrun_idへ結合したlive result・replay・run bundleと、その観測指標を公開する提出用データセット。結果の意味論は`src/fiction_forks/`、公式curated runへの昇格条件は`RESULTS.md`と`artifacts/runs/`が正本 |
 | 次の破滅候補 | version付き`DoomCandidate`とscenario PR（0.5 candidate）。人間レビュー前はactive doomではない |
 | 元議論・非公開証拠 | このリポジトリの外。本文や参加者情報を複製しない |
 | ハッカソンの公式根拠 | `docs/official-sources.md` に固定した公式サイトと片山俊大氏 v1.0ペーパー |
 
 ## 派生物
 
-CLIのJSON出力、可視化、比較レポートは再生成可能な派生物です。既定ではGit管理しません。例外として、人間レビューを通すcurated runだけを `artifacts/runs/` へ置き、`RESULTS.md` にfixture/live区分、scenario、intervention、seed、engine version、exact commit、input digest、artifact SHA-256を記録します。自由記述、role-scoped evidence、credentialは公開artifactから除外します。
+CLIのJSON出力、可視化、比較レポートは再生成可能な派生物です。既定ではGit管理しません。例外として、人間レビューを通すcurated runだけを `artifacts/runs/` へ置き、`RESULTS.md` にfixture/live区分、scenario、intervention、seed、engine version、exact commit、input digest、artifact SHA-256を記録します。ハッカソン提出で再現性を示すlive生ログ・replay・run bundle・解析は`evaluation/`へ置けますが、公式curated runとは区別し、provider、model、source revision、artifact digest、fixture/live区分を保持します。自由記述、role-scoped evidence、credentialは公開artifactから除外します。
 
 ## 変更ルール
 

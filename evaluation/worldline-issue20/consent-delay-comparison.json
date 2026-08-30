@@ -1,0 +1,78 @@
+{
+  "baseline": {
+    "collapse_year": 2036,
+    "collapsed": true,
+    "final_state": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    },
+    "state_at_comparison_year": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    }
+  },
+  "comparison_year": 2036,
+  "declared_costs": [
+    "複数の防護層、予備資源、退避拠点、突破訓練を常時維持する費用",
+    "誤警報と停止判断を検証する人員および監査時間"
+  ],
+  "declared_failure_modes": [
+    "複数層が同じデータ、モデル、電源へ依存し同時に破られる",
+    "危機を無限に回避できるという誤信が退避判断を遅らせる",
+    "防護の強制解除権が一主体へ集中する",
+    "防護資源を使い切った後の撤退・再設計条件が定義されない"
+  ],
+  "declared_side_effects": [
+    "安全を理由に移動、通信、取引を過剰に遮断する危険",
+    "防護層への依存が根本原因の除去を遅らせる",
+    "常時監視が目的外利用や萎縮を生む",
+    "高コストな地域と導入できない地域の安全格差"
+  ],
+  "engine_version": "0.3.0",
+  "fork": {
+    "activation_year": 2037,
+    "collapse_year": 2036,
+    "collapsed": true,
+    "final_state": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    },
+    "state_at_comparison_year": {
+      "cognitive_sovereignty": 6.0,
+      "legitimacy": 38.0,
+      "living_systems": 43.0,
+      "repair_capacity": 33.0,
+      "strategic_autonomy": 17.0
+    },
+    "technology_delays": {
+      "layered-stop-charter": 5
+    },
+    "technology_schedule": {
+      "adaptive-breach-drills": 2037,
+      "human-escape-corridors": 2036,
+      "layered-stop-charter": 2035,
+      "open-hazard-probes": 2029,
+      "replaceable-safety-modules": 2030
+    }
+  },
+  "intervention_id": "adaptive-safety-envelope",
+  "scenario_id": "japan-2036-centralization",
+  "schema_version": "fiction_forks_comparison.v1",
+  "seed": 2036,
+  "state_delta_at_comparison_year": {
+    "cognitive_sovereignty": 0.0,
+    "legitimacy": 0.0,
+    "living_systems": 0.0,
+    "repair_capacity": 0.0,
+    "strategic_autonomy": 0.0
+  }
+}
