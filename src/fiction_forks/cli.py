@@ -114,6 +114,30 @@ def _social_provider(args: argparse.Namespace):
     )
 
 
+def _artifact_bytes(rendered: str) -> bytes:
+    # Artifact bytes are part of the replay/provenance contract. Text-mode
+    # writes would emit CRLF on Windows and LF on Linux, producing different
+    # SHA-256 values for the same logical run.
+    return (rendered + "\n").encode("utf-8")
+
+
+def _owns_installed_target(entry: dict[str, object], target: Path) -> bool:
+    """Return True only if target is still the file this transaction installed.
+
+    Linux can reuse an inode immediately after unlink. Matching device/inode is
+    therefore not enough; the staged digest must match as well.
+    """
+
+    try:
+        stat = target.stat()
+        digest = hashlib.sha256(target.read_bytes()).hexdigest()
+    except OSError:
+        return False
+    identity_matches = entry.get("staged_identity") == (stat.st_dev, stat.st_ino)
+    digest_matches = entry.get("staged_digest") == digest
+    return identity_matches and digest_matches
+
+
 def _write_output(path_value: str, rendered: str, *, overwrite: bool) -> None:
     path = Path(path_value)
     if path.exists() and not overwrite:
@@ -122,10 +146,7 @@ def _write_output(path_value: str, rendered: str, *, overwrite: bool) -> None:
     temporary = path.with_name(f".{path.name}.tmp")
     if temporary.exists():
         raise ContractError(f"temporary output already exists: {temporary}")
-    # Artifact bytes are part of the replay/provenance contract. Text-mode
-    # writes would emit CRLF on Windows and LF on Linux, producing different
-    # SHA-256 values for the same logical run.
-    temporary.write_bytes((rendered + "\n").encode("utf-8"))
+    temporary.write_bytes(_artifact_bytes(rendered))
     temporary.replace(path)
 
 
@@ -167,14 +188,17 @@ def _write_output_pair(
                 "backup_owned": False,
                 "installed": False,
                 "staged_identity": None,
+                "staged_digest": None,
                 "temporary_owned": False,
             }
             staged.append(entry)
+            payload = _artifact_bytes(rendered)
             with temporary.open("xb") as handle:
                 entry["temporary_owned"] = True
-                handle.write((rendered + "\n").encode("utf-8"))
+                handle.write(payload)
             stat = temporary.stat()
             entry["staged_identity"] = (stat.st_dev, stat.st_ino)
+            entry["staged_digest"] = hashlib.sha256(payload).hexdigest()
 
         for entry in staged:
             target = entry["target"]
@@ -209,8 +233,7 @@ def _write_output_pair(
                     temporary.unlink(missing_ok=True)
                 restore_allowed = not target.exists()
                 if entry["installed"] and target.exists():
-                    stat = target.stat()
-                    if entry["staged_identity"] == (stat.st_dev, stat.st_ino):
+                    if _owns_installed_target(entry, target):
                         target.unlink()
                         restore_allowed = True
                     else:

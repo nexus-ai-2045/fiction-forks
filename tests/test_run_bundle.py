@@ -475,6 +475,26 @@ class RunBundleTests(unittest.TestCase):
             self.assertEqual("old-bundle\n", second.read_text(encoding="utf-8"))
             self.assertEqual(1, len(list(Path(directory).glob(".result.json.*.bak"))))
 
+    def test_installed_ownership_rejects_reused_inode_with_foreign_bytes(
+        self,
+    ) -> None:
+        from fiction_forks.cli import _owns_installed_target
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "result.json"
+            payload = b"new-result\n"
+            path.write_bytes(payload)
+            stat = path.stat()
+            entry = {
+                "staged_identity": (stat.st_dev, stat.st_ino),
+                "staged_digest": hashlib.sha256(payload).hexdigest(),
+            }
+            path.unlink()
+            path.write_bytes(b"concurrent-owner\n")
+            reused = path.stat()
+            entry["staged_identity"] = (reused.st_dev, reused.st_ino)
+            self.assertFalse(_owns_installed_target(entry, path))
+
 
 def subprocess_result(stdout: str):
     return type("Completed", (), {"stdout": stdout})()
