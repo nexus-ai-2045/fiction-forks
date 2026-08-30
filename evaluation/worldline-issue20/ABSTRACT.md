@@ -33,6 +33,10 @@
 
 設計上は破滅回避可能でも、AI役は監査、手動退避、交換部品の必須行動を選び切らなかった。したがって「無限回避」は成立せず、制度・資源・人間の退避を欠くと防護層が連鎖的に遅延する。これは成功だけを作るデモではなく、AIの選択がモデル内の失敗経路を生む実測例である。
 
-## 状態
+## 正本と状態
 
-`candidate`。Issue #20の採用意思とローカル実測は確認済みだが、public branchへのpush、PR、公式worldline化は別の公開判断とする。
+- 介入正本: `interventions/adaptive-safety-envelope.json`
+- social config正本: `scenarios/japan-2036/social-adaptive-safety-envelope.json`
+- fixture正本: `fixtures/social/adaptive-safety-envelope.jsonl`
+- このdirectoryはlive result、replay、run bundle、派生比較、解析だけを保持し、入力正本を複製しない
+- worldlineはPR #22でmainへ統合済み。Ollama liveは単一runの提出用実測証拠であり、公式curated runや現実の効果認定ではない

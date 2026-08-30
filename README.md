@@ -151,6 +151,8 @@ Issueはアイデアであり、効果や実現可能性の証明ではありま
 | 文書 | 内容 |
 |---|---|
 | [RESULTS](RESULTS.md) | 実行済みrun、hash、未実測事項 |
+| [Issue #20 live証拠](evaluation/worldline-issue20/ABSTRACT.md) | Ollama live生ログ、replay、run bundle、解析境界 |
+| [創発性評価](evaluation/README.md) | 観測可能な指標と`not_measured`の扱い |
 | [社会シミュレーション](docs/social-simulation.md) | 5役、3ターン、provider、replay |
 | [シミュレーション契約](docs/simulation-contract.md) | 年次状態更新と破滅条件 |
 | [フィクション・レンズ](docs/fiction-lenses.md) | 作品を知らない人にも通じる同義表現 |

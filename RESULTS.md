@@ -138,3 +138,30 @@ python -m fiction_forks social `
 - scenario数値は未来予測ではなく、因果仮説を追跡するMVP用テスト値である。
 - 一つのrunは政策、災害、安全保障の助言ではない。
 - fixtureの成功を、AIエージェント間の創発の証拠として扱わない。
+
+## Issue #20：適応型セーフティ・エンベロープ
+
+Issue #20のworldlineはPR #22でmainへ統合した。決定論fixtureとOllama liveは別実行として扱う。
+
+### 決定論fixture
+
+- provider: `fixture`（AI実測ではない）
+- scenario / intervention / seed: `japan-2036-centralization` / `adaptive-safety-envelope` / `2036`
+- actions: 15 / valid: 15 / invalid: 0
+- 通常条件: 2032年発動、2036年の修復不能条件を回避
+- 制度層5年遅延: 2037年発動、2036年の修復不能条件に間に合わない
+
+### Ollama live
+
+- provider / model: `ollama` / `qwen2.5vl:3b`
+- run ID: `ff-d57ea8247832c89d`
+- actions: 15 / valid: 14 / invalid: 1 / abstain: 6
+- interaction edges: 18
+- AIが選ばなかった必須行動により2052年発動、2036年に修復不能条件へ到達
+- [解析要約](evaluation/worldline-issue20/ABSTRACT.md)
+- [live生ログ](evaluation/worldline-issue20/ollama-live-result.json): SHA-256 `c536366c092fa28fdf7cadb9d238c31f260444183a21182cc9dbee749b4b266f`
+- [run bundle](evaluation/worldline-issue20/ollama-live-bundle.json): SHA-256 `5d077c025a0bd52509300f03003c827b010fd0e285737d79e0fb139c4b2bb71c`
+- [replay結果](evaluation/worldline-issue20/replayed-result.json): SHA-256 `5642d3a8169468d7d44a4ba7609803a462cf6a48bbf66f2bc74534ceb79d415e`
+- replay final event hash、bundle内run_id、event stream SHA-256は一致
+
+このlive runは単一モデル・単一seedの実測であり、一般的なモデル性能や現実の効果を証明しない。公開する生ログは秘密情報・個人パス・role-scoped private evidenceを含まないことを検査する。
