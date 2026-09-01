@@ -66,11 +66,11 @@ flowchart LR
 | Web workbench | `web/` | Doom Map、参加入口、chat/UI状態、typed result projection、Issue Markdown | metric、破滅判定、GitHubへの自動投稿 |
 | 対話provider | `DialogueProvider`（0.4で追加） | 理解確認、質問、`IdeaDraft`候補 | metric delta、破滅レベル、公式結果 |
 | Local companion | loopback process（spike） | Codex protocolの縮小adapter、短命session | public listen、raw tool委譲、secret保存 |
-| Preview template catalog | `catalogs/intervention-templates.v1.json` | preview可能なscenario、固定intervention ID/path、利用者確認要否 | 自由記述からの効果量生成 |
+| Preview template catalog | `catalogs/intervention-templates.v1.json` | preview可能なscenario、固定intervention ID/path、固定social config・fixtureのpathとSHA-256、利用者確認要否 | 自由記述からの効果量生成、provider・model・実行資源の宣言 |
 | 暫定run契約 | `participation.py` | 確認済みdraftとcatalog entryを検証し、version付きrequestまたは`not-simulatable`を返す | 未知の効果量生成、engine実行、official判定 |
 | 暫定run adapter | 0.4後続PRで追加 | 検証済みrequestをcanonical Python engineへ渡す | 独自schema、未知の効果量生成、official判定 |
 | Public run transport | 0.4で追加 | triage済みsimulation-requestを`main`固定workflowで非同期実行する | browser内Python、PR/fork code実行、secret利用 |
-| Local run transport | loopback process（0.4で追加） | 同じrequest schemaをcanonical Python CLIへ渡す | public listen、独自engine実装 |
+| Local run transport | loopback process（0.4で追加） | 同じrequest schemaをcanonical Python CLIへ渡す、起動時grantから実行資源を解決する | public listen、独自engine実装、独自の承認済み世界線定義、catalog path以外のpath知識 |
 | PR契約 | `pr_contract.py`, `.github/` templates | idea/worldline/maintenance分離、投稿者とfixture結果のsummary | merge判断、live LLM実測 |
 | 共同編集 | GitHub | diff、review、CI、履歴 | シミュレーションの暗黙変更 |
 
@@ -101,7 +101,13 @@ flowchart LR
 
 `ProvisionalRunRequest.v1`が受け付けるのはschema version、scenario ID、template ID、catalog version、許可seed、named delay profile、利用者確認だけとする。path、git ref、effect、model/provider、任意CLI引数は受け付けない。Issue本文をshellへ展開せず、event payloadをJSONとして検証する。triage時のrequest digestと実行時main SHAをresultへ記録し、同じ組み合わせの重複実行を抑止する。
 
-Issue作成前の同期previewはloopback local run adapterだけが提供する。adapterは同じrequest schemaからrepoのPython CLIを起動し、result schemaだけをWebへ返す。adapterも`127.0.0.1`、sessionごとの短命capability token、exact Origin allowlist、JSON Content-Typeとcustom headerによるCORS preflight、request size・同時run数・timeout上限を必須とし、`Origin: null`とsimple requestを拒否する。public workflow、local adapterのどちらも未実装なら、UIはpreview可能と表示せず`not-available`とIssue handoffを示す。公開WebにOpenAI API key、GitHub token、Codex credentialを置かない。
+Issue作成前の同期previewはloopback local run adapterだけが提供する。adapterは同じrequest schemaからrepoのPython CLIを起動し、result schemaだけをWebへ返す。adapterも`127.0.0.1`、sessionごとの短命capability token、exact Origin allowlist、JSON Content-Typeとcustom headerによるCORS preflight、request size・同時run数・timeout上限を必須とし、`Origin: null`とsimple requestを拒否する。session tokenは起動時に1度だけ発行し、`--session-ttl-seconds`で宣言した寿命を過ぎたら同じprocessでも受け付けない。再発行はadapterの再起動だけで行い、operatorが新しいtokenを目で確認する経路を維持する。public workflow、local adapterのどちらも未実装なら、UIはpreview可能と表示せず`not-available`とIssue handoffを示す。公開WebにOpenAI API key、GitHub token、Codex credentialを置かない。
+
+local run requestは`fiction_forks_local_run_request.v2` envelopeであり、`run_request`は`ProvisionalRunRequest`と1バイトも違わない。承認済み世界線を宣言する場所は`catalogs/intervention-templates.v1.json`だけとし、adapterはscenario、intervention、social config、fixtureのpathを自分で持たない。catalogが各templateへsocial configとfixtureのrepo相対pathとSHA-256を固定し、digestはfileの生バイトではなくparse後の値をcanonical化して取る（JSONLは1行ずつparseしたobjectのlistを対象にする）。これにより改行コードの差でdigestが動かない。
+
+`execution`が運ぶのはproviderの**ラベル**だけであり、その実体（model名、endpoint、project、location）は起動時grantにしか存在しない。`execution.provider_id`は起動時grant表へのindexであってengine入力ではない。live実行の可否はbrowserが送った文字列ではなく、解決済みgrantと`confirm_live`の一致で判定する。live providerを選んだrunでは`--fixture`をCLIへ渡さないが、catalogは常にfixtureのpathとSHA-256を要求する。fixtureは5役×3ターンの再現性ベースラインとして世界線定義の一部であり、live runではdigest検証だけを行って中身を使わない。
+
+local transportは`none`以外のdelay profileを実行できない。CLIの`social`サブコマンドが遅延引数を持たないため、宣言した遅延が黙って無視される代わりに明示的なcontract errorで落とす。
 
 ブラウザの表示状態とsimulation stateを分ける。フィルタ、選択中ノード、drawerの開閉はUI状態だが、指標、発動年、破滅判定はresult JSONから取得する。テキスト量の多いHUD、設定、アクセシビリティ操作はDOMで実装する。
 

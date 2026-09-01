@@ -27,6 +27,7 @@
 | セキュリティ境界 | `SECURITY.md` と `docs/security-model.md` |
 | バージョン | `pyproject.toml` の `project.version`。同期規律は `VERSIONING.md`、変更履歴は `CHANGELOG.md` |
 | 公開curated run | `RESULTS.md` のmanifest記録と `artifacts/runs/` の対応artifact |
+| 観測指標評価 | `evaluation/`。curated artifactを入力に再生成する派生層であり、runtime physics、公式結果、創発の主張の正本ではない。指標が何を測り何を主張しないかはADR 0014、実測値の正本は`RESULTS.md`と`artifacts/runs/` |
 | 次の破滅候補 | version付き`DoomCandidate`とscenario PR（0.5 candidate）。人間レビュー前はactive doomではない |
 | 元議論・非公開証拠 | このリポジトリの外。本文や参加者情報を複製しない |
 | ハッカソンの公式根拠 | `docs/official-sources.md` に固定した公式サイトと片山俊大氏 v1.0ペーパー |
@@ -34,6 +35,8 @@
 ## 派生物
 
 CLIのJSON出力、可視化、比較レポートは再生成可能な派生物です。既定ではGit管理しません。例外として、人間レビューを通すcurated runだけを `artifacts/runs/` へ置き、`RESULTS.md` にfixture/live区分、scenario、intervention、seed、engine version、exact commit、input digest、artifact SHA-256を記録します。自由記述、role-scoped evidence、credentialは公開artifactから除外します。
+
+`evaluation/` の集計も同じ派生物です。レビュー再現のため `evaluation/outputs/` と `evaluation/worldline-issue12/` をGit管理しますが、公開curated runではありません。`evaluation/emergence_metrics.py` は観測できた値だけを集計し、欠測を0で補完せず `not_measured` とし、fixtureの成功をAIエージェント間の創発の証拠として扱いません。`evaluation/worldline-issue12/` は未検証のworldline候補で、公式結果にも実測結果にも数えません。`evaluation/pitch-90s.md` はfixture/live境界の説明台本であり、実測値の正本は `RESULTS.md` です。
 
 ## 変更ルール
 

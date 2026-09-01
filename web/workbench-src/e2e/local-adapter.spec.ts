@@ -43,6 +43,8 @@ test("real adapter: execute fixture, verify evidence, and replay generated event
   const { child, token } = await startAdapter(new URL(baseURL).origin);
   try {
     await page.goto("./");
+    // 既定templateは明示固定なので、選択せずに押しても15行動の世界線になる。
+    await expect(page.getByLabel("世界線template")).toHaveValue("contested-world-observation.v1");
     await page.getByLabel("Session token").fill(token);
     await page.getByRole("button", { name: "シミュレーションを実行" }).click();
 

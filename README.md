@@ -190,9 +190,12 @@ npm run preview
 $env:PYTHONPATH = "src"
 python -m fiction_forks.local_adapter --repo-root .
 # http://127.0.0.1:8765/api/health
+# X-Fiction-Forks-Session: <起動時に1度だけ表示されるsession token>
 ```
 
-Workbenchは同一originの`/api`をVite proxy経由でadapterへ接続します。同時実行は1件、入力は固定worldline ID・provider・seedだけです。OllamaまたはVertexはserver起動時のgrantと各runの明示確認を両方要求します。
+session tokenは起動時に標準出力へ1度だけ表示します。workbenchの「Session token」欄へ貼り付けてください。寿命は`--session-ttl-seconds`（既定900秒）で、超えると同じprocessでも`POST /api/runs`が403 `session_not_allowed`を返します。`GET /api/health`はtokenを要求しないため、画面はreadyのまま実行だけが失敗します。再発行はadapterの再起動だけで行い、新しく表示されたtokenを貼り直します。
+
+Workbenchは同一originの`/api`をVite proxy経由でadapterへ接続します。同時実行は1件です。requestは`fiction_forks_local_run_request.v2` envelopeで、`run_request`は`ProvisionalRunRequest`（`schema_version`、`scenario_id`、`template_id`、`template_version`、`catalog_id`、`catalog_version`、`intervention_id`、`intervention_sha256`、`seed`、`delay_profile`、`user_confirmed`）、`execution`は`provider_id`と`confirm_live`だけを運びます。値は`GET /api/health`が返すcatalog projection由来で、ブラウザが選ぶのはtemplateとproviderだけです。seedはcatalogの`allowed_seeds`、`delay_profile`は`none`に固定され、worldline ID、path、model名は受け付けません。OllamaまたはVertexはserver起動時のgrantと各runの明示確認を両方要求します。
 
 ```powershell
 # Ollamaを明示的に許可する場合
