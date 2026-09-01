@@ -4,6 +4,10 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 ## [Unreleased]
 
+- ローカルadapterのrequestを`fiction_forks_local_run_request.v2` envelope（`ProvisionalRunRequest` + `execution`）へ置き換え、`worldline_id`を運ぶv1を並行サポートなしで撤去した
+- 承認済み世界線をcatalogだけに置くため、social configとfixtureのpathとSHA-256をtemplateへ必須追加し、`catalog_version`を2から3、両templateの`template_version`を2から3へ上げた。v2として確認済みのtemplate confirmationは無効になり、再確認が要る
+- ローカルadapterのsession tokenへ`--session-ttl-seconds`（既定900秒）の寿命を追加し、超過後は同じprocessでも`session_not_allowed`で拒否するようにした。再発行はadapterの再起動だけで行う
+
 次のリリースに向けた変更をここへ記録します。
 
 ## [0.3.1] - 2026-08-30

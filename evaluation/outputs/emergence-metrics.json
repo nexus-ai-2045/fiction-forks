@@ -35,6 +35,7 @@
         "measured": 6,
         "not_measured": 0
       },
+      "curated": 6,
       "fail_closed_rate": {
         "mean": 0.0667,
         "not_measured": 2
@@ -80,7 +81,8 @@
           "mean": 0.0,
           "not_measured": 4
         }
-      }
+      },
+      "uncurated": 0
     },
     "by_source_class": {
       "deterministic_comparison": {
@@ -113,6 +115,7 @@
           "measured": 2,
           "not_measured": 0
         },
+        "curated": 2,
         "fail_closed_rate": {
           "mean": "not_measured",
           "not_measured": 2
@@ -152,7 +155,8 @@
             "mean": "not_measured",
             "not_measured": 2
           }
-        }
+        },
+        "uncurated": 0
       },
       "fixture": {
         "action_diversity": {
@@ -185,6 +189,7 @@
           "measured": 2,
           "not_measured": 0
         },
+        "curated": 2,
         "fail_closed_rate": {
           "mean": 0.0,
           "not_measured": 0
@@ -226,7 +231,8 @@
             "mean": 0.0,
             "not_measured": 0
           }
-        }
+        },
+        "uncurated": 0
       },
       "live": {
         "action_diversity": {
@@ -260,6 +266,7 @@
           "measured": 2,
           "not_measured": 0
         },
+        "curated": 2,
         "fail_closed_rate": {
           "mean": 0.1333,
           "not_measured": 0
@@ -305,7 +312,8 @@
             "mean": "not_measured",
             "not_measured": 2
           }
-        }
+        },
+        "uncurated": 0
       }
     }
   },
@@ -319,6 +327,7 @@
       "capability_coverage": "not_measured",
       "collapse_year": "not_measured",
       "collapsed": false,
+      "curated": true,
       "event_count": "not_measured",
       "fail_closed_rate": "not_measured",
       "identity": {
@@ -357,6 +366,7 @@
       "capability_coverage": "not_measured",
       "collapse_year": 2036,
       "collapsed": true,
+      "curated": true,
       "event_count": "not_measured",
       "fail_closed_rate": "not_measured",
       "identity": {
@@ -413,6 +423,7 @@
       "capability_coverage": 7,
       "collapse_year": "not_measured",
       "collapsed": false,
+      "curated": true,
       "event_count": 15,
       "fail_closed_rate": 0.0,
       "identity": {
@@ -479,6 +490,7 @@
       "capability_coverage": 6,
       "collapse_year": "not_measured",
       "collapsed": false,
+      "curated": true,
       "event_count": 15,
       "fail_closed_rate": 0.0,
       "identity": {
@@ -542,6 +554,7 @@
       "capability_coverage": "not_measured",
       "collapse_year": 2036,
       "collapsed": true,
+      "curated": true,
       "event_count": 15,
       "fail_closed_rate": 0.0667,
       "identity": {
@@ -593,6 +606,7 @@
       "capability_coverage": "not_measured",
       "collapse_year": 2036,
       "collapsed": true,
+      "curated": true,
       "event_count": 15,
       "fail_closed_rate": 0.2,
       "identity": {
@@ -624,6 +638,12 @@
       "valid_action_count": 12
     }
   ],
+  "input_curation": {
+    "curated": 6,
+    "curated_only": true,
+    "curated_root": "artifacts/runs",
+    "uncurated": 0
+  },
   "n_executions": 6,
   "schema_version": "fiction_forks_emergence_report.v1"
 }

@@ -25,6 +25,8 @@ ADRは、現在の設計が「何を選んだか」だけでなく、「なぜ�
 | [0010](0010-independent-observation-requires-contestation.md) | Accepted | 世界観測は独立照合・来歴・異議申立てが揃うまで発動しない |
 | [0011](0011-participation-is-a-reviewed-control-loop.md) | Accepted | Issue、worldline PR、simulation、人間レビューを一つの参加ループにする |
 | [0012](0012-chat-first-provisional-simulation-and-local-codex-boundary.md) | Accepted | チャット壁打ち、暫定simulation、local Codex、次の破滅を公式世界線から分離する |
+| [0013](0013-local-transport-shares-the-participation-contract.md) | Accepted | local run transportを参加契約へ一本化し、承認済み世界線をcatalogだけに置く |
+| [0014](0014-emergence-metrics-are-observational-not-evidence.md) | Accepted | 創発指標を観測記録として扱い、創発の証拠にしない |
 
 ## 追加方法
 
@@ -37,4 +39,6 @@ ADRは、現在の設計が「何を選んだか」だけでなく、「なぜ�
 5. Alternatives considered
 6. 見直し条件
 
-既存判断を変更する場合は元ADRを書き換えず、新しいADRから`Supersedes`を明示する。誤字やリンク修正を除き、Accepted ADRの意味を履歴なしに変更しない。
+既存判断を変更する場合は元ADRを書き換えず、新しいADRから関係を明示する。判断全体を置換する場合は`Supersedes`、判断の一部だけを上書きし残りを有効に保つ場合は`Amends`を使い、どちらも対象ADRと上書きする範囲を書く。誤字やリンク修正を除き、Accepted ADRの意味を履歴なしに変更しない。
+
+新しいADRを追加したら、上のIndexへ同じ連番の行を必ず足す。`tests/test_docs.py`がIndexと実ファイルの双方向一致を検査するため、登録漏れはCIで失敗する。

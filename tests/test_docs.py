@@ -11,6 +11,14 @@ from xml.etree import ElementTree
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def canonical_digest(value: object) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+    ).hexdigest()
+
+
 class DocumentationContractTests(unittest.TestCase):
     def test_design_ssot_documents_exist(self) -> None:
         required = (
@@ -58,6 +66,17 @@ class DocumentationContractTests(unittest.TestCase):
                     content,
                 )
                 self.assertEqual(record_statuses, [indexed_status])
+
+    def test_adr_index_lists_every_adr_record(self) -> None:
+        index = (ROOT / "docs/adr/README.md").read_text(encoding="utf-8")
+        indexed_links = set(
+            re.findall(r"(?m)^\| \[\d{4}\]\((\d{4}[^)]+\.md)\) \|", index)
+        )
+        records = {
+            path.name
+            for path in (ROOT / "docs/adr").glob("[0-9][0-9][0-9][0-9]-*.md")
+        }
+        self.assertEqual(records, indexed_links)
 
     def test_chat_simulation_roadmap_keeps_state_and_safety_boundaries(self) -> None:
         adr = (
@@ -123,7 +142,7 @@ class DocumentationContractTests(unittest.TestCase):
             catalog["schema_version"],
             "fiction_forks_preview_template_catalog.v1",
         )
-        self.assertEqual(catalog["catalog_version"], 2)
+        self.assertEqual(catalog["catalog_version"], 3)
         scenario = json.loads(
             (ROOT / "scenarios/japan-2036/scenario.json").read_text(
                 encoding="utf-8"
@@ -162,6 +181,31 @@ class DocumentationContractTests(unittest.TestCase):
                     entry["intervention_sha256"],
                 )
                 self.assertEqual(intervention["id"], entry["intervention_id"])
+
+                self.assertRegex(
+                    entry["social_config_path"],
+                    r"^scenarios/[a-z0-9-]+/social(-[a-z0-9-]+)?\.json$",
+                )
+                self.assertRegex(
+                    entry["fixture_path"], r"^fixtures/social/[a-z0-9-]+\.jsonl$"
+                )
+                social_config_path = ROOT / entry["social_config_path"]
+                fixture_path = ROOT / entry["fixture_path"]
+                self.assertTrue(social_config_path.is_file())
+                self.assertTrue(fixture_path.is_file())
+                social_config = json.loads(
+                    social_config_path.read_text(encoding="utf-8")
+                )
+                self.assertEqual(social_config["id"], entry["social_config_id"])
+                self.assertEqual(
+                    canonical_digest(social_config), entry["social_config_sha256"]
+                )
+                records = [
+                    json.loads(line)
+                    for line in fixture_path.read_text(encoding="utf-8").splitlines()
+                    if line.strip()
+                ]
+                self.assertEqual(canonical_digest(records), entry["fixture_sha256"])
 
     def test_participation_entries_route_to_distinct_workflows(self) -> None:
         ux = (ROOT / "docs/ux-flow.md").read_text(encoding="utf-8")
