@@ -168,10 +168,32 @@ def _write_output(path_value: str, rendered: str, *, overwrite: bool) -> None:
         raise ContractError("output already exists; pass --overwrite to replace it")
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.tmp")
-    if temporary.exists():
-        raise ContractError(f"temporary output already exists: {temporary}")
-    temporary.write_bytes(_artifact_bytes(rendered))
-    temporary.replace(path)
+    payload = _artifact_bytes(rendered)
+    try:
+        with temporary.open("xb") as handle:
+            handle.write(payload)
+    except FileExistsError as error:
+        raise ContractError(
+            f"temporary output already exists: {temporary}"
+        ) from error
+    try:
+        if overwrite:
+            temporary.replace(path)
+        else:
+            # A hard link is an atomic no-replace install on the same volume.
+            # It closes the path.exists()/replace() race without taking
+            # ownership of a concurrently-created output. Same contract as
+            # _write_output_pair.
+            path.hardlink_to(temporary)
+            temporary.unlink()
+    except FileExistsError as error:
+        temporary.unlink(missing_ok=True)
+        raise ContractError(
+            "output already exists; pass --overwrite to replace it"
+        ) from error
+    except OSError as error:
+        temporary.unlink(missing_ok=True)
+        raise ContractError(f"output was not written: {error}") from error
 
 
 def _write_output_pair(
