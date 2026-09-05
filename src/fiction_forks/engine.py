@@ -145,17 +145,25 @@ def validate_scenario(scenario: Mapping[str, Any]) -> None:
     shocks = scenario["shocks"]
     if not isinstance(shocks, list):
         raise ContractError("shocks must be a list")
+    seen_shock_ids: set[str] = set()
     for index, raw_shock in enumerate(shocks):
         shock = _require_mapping(raw_shock, f"shock:{index}")
         shock_id = shock.get("id", "unknown")
         label = f"shock:{shock_id}"
         if not isinstance(shock_id, str) or not shock_id.strip():
             raise ContractError(f"shock:{index}.id must be a non-empty string")
+        if shock_id in seen_shock_ids:
+            raise ContractError(f"shock ids must be unique: {shock_id}")
+        seen_shock_ids.add(shock_id)
         if not isinstance(shock.get("label"), str) or not shock["label"].strip():
             raise ContractError(f"{label}.label must be a non-empty string")
         if "year" not in shock:
             raise ContractError(f"{label}.year is required")
-        _require_int(shock["year"], f"{label}.year")
+        shock_year = _require_int(shock["year"], f"{label}.year")
+        if not start_year <= shock_year <= end_year:
+            raise ContractError(
+                f"{label}.year must be between {start_year} and {end_year}"
+            )
         if "effects" not in shock:
             raise ContractError(f"{label}.effects is required")
         _validate_effects(shock["effects"], f"{label}.effects")
@@ -167,6 +175,11 @@ def validate_scenario(scenario: Mapping[str, Any]) -> None:
     unknown = sorted(set(collapse_metrics) - set(METRICS))
     if unknown:
         raise ContractError(f"collapse has unknown metrics: {unknown}")
+    duplicated = sorted(
+        {metric for metric in collapse_metrics if collapse_metrics.count(metric) > 1}
+    )
+    if duplicated:
+        raise ContractError(f"collapse.metrics must be unique: {duplicated}")
     threshold = _require_number(collapse.get("threshold"), "collapse.threshold")
     if not 0 <= threshold <= 100:
         raise ContractError("collapse threshold must be between 0 and 100")
@@ -389,6 +402,8 @@ def simulate(
     validate_scenario(scenario)
     if intervention is not None:
         validate_intervention(intervention, scenario)
+    elif technology_delays:
+        raise ContractError("technology delays require an intervention")
 
     rng = random.Random(seed)
     state = {metric: float(scenario["initial_state"][metric]) for metric in METRICS}

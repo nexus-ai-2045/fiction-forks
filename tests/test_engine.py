@@ -143,6 +143,46 @@ class SimulationContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ContractError, "shock:broken"):
             simulate(broken)
 
+    def test_shock_year_outside_simulated_window_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["shocks"][0]["year"] = int(broken["end_year"]) + 1
+        with self.assertRaisesRegex(ContractError, "year must be between"):
+            simulate(broken)
+
+    def test_shock_year_before_start_year_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["shocks"][0]["year"] = int(broken["start_year"]) - 1
+        with self.assertRaisesRegex(ContractError, "year must be between"):
+            simulate(broken)
+
+    def test_duplicate_shock_id_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        duplicate = json.loads(json.dumps(broken["shocks"][0]))
+        broken["shocks"].append(duplicate)
+        with self.assertRaisesRegex(ContractError, "shock ids must be unique"):
+            simulate(broken)
+
+    def test_duplicate_collapse_metric_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["collapse"]["metrics"] = ["legitimacy", "legitimacy"]
+        broken["collapse"]["minimum_breaches"] = 2
+        with self.assertRaisesRegex(ContractError, "collapse.metrics must be unique"):
+            simulate(broken)
+
+    def test_technology_delays_without_intervention_fails_closed(self) -> None:
+        with self.assertRaisesRegex(
+            ContractError, "technology delays require an intervention"
+        ):
+            simulate(
+                self.scenario,
+                seed=2036,
+                technology_delays={"joint-governance-and-drills": 5},
+            )
+
+    def test_empty_technology_delays_without_intervention_is_allowed(self) -> None:
+        result = simulate(self.scenario, seed=2036, technology_delays={})
+        self.assertEqual({}, result["technology_delays"])
+
     def test_public_files_do_not_contain_windows_home_path(self) -> None:
         for path in ROOT.rglob("*"):
             if not path.is_file() or {
