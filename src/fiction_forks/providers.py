@@ -238,7 +238,11 @@ class ReplayProvider:
             raise ProviderError(f"replay action is missing for {key}") from error
         condition_count = recorded.pop("condition_count", None)
         text_redacted = recorded.pop("text_redacted", None)
-        if not isinstance(condition_count, int) or text_redacted is not True:
+        if (
+            isinstance(condition_count, bool)
+            or not isinstance(condition_count, int)
+            or text_redacted is not True
+        ):
             raise ProviderError("replay action is not a public receipt projection")
         recorded["conditions"] = ["replayed condition"] * condition_count
         recorded["text"] = "replayed redacted action"

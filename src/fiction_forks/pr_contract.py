@@ -289,7 +289,11 @@ def _event(path: Path) -> dict[str, Any]:
 
 
 def _safe_cell(value: object) -> str:
-    return str(value).replace("|", "\\|").replace("\r", " ").replace("\n", " ")
+    # Backslashes must be escaped first. Escaping "|" alone lets an attacker
+    # supplied "\|" become "\\|" in the table, where GFM reads "\\" as a
+    # literal backslash and the following "|" as a raw cell separator.
+    text = str(value).replace("\\", "\\\\").replace("|", "\\|")
+    return text.replace("\r", " ").replace("\n", " ")
 
 
 def _append(path: Path | None, text: str) -> None:
