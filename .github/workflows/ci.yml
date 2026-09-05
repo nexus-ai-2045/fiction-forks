@@ -5,6 +5,9 @@ on:
     branches:
       - main
   pull_request:
+    # PR本文の fiction-forks-pr-type marker を後から書き換えても再検査するため
+    # edited を含める。ready_for_review は draft 解除時の再判定用。
+    types: [opened, synchronize, reopened, edited, ready_for_review]
 
 permissions:
   contents: read
@@ -97,12 +100,23 @@ jobs:
       fixture: ${{ steps.contract.outputs.fixture }}
     env:
       PYTHONUTF8: "1"
-      PYTHONPATH: src
+      # ゲートのコード自体をPRで書き換えて素通しさせないため、実行するmoduleは
+      # base ref側 (gate-base/src) から読み込む。PR側treeはdiffと入力fileの
+      # 検査対象としてのみ使う (--repo で明示)。
+      PYTHONPATH: ${{ github.workspace }}/gate-base/src
     steps:
       - name: Checkout full PR history
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
+          persist-credentials: false
+
+      # PR側checkoutの後に置く。逆順だとroot checkoutがgate-baseを消し得る。
+      - name: Checkout gate code from base ref
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: gate-base
           persist-credentials: false
 
       - name: Set up Python
@@ -117,6 +131,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: >-
           python -m fiction_forks.pr_contract check
+          --repo "$GITHUB_WORKSPACE"
           --base "$BASE_SHA"
           --head "$HEAD_SHA"
           --event "$GITHUB_EVENT_PATH"

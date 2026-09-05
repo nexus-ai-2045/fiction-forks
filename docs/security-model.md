@@ -45,7 +45,7 @@ Fiction Forksは、ローカルCLI、静的GitHub Pages Idea Builder、公開Git
 
 ### GitHubとCI
 
-悪意あるPRはworkflow、依存、外部URL、生成物へ変更を混ぜられる。Actionsはexact commit、Python toolはhash付きwheelへ固定し、CI権限は`contents: read`に限定する。依存更新、workflow変更、gate baseline変更は通常介入と分離してレビューする。
+悪意あるPRはworkflow、依存、外部URL、生成物へ変更を混ぜられる。Actionsはexact commit、Python toolはhash付きwheelへ固定し、CI権限は`contents: read`に限定する。依存更新、workflow変更、gate baseline変更は通常介入と分離してレビューする。加えて、PR契約gate自身がPRのコードで実行されると、`src/fiction_forks/pr_contract.py`を書き換えるPRが混在禁止や5役×3ターン検査を素通しできる。そのため`pr-contract` jobはgateのコードをbase ref (`github.event.pull_request.base.sha`) から別path (`gate-base/`) へcheckoutし、`PYTHONPATH`をbase側の`src`に向けて実行する。PR側のtreeはdiff読み取りと入力fileの検査対象としてのみ使う。PR本文の種別markerを後から書き換える経路も塞ぐため、`pull_request`の`types`に`edited`を含めて再検査させる。残る前提として、workflow定義自体はPR側が使われるため、`.github/`配下の変更は人間レビューが必要である。
 
 ### 誤情報と安全保障表現
 
