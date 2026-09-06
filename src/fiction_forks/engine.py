@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import random
+from collections import Counter
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Mapping
@@ -175,10 +176,11 @@ def validate_scenario(scenario: Mapping[str, Any]) -> None:
     unknown = sorted(set(collapse_metrics) - set(METRICS))
     if unknown:
         raise ContractError(f"collapse has unknown metrics: {unknown}")
-    duplicated = sorted(
-        {metric for metric in collapse_metrics if collapse_metrics.count(metric) > 1}
-    )
-    if duplicated:
+    if len(collapse_metrics) != len(set(collapse_metrics)):
+        counts = Counter(collapse_metrics)
+        duplicated = sorted(
+            metric for metric, count in counts.items() if count > 1
+        )
         raise ContractError(f"collapse.metrics must be unique: {duplicated}")
     threshold = _require_number(collapse.get("threshold"), "collapse.threshold")
     if not 0 <= threshold <= 100:

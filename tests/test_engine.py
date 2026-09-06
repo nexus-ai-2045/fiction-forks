@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import time
 import tomllib
 import unittest
 from pathlib import Path
@@ -168,6 +169,16 @@ class SimulationContractTests(unittest.TestCase):
         broken["collapse"]["minimum_breaches"] = 2
         with self.assertRaisesRegex(ContractError, "collapse.metrics must be unique"):
             simulate(broken)
+
+    def test_many_duplicate_collapse_metrics_fail_closed_in_linear_time(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["collapse"]["metrics"] = ["legitimacy"] * 40_000
+        broken["collapse"]["minimum_breaches"] = 2
+        started = time.perf_counter()
+        with self.assertRaisesRegex(ContractError, "collapse.metrics must be unique"):
+            simulate(broken)
+        elapsed = time.perf_counter() - started
+        self.assertLess(elapsed, 1.0, f"duplicate check took {elapsed:.3f}s")
 
     def test_technology_delays_without_intervention_fails_closed(self) -> None:
         with self.assertRaisesRegex(
