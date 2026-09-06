@@ -51,6 +51,16 @@ python -m fiction_forks social `
   --output run.json
 ```
 
+Web workbench（`web/workbench-src/`）や`package.json`、`tools/`に触れる場合は、CIの`web-workbench` jobと同じ検証を通します（Node 24）。
+
+```powershell
+npm ci
+npm test
+npm run build
+npx playwright install --with-deps chromium
+npm run test:e2e
+```
+
 ### Colabで動かす
 
 [検証用notebook](https://colab.research.google.com/github/nexus-ai-2045/fiction-forks/blob/main/notebooks/validate-worldline.ipynb)を開き、本repoまたは公開forkのURL、GitHub上のbranch名、slugを指定します。notebookはGitHub APIで本repoからのforkであることをread-only確認してからcloneし、fixtureと決定論比較を実行します。credentialの入力やPR作成は行いません。
@@ -66,7 +76,7 @@ PR作成、承認、merge、mainからの反映確認は別の状態です。
 5. 参照作品と、そこから抽出した機能を自分の言葉で書く。
 6. 実現方式、技術・制度・運用ノード、依存先、実装年数、完成証拠を書く。
 7. 既存scenarioと同じseedで基準世界・介入世界を比較する。
-8. `python -m unittest discover -s tests -v` を通す。
+8. `python -m unittest discover -s tests -v` を通す。 `web/`、`package.json`、`tools/`に触れる場合は `npm test` と `npm run build` も通す。
 9. 公式画像、台詞、音声、映像、ロゴ、特徴的な口調を収録しない。
 10. 一つ以上のノードを意図的に遅らせ、介入が間に合わない条件も確認する。
 11. worldline PRへengine、workflow、version、文書等の保守変更を混在させない。判断変更が必要なら先に別のmaintenance PRを作る。
