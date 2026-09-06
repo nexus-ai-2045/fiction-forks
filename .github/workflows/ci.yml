@@ -12,9 +12,17 @@ on:
 permissions:
   contents: read
 
+# 本文編集 (edited) を連打された時に古いrunを残さない。PR単位、push時はrefで束ねる。
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   web-workbench:
     name: Web workbench / contract・build・E2E
+    # PR本文/タイトルの編集 (edited) ではコードが変わらないのでbuild・E2Eは回さない。
+    # required checkがskipされてもrulesetはskipped=通過として扱う。
+    if: github.event_name != 'pull_request' || github.event.action != 'edited'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,6 +61,9 @@ jobs:
 
   verify:
     name: Python ${{ matrix.python-version }} / ${{ matrix.os }}
+    # 同上。edited はコード差分を伴わないためmatrix 4本を再実行しない。
+    # required checkがskipされてもrulesetはskipped=通過として扱う。
+    if: github.event_name != 'pull_request' || github.event.action != 'edited'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -103,6 +114,8 @@ jobs:
       # ゲートのコード自体をPRで書き換えて素通しさせないため、実行するmoduleは
       # base ref側 (gate-base/src) から読み込む。PR側treeはdiffと入力fileの
       # 検査対象としてのみ使う (--repo で明示)。
+      # PYTHONPATHだけではcwd (PR root) が先に検索されるため、実行stepの
+      # working-directory も gate-base にしてPR treeをimport pathから外す。
       PYTHONPATH: ${{ github.workspace }}/gate-base/src
     steps:
       - name: Checkout full PR history
@@ -126,6 +139,7 @@ jobs:
 
       - name: Classify contribution contract
         id: contract
+        working-directory: ${{ github.workspace }}/gate-base
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
