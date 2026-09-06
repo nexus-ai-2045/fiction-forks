@@ -9,7 +9,7 @@
 - 用途: protocol、部分観測、fail-closed、hash chain、world physicsの回帰検査
 - AI実測: いいえ。fixtureは台本であり、LLMの挙動を示さない
 - Python: 3.13
-- scenario: `japan-2036`
+- scenario: `japan-2036-centralization`
 - intervention: `doraemon-public-tools`
 - seed: `2036`
 - run ID: `ff-b74f4c768380c732`
@@ -118,7 +118,7 @@ python -m fiction_forks social `
 
 ## 世界観測fork：検証結果
 
-- `python -m unittest discover -s tests -v`: 49 tests、全件pass
+- `python -m unittest discover -s tests -v`: 全件pass（件数は記録時点で陳腐化するため書かない。正本はCIの`verify` job）
 - `python -m ai_ratchet_gate --repo .`: pass（現存0件 / 新規0件）
 - JSON契約: 介入、social config、fixture、通常比較、遅延比較をテストでread-back
 - 権利境界: 新規画像、ロゴ、音声、映像、台詞、キャラクター表現なし
