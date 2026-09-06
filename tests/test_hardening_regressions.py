@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import sys
 import tempfile
 import unittest
@@ -106,6 +107,62 @@ class WriteOutputAtomicityTests(unittest.TestCase):
                 sorted(p.name for p in Path(tmp).iterdir()),
                 ["out.json"],
             )
+
+
+class _ENOSPCHandle:
+    """Wraps a real file handle so the first write fails like a full disk."""
+
+    def __init__(self, handle: object) -> None:
+        self._handle = handle
+
+    def __enter__(self) -> "_ENOSPCHandle":
+        self._handle.__enter__()
+        return self
+
+    def __exit__(self, *exc_info: object) -> object:
+        return self._handle.__exit__(*exc_info)
+
+    def write(self, payload: bytes) -> int:
+        raise OSError(errno.ENOSPC, "No space left on device")
+
+
+class WriteOutputPartialWriteTests(unittest.TestCase):
+    def test_failed_write_removes_the_owned_temporary(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "out.json"
+            real_open = Path.open
+
+            def failing_open(
+                self: Path, mode: str = "r", *args: object, **kwargs: object
+            ):
+                handle = real_open(self, mode, *args, **kwargs)
+                if "x" in mode:
+                    return _ENOSPCHandle(handle)
+                return handle
+
+            with patch.object(Path, "open", failing_open):
+                with self.assertRaises(ContractError):
+                    cli._write_output(str(target), "payload", overwrite=False)
+            # No partial ".out.json.tmp" may survive: it would poison the
+            # next run's exclusive create.
+            self.assertEqual(sorted(p.name for p in Path(tmp).iterdir()), [])
+            # The next attempt must still be able to write.
+            cli._write_output(str(target), "payload", overwrite=False)
+            self.assertEqual(target.read_bytes(), b"payload\n")
+
+
+class WriteOutputCommitCleanupTests(unittest.TestCase):
+    def test_cleanup_failure_after_install_is_not_reported_as_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp) / "out.json"
+
+            def failing_unlink(self: Path, **kwargs: object) -> None:
+                raise OSError(errno.EIO, "I/O error")
+
+            with patch.object(Path, "unlink", failing_unlink):
+                with self.assertWarns(RuntimeWarning):
+                    cli._write_output(str(target), "payload", overwrite=False)
+            self.assertEqual(target.read_bytes(), b"payload\n")
 
 
 class ReplayConditionCountTypingTests(unittest.TestCase):
