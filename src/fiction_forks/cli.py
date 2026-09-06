@@ -8,6 +8,7 @@ import json
 import subprocess
 import sys
 import uuid
+import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
@@ -168,10 +169,52 @@ def _write_output(path_value: str, rendered: str, *, overwrite: bool) -> None:
         raise ContractError("output already exists; pass --overwrite to replace it")
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(f".{path.name}.tmp")
-    if temporary.exists():
-        raise ContractError(f"temporary output already exists: {temporary}")
-    temporary.write_bytes(_artifact_bytes(rendered))
-    temporary.replace(path)
+    payload = _artifact_bytes(rendered)
+    try:
+        handle = temporary.open("xb")
+    except FileExistsError as error:
+        raise ContractError(
+            f"temporary output already exists: {temporary}"
+        ) from error
+    try:
+        with handle:
+            handle.write(payload)
+    except OSError as error:
+        # The exclusive create succeeded, so this transaction owns the
+        # temporary. A partial write must be reclaimed here, otherwise the
+        # leftover blocks every later run at the "xb" open.
+        temporary.unlink(missing_ok=True)
+        raise ContractError(f"output was not written: {error}") from error
+    try:
+        if overwrite:
+            temporary.replace(path)
+        else:
+            # A hard link is an atomic no-replace install on the same volume.
+            # It closes the path.exists()/replace() race without taking
+            # ownership of a concurrently-created output. Same contract as
+            # _write_output_pair.
+            path.hardlink_to(temporary)
+    except FileExistsError as error:
+        temporary.unlink(missing_ok=True)
+        raise ContractError(
+            "output already exists; pass --overwrite to replace it"
+        ) from error
+    except OSError as error:
+        temporary.unlink(missing_ok=True)
+        raise ContractError(f"output was not written: {error}") from error
+    if not overwrite:
+        # The output is installed at this point. Dropping the staging link is
+        # maintenance, so a transient failure must not report a committed
+        # output as failed; surface it as a warning instead.
+        try:
+            temporary.unlink()
+        except OSError as error:
+            warnings.warn(
+                f"output was written but the temporary file remains: "
+                f"{temporary}: {error}",
+                RuntimeWarning,
+                stacklevel=2,
+            )
 
 
 def _write_output_pair(
