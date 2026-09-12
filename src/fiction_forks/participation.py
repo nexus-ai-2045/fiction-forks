@@ -202,6 +202,62 @@ def validate_idea_draft(value: Any) -> dict[str, Any]:
     return normalized
 
 
+
+def _bind_fixture_to_social_config(
+    records: list[dict[str, Any]],
+    social_config: Mapping[str, Any],
+    *,
+    template_id: str,
+) -> None:
+    """fixtureの turn×role 集合と action_id を、選択中の social config へ束縛する。
+
+    digest一致だけでは別世界線のfixtureを差し込めてしまい、local runは
+    provider_error→abstainのHTTP 200として通過しうる。catalog受理時に照合し、
+    壊れた組合せを検証済み世界線として表示・再生できないようにする。
+    """
+
+    roles = social_config["roles"]
+    turns = social_config["turns"]
+    actions = social_config["actions"]
+    if not isinstance(roles, list) or not isinstance(turns, list) or not isinstance(actions, list):
+        raise ContractError(f"template:{template_id} social config is incomplete")
+    role_ids = [role["id"] for role in roles]
+    expected = {
+        (turn, role_id)
+        for turn in range(1, len(turns) + 1)
+        for role_id in role_ids
+    }
+    action_ids = {action["id"] for action in actions}
+    allowed_roles = {
+        action["id"]: set(action["allowed_roles"]) for action in actions
+    }
+    observed: list[tuple[int, str]] = []
+    for index, record in enumerate(records):
+        label = f"template:{template_id} fixture[{index}]"
+        turn = record.get("turn")
+        agent_id = record.get("agent_id")
+        action_id = record.get("action_id")
+        if type(turn) is not int or turn < 1:
+            raise ContractError(f"{label} turn must be a positive integer")
+        if not isinstance(agent_id, str) or not agent_id.strip():
+            raise ContractError(f"{label} agent_id must be a non-empty string")
+        if not isinstance(action_id, str) or not action_id.strip():
+            raise ContractError(f"{label} action_id must be a non-empty string")
+        if action_id not in action_ids:
+            raise ContractError(
+                f"template:{template_id} fixture action_id is not in social config"
+            )
+        if agent_id not in allowed_roles[action_id]:
+            raise ContractError(
+                f"template:{template_id} fixture action_id is not allowed for role"
+            )
+        observed.append((turn, agent_id))
+    if len(observed) != len(expected) or set(observed) != expected:
+        raise ContractError(
+            f"template:{template_id} fixture turn×role set must match social config"
+        )
+
+
 def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]:
     catalog = _mapping(value, "preview template catalog")
     _exact_fields(
@@ -341,9 +397,13 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
             root_path=root_path,
             label=f"template:{template_id} fixture_path",
         )
-        if _canonical_digest(_load_jsonl(fixture_path)) != fixture_digest:
+        fixture_records = _load_jsonl(fixture_path)
+        if _canonical_digest(fixture_records) != fixture_digest:
             raise ContractError(f"template:{template_id} fixture_sha256 mismatch")
         validate_social_config(social_config, intervention)
+        _bind_fixture_to_social_config(
+            fixture_records, social_config, template_id=template_id
+        )
         _resolve_scenario_path(root_path, scenario_id, template_id)
         normalized_templates.append(
             {

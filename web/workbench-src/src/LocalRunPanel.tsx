@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ReplaySection } from "./Replay";
 import { DEFAULT_TEMPLATE_ID, buildLocalRunRequest, parseLocalRunCatalog, requestLocalRun, type LocalProvider, type LocalRunCatalog, type VerifiedLocalRun } from "./run-request";
 
@@ -12,6 +12,8 @@ export function LocalRunPanel() {
   const [error, setError] = useState("");
   const [verified, setVerified] = useState<VerifiedLocalRun | null>(null);
   const [adapterStatus, setAdapterStatus] = useState<"checking" | "ready" | "unavailable">("checking");
+  // template切替や再実行で古いresponseを捨てるための世代カウンタ。
+  const requestGeneration = useRef(0);
 
   useEffect(() => {
     let active = true;
@@ -30,20 +32,49 @@ export function LocalRunPanel() {
   const granted = catalog?.providers.includes(provider) ?? false;
   const selected = catalog?.templates.find((item) => item.template_id === templateId) ?? null;
   const adapterReady = adapterStatus === "ready" && catalog !== null && selected !== null;
+
+  const discardStaleResults = () => {
+    requestGeneration.current += 1;
+    setVerified(null);
+    setError("");
+    setPending(false);
+  };
+
+  const onTemplateChange = (next: string) => {
+    if (next === templateId) return;
+    discardStaleResults();
+    setTemplateId(next);
+  };
+
   const submit = async () => {
     if (pending || !catalog || !selected) return;
+    const generation = ++requestGeneration.current;
+    const requestedInterventionId = selected.intervention_id;
     setPending(true); setError(""); setVerified(null);
     try {
-      setVerified(await requestLocalRun(buildLocalRunRequest(catalog, selected, provider, selected.allowed_seeds[0], confirmed), token));
+      const result = await requestLocalRun(buildLocalRunRequest(catalog, selected, provider, selected.allowed_seeds[0], confirmed), token);
+      if (generation !== requestGeneration.current) return;
+      const bundleIntervention = result.bundle?.run_request?.parameters?.intervention_id;
+      // bundleがある応答は intervention_id で request identity へ束縛する。
+      if (
+        typeof bundleIntervention === "string"
+        && bundleIntervention !== requestedInterventionId
+      ) {
+        throw new Error("応答が選択中の世界線と一致しません。もう一度実行してください。");
+      }
+      setVerified(result);
     } catch (cause) {
+      if (generation !== requestGeneration.current) return;
       setError(cause instanceof Error ? cause.message : "シミュレーター実行に失敗しました。");
-    } finally { setPending(false); }
+    } finally {
+      if (generation === requestGeneration.current) setPending(false);
+    }
   };
 
   return <section className="local-run" aria-labelledby="local-run-title">
     <div className="section-heading"><div><span>RUN / CANONICAL SIMULATOR</span><h2 id="local-run-title">この世界線を、いま実行する。</h2></div><p>既存Python runtimeを呼び出し、run・replay・evidenceを同じrun_idで検証します。</p></div>
-    {catalog && <label>世界線template<select aria-label="世界線template" value={templateId} onChange={(event) => setTemplateId(event.target.value)}>{catalog.templates.map((item) => <option key={item.template_id} value={item.template_id}>{item.abstract_function}</option>)}</select></label>}
-    <label>実行環境<select value={provider} onChange={(event) => { setProvider(event.target.value as LocalProvider); setConfirmed(false); }}><option value="fixture">Fixture（外部AI通信なし）</option><option value="ollama">Ollama（ローカルAI）</option><option value="vertex">Vertex AI（Google Cloud）</option></select></label>
+    {catalog && <label>世界線template<select aria-label="世界線template" value={templateId} onChange={(event) => onTemplateChange(event.target.value)}>{catalog.templates.map((item) => <option key={item.template_id} value={item.template_id}>{item.abstract_function}</option>)}</select></label>}
+    <label>実行環境<select value={provider} onChange={(event) => { setProvider(event.target.value as LocalProvider); setConfirmed(false); discardStaleResults(); }}><option value="fixture">Fixture（外部AI通信なし）</option><option value="ollama">Ollama（ローカルAI）</option><option value="vertex">Vertex AI（Google Cloud）</option></select></label>
     <label>Session token<input type="password" autoComplete="off" value={token} onChange={(event) => setToken(event.target.value)} /></label>
     {adapterStatus === "checking" && <p className="run-status">ローカルadapterを確認しています…</p>}
     {adapterStatus === "unavailable" && <p className="run-warning">このページではローカルadapterに接続できません。手元でadapterを起動したページから実行してください。</p>}

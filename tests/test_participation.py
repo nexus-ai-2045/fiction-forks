@@ -225,6 +225,60 @@ class ParticipationContractTests(unittest.TestCase):
             self.assertEqual(len(normalized[0]["templates"]), 2)
             self.assertEqual(normalized[0], normalized[1])
 
+    def test_catalog_rejects_fixture_bound_to_a_different_social_config(self) -> None:
+        """別世界線のfixtureを差し替えても digest/social 検査だけでは通らない。"""
+        catalog = copy.deepcopy(self.catalog)
+        donor = catalog["templates"][1]
+        catalog["templates"][0].update(
+            {
+                "fixture_path": donor["fixture_path"],
+                "fixture_sha256": donor["fixture_sha256"],
+            }
+        )
+        with self.assertRaisesRegex(
+            ContractError,
+            r"fixture (turn×role set must match social config|action_id is not in social config|action_id is not allowed for role)",
+        ):
+            validate_template_catalog(catalog, root=ROOT)
+
+    def test_catalog_rejects_fixture_action_id_outside_social_config(self) -> None:
+        """turn×roleは揃っていても、action_idがsocial config外なら拒否する。"""
+        catalog = copy.deepcopy(self.catalog)
+        target = catalog["templates"][0]
+        records = [
+            json.loads(line)
+            for line in (ROOT / target["fixture_path"]).read_text(encoding="utf-8").splitlines()
+            if line.strip()
+        ]
+        records[0]["action_id"] = "not-a-registered-action"
+        newline = chr(10)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in self._catalog_input_relatives():
+                source = ROOT / relative
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                if relative == target["fixture_path"]:
+                    payload = newline.join(
+                        json.dumps(item, ensure_ascii=False, separators=(",", ":"))
+                        for item in records
+                    )
+                    destination.write_text(payload + newline, encoding="utf-8")
+                else:
+                    destination.write_bytes(source.read_bytes())
+            from fiction_forks.agent_protocol import digest as canonical_digest
+
+            mutated = [
+                json.loads(line)
+                for line in (root / target["fixture_path"]).read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            ]
+            catalog["templates"][0]["fixture_sha256"] = canonical_digest(mutated)
+            with self.assertRaisesRegex(
+                ContractError, r"fixture action_id is not in social config"
+            ):
+                validate_template_catalog(catalog, root=root)
+
     def test_catalog_binds_each_social_config_to_its_own_intervention(self) -> None:
         catalog = copy.deepcopy(self.catalog)
         borrowed = catalog["templates"][0]

@@ -1,5 +1,20 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { LocalRunPanel } from "./LocalRunPanel";
+import { requestLocalRun } from "./run-request";
+
+vi.mock("./run-request", async () => {
+  const actual = await vi.importActual<typeof import("./run-request")>("./run-request");
+  return {
+    ...actual,
+    requestLocalRun: vi.fn(),
+  };
+});
+
+vi.mock("./Replay", () => ({
+  ReplaySection: () => <div data-testid="replay-stub" />,
+}));
+
+const mockedRequestLocalRun = vi.mocked(requestLocalRun);
 
 const readyHealth = {
   status: "ready",
@@ -32,7 +47,10 @@ const readyHealth = {
 };
 
 describe("local adapter health boundary", () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    mockedRequestLocalRun.mockReset();
+  });
 
   it("fails closed when a Pages fallback returns HTML-like health data", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({}) }));
@@ -63,5 +81,86 @@ describe("local adapter health boundary", () => {
     render(<LocalRunPanel />);
     await waitFor(() => expect(screen.getByText(/ローカルadapterに接続できません/)).toBeInTheDocument());
     expect(screen.getByRole("button", { name: "シミュレーションを実行" })).toBeDisabled();
+  });
+});
+
+describe("template selection discards stale run state", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    mockedRequestLocalRun.mockReset();
+  });
+
+  it("discards verified results when the template changes", async () => {
+    mockedRequestLocalRun.mockResolvedValue({
+      run_id: "ff-stale",
+      execution_id: "ffx-" + "a".repeat(32),
+      replay: { events: [{ type: "x" }, { type: "y" }] },
+      bundle: {
+        run_request: {
+          parameters: { intervention_id: "haruhi-world-observation" },
+        },
+      },
+    } as never);
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => readyHealth,
+    }));
+    render(<LocalRunPanel />);
+    fireEvent.change(screen.getByLabelText("Session token"), { target: { value: "test-token" } });
+    const run = screen.getByRole("button", { name: "シミュレーションを実行" });
+    await waitFor(() => expect(run).toBeEnabled());
+    fireEvent.click(run);
+    await waitFor(() => expect(screen.getByText(/検証成功/)).toBeInTheDocument());
+    expect(screen.getByText(/run_id ff-stale/)).toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("世界線template"), {
+      target: { value: "public-tools-access.v1" },
+    });
+    await waitFor(() => {
+      expect(screen.queryByText(/検証成功/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/run_id ff-stale/)).not.toBeInTheDocument();
+    });
+    expect(screen.getByLabelText("世界線template")).toHaveValue("public-tools-access.v1");
+    expect(screen.getByText(/SHA-256 2e116cde3f8ad9547261cc58fd1b88c594f8bbefcc0d34961687dc47d21cf455/)).toBeInTheDocument();
+  });
+
+  it("ignores a late response after the template changes during a pending run", async () => {
+    let resolveRun: (value: never) => void = () => undefined;
+    mockedRequestLocalRun.mockImplementation(
+      () => new Promise((resolve) => { resolveRun = resolve as (value: never) => void; }),
+    );
+
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => readyHealth,
+    }));
+    render(<LocalRunPanel />);
+    fireEvent.change(screen.getByLabelText("Session token"), { target: { value: "test-token" } });
+    const run = screen.getByRole("button", { name: "シミュレーションを実行" });
+    await waitFor(() => expect(run).toBeEnabled());
+    fireEvent.click(run);
+    await waitFor(() => expect(run).toHaveTextContent("実行中…"));
+
+    fireEvent.change(screen.getByLabelText("世界線template"), {
+      target: { value: "public-tools-access.v1" },
+    });
+    await waitFor(() => expect(run).toHaveTextContent("シミュレーションを実行"));
+
+    resolveRun({
+      run_id: "ff-late",
+      execution_id: "ffx-" + "b".repeat(32),
+      replay: { events: [{ type: "x" }] },
+      bundle: {
+        run_request: {
+          parameters: { intervention_id: "haruhi-world-observation" },
+        },
+      },
+    } as never);
+
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(screen.queryByText(/検証成功/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/run_id ff-late/)).not.toBeInTheDocument();
+    expect(run).not.toBeDisabled();
   });
 });
