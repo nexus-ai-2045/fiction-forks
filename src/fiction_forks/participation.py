@@ -219,7 +219,11 @@ def _bind_fixture_to_social_config(
     roles = social_config["roles"]
     turns = social_config["turns"]
     actions = social_config["actions"]
-    if not isinstance(roles, list) or not isinstance(turns, list) or not isinstance(actions, list):
+    if (
+        not isinstance(roles, list)
+        or not isinstance(turns, list)
+        or not isinstance(actions, list)
+    ):
         raise ContractError(f"template:{template_id} social config is incomplete")
     role_ids = [role["id"] for role in roles]
     expected = {
@@ -232,6 +236,7 @@ def _bind_fixture_to_social_config(
         action["id"]: set(action["allowed_roles"]) for action in actions
     }
     observed: list[tuple[int, str]] = []
+    action_by_index: list[str] = []
     for index, record in enumerate(records):
         label = f"template:{template_id} fixture[{index}]"
         turn = record.get("turn")
@@ -243,6 +248,13 @@ def _bind_fixture_to_social_config(
             raise ContractError(f"{label} agent_id must be a non-empty string")
         if not isinstance(action_id, str) or not action_id.strip():
             raise ContractError(f"{label} action_id must be a non-empty string")
+        observed.append((turn, agent_id))
+        action_by_index.append(action_id)
+    if len(observed) != len(expected) or set(observed) != expected:
+        raise ContractError(
+            f"template:{template_id} fixture turn×role set must match social config"
+        )
+    for (_turn, agent_id), action_id in zip(observed, action_by_index, strict=True):
         if action_id not in action_ids:
             raise ContractError(
                 f"template:{template_id} fixture action_id is not in social config"
@@ -251,11 +263,7 @@ def _bind_fixture_to_social_config(
             raise ContractError(
                 f"template:{template_id} fixture action_id is not allowed for role"
             )
-        observed.append((turn, agent_id))
-    if len(observed) != len(expected) or set(observed) != expected:
-        raise ContractError(
-            f"template:{template_id} fixture turn×role set must match social config"
-        )
+
 
 
 def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]:
