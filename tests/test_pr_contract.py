@@ -54,8 +54,8 @@ FIXED_PREVIEW_SOCIAL_CONFIG = {
     "missing_action_delay_years": 1,
 }
 FIXED_PREVIEW_FIXTURE = [
-    {"turn": 1, "agent_id": "role-1"},
-    {"turn": 1, "agent_id": "role-2"},
+    {"turn": 1, "agent_id": "role-1", "action_id": "abstain"},
+    {"turn": 1, "agent_id": "role-2", "action_id": "abstain"},
 ]
 
 

@@ -54,7 +54,15 @@ export function LocalRunPanel() {
     try {
       const result = await requestLocalRun(buildLocalRunRequest(catalog, selected, provider, selected.allowed_seeds[0], confirmed), token);
       if (generation !== requestGeneration.current) return;
-      const bundleIntervention = result.bundle?.run_request?.parameters?.intervention_id;
+      const runRequest = result.bundle["run_request"];
+      const parameters =
+        typeof runRequest === "object" && runRequest !== null && !Array.isArray(runRequest)
+          ? (runRequest as Record<string, unknown>)["parameters"]
+          : undefined;
+      const bundleIntervention =
+        typeof parameters === "object" && parameters !== null && !Array.isArray(parameters)
+          ? (parameters as Record<string, unknown>)["intervention_id"]
+          : undefined;
       // bundleがある応答は intervention_id で request identity へ束縛する。
       if (
         typeof bundleIntervention === "string"
