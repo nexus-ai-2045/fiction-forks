@@ -106,7 +106,7 @@ test("mobile live-run table keeps every column header accessible", async ({ page
 
 test("network fixture: exact local adapter response is verified and double submit is blocked", async ({ page }) => {
   let requests = 0;
-  await page.route("**/api/health", (route) => route.fulfill({ json: { status: "ready", providers: ["fixture"], worldlines: ["haruhi-world-observation"] } }));
+  await page.route("**/api/health", (route) => route.fulfill({ json: { status: "ready", schema_version: "fiction_forks_local_run_response.v1", providers: ["fixture"], catalog_id: "japan-2036-preview-templates", catalog_version: 3, templates: [{ template_id: "contested-world-observation.v1", template_version: 3, scenario_id: "japan-2036-centralization", intervention_id: "haruhi-world-observation", intervention_sha256: "6b9420240ae02129b4fd24f679aef0a9e79dbd53dca052f58700e1a7d5c79d70", abstract_function: "複数の独立観測と異議申立てで世界状態の変化を検証する", allowed_seeds: [2036], delay_profiles: ["none"] }] } }));
   await page.route("**/api/runs", async (route) => {
     requests += 1;
     await new Promise((resolve) => setTimeout(resolve, 150));

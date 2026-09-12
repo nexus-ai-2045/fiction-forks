@@ -16,6 +16,57 @@ from fiction_forks.pr_contract import (
 )
 
 
+FIXED_PREVIEW_INTERVENTION = {
+    "id": "fixed-preview",
+    "technology_tree": {"nodes": []},
+}
+FIXED_PREVIEW_SOCIAL_CONFIG = {
+    "schema_version": "fiction_forks_social_config.v1",
+    "id": "fixed-preview-dialogue",
+    "title": "fixed preview dialogue",
+    "assumption_notice": "テスト用の固定social configです。",
+    "turns": [{"id": "turn-1", "event": "fixed preview turn"}],
+    "roles": [
+        {
+            "id": "role-1",
+            "title": "role one",
+            "objective": "observe",
+            "private_context": "none",
+        },
+        {
+            "id": "role-2",
+            "title": "role two",
+            "objective": "observe",
+            "private_context": "none",
+        },
+    ],
+    "evidence": [],
+    "actions": [
+        {
+            "id": "abstain",
+            "title": "abstain",
+            "allowed_roles": ["role-1", "role-2"],
+            "capability": "none",
+            "reversible": True,
+        }
+    ],
+    "node_requirements": {},
+    "missing_action_delay_years": 1,
+}
+FIXED_PREVIEW_FIXTURE = [
+    {"turn": 1, "agent_id": "role-1"},
+    {"turn": 1, "agent_id": "role-2"},
+]
+
+
+def _canonical_digest(value: object) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+    ).hexdigest()
+
+
 class PullRequestContractTests(unittest.TestCase):
     def _write_preview_catalog(
         self, root: Path, *, digest_override: str | None = None
@@ -23,16 +74,20 @@ class PullRequestContractTests(unittest.TestCase):
         intervention_path = root / "interventions/fixed-preview.json"
         intervention_path.parent.mkdir(parents=True, exist_ok=True)
         intervention_path.write_text(
-            json.dumps({"id": "fixed-preview"}), encoding="utf-8"
+            json.dumps(FIXED_PREVIEW_INTERVENTION), encoding="utf-8"
         )
-        digest = hashlib.sha256(
-            json.dumps(
-                {"id": "fixed-preview"},
-                ensure_ascii=False,
-                sort_keys=True,
-                separators=(",", ":"),
-            ).encode("utf-8")
-        ).hexdigest()
+        digest = _canonical_digest(FIXED_PREVIEW_INTERVENTION)
+        social_config_path = root / "scenarios/test/social-fixed-preview.json"
+        social_config_path.parent.mkdir(parents=True, exist_ok=True)
+        social_config_path.write_text(
+            json.dumps(FIXED_PREVIEW_SOCIAL_CONFIG), encoding="utf-8"
+        )
+        fixture_path = root / "fixtures/social/fixed-preview.jsonl"
+        fixture_path.parent.mkdir(parents=True, exist_ok=True)
+        fixture_path.write_text(
+            "\n".join(json.dumps(item) for item in FIXED_PREVIEW_FIXTURE) + "\n",
+            encoding="utf-8",
+        )
         catalog_path = root / "catalogs/intervention-templates.v1.json"
         catalog_path.parent.mkdir(parents=True, exist_ok=True)
         catalog_path.write_text(
@@ -50,6 +105,13 @@ class PullRequestContractTests(unittest.TestCase):
                             "intervention_id": "fixed-preview",
                             "intervention_path": "interventions/fixed-preview.json",
                             "intervention_sha256": digest_override or digest,
+                            "social_config_path": "scenarios/test/social-fixed-preview.json",
+                            "social_config_id": FIXED_PREVIEW_SOCIAL_CONFIG["id"],
+                            "social_config_sha256": _canonical_digest(
+                                FIXED_PREVIEW_SOCIAL_CONFIG
+                            ),
+                            "fixture_path": "fixtures/social/fixed-preview.jsonl",
+                            "fixture_sha256": _canonical_digest(FIXED_PREVIEW_FIXTURE),
                             "abstract_function": "fixed preview",
                             "target_doom": "fixed doom",
                             "side_effect_candidates": ["fixed side effect"],
@@ -215,7 +277,19 @@ class PullRequestContractTests(unittest.TestCase):
             root = Path(directory)
             catalog = self._write_preview_catalog(root)
             intervention_path = root / "interventions/fixed-preview.json"
-            intervention_path.write_bytes(b'{\r\n  "id": "fixed-preview"\r\n}\r\n')
+            intervention_path.write_bytes(
+                json.dumps(FIXED_PREVIEW_INTERVENTION, indent=2)
+                .replace("\n", "\r\n")
+                .encode("utf-8")
+                + b"\r\n"
+            )
+            fixture_path = root / "fixtures/social/fixed-preview.jsonl"
+            fixture_path.write_bytes(
+                b"".join(
+                    json.dumps(item).encode("utf-8") + b"\r\n"
+                    for item in FIXED_PREVIEW_FIXTURE
+                )
+            )
             result = validate_contract(
                 "maintenance",
                 [Change("M", catalog)],

@@ -18,8 +18,32 @@ from evaluation.emergence_metrics import (  # noqa: E402
     contains_prose,
     identity_key,
     main,
+    render_markdown,
     summarize_document,
 )
+
+
+LIVE_SUMMARY = {
+    "schema_version": "fiction_forks_live_run_summary.v1",
+    "provider": "vertex",
+    "model": "gemini-2.5-flash",
+    "runtime_revision": "abc",
+    "seed": 2036,
+    "event_count": 1,
+    "valid_action_count": 1,
+    "invalid_action_count": 0,
+    "interaction_edge_count": 0,
+    "activation_year": 2037,
+    "collapsed": True,
+    "turns": [
+        {
+            "turn": 1,
+            "agent_id": "civic_challenger",
+            "action_id": "establish-contestation-rights",
+            "valid": True,
+        }
+    ],
+}
 
 
 class EmergenceMetricsTests(unittest.TestCase):
@@ -304,6 +328,61 @@ class EmergenceMetricsTests(unittest.TestCase):
             self.assertEqual(
                 0.0, report["aggregates"]["by_source_class"]["fixture"]["collapse_rate"]
             )
+
+    def test_inputs_outside_curated_root_are_marked_uncurated(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            curated_dir = root / "artifacts/runs"
+            uncurated_dir = root / "evaluation/outputs"
+            curated_dir.mkdir(parents=True)
+            uncurated_dir.mkdir(parents=True)
+            (curated_dir / "curated.json").write_text(
+                json.dumps({**LIVE_SUMMARY, "run_id": "ff-curated"}), encoding="utf-8"
+            )
+            (uncurated_dir / "candidate.json").write_text(
+                json.dumps({**LIVE_SUMMARY, "run_id": "ff-candidate"}), encoding="utf-8"
+            )
+
+            report = build_report([curated_dir, uncurated_dir], repo_root=root)
+
+            self.assertEqual(2, report["n_executions"])
+            curation = report["input_curation"]
+            self.assertEqual("artifacts/runs", curation["curated_root"])
+            self.assertFalse(curation["curated_only"])
+            self.assertEqual(1, curation["curated"])
+            self.assertEqual(1, curation["uncurated"])
+            curated_by_path = {
+                row["identity"]["source_path"]: row["curated"]
+                for row in report["executions"]
+            }
+            self.assertEqual(
+                {
+                    "artifacts/runs/curated.json": True,
+                    "evaluation/outputs/candidate.json": False,
+                },
+                curated_by_path,
+            )
+            live = report["aggregates"]["by_source_class"]["live"]
+            self.assertEqual(1, live["curated"])
+            self.assertEqual(1, live["uncurated"])
+            self.assertIn("curated root の外", render_markdown(report))
+
+    def test_curated_root_only_report_declares_curated_only(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            curated_dir = root / "artifacts/runs"
+            curated_dir.mkdir(parents=True)
+            (curated_dir / "curated.json").write_text(
+                json.dumps({**LIVE_SUMMARY, "run_id": "ff-curated"}), encoding="utf-8"
+            )
+
+            report = build_report([curated_dir], repo_root=root)
+
+            self.assertTrue(report["input_curation"]["curated_only"])
+            self.assertEqual(0, report["input_curation"]["uncurated"])
+            self.assertEqual([True], [row["curated"] for row in report["executions"]])
+            self.assertEqual(0, report["aggregates"]["all"]["uncurated"])
+            self.assertNotIn("curated root の外", render_markdown(report))
 
     def test_cli_writes_json_and_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

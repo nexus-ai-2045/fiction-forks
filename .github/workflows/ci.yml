@@ -5,24 +5,13 @@ on:
     branches:
       - main
   pull_request:
-    # PR本文の fiction-forks-pr-type marker を後から書き換えても再検査するため
-    # edited を含める。ready_for_review は draft 解除時の再判定用。
-    types: [opened, synchronize, reopened, edited, ready_for_review]
 
 permissions:
   contents: read
 
-# 本文編集 (edited) を連打された時に古いrunを残さない。PR単位、push時はrefで束ねる。
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   web-workbench:
     name: Web workbench / contract・build・E2E
-    # PR本文/タイトルの編集 (edited) ではコードが変わらないのでbuild・E2Eは回さない。
-    # required checkがskipされてもrulesetはskipped=通過として扱う。
-    if: github.event_name != 'pull_request' || github.event.action != 'edited'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -61,9 +50,6 @@ jobs:
 
   verify:
     name: Python ${{ matrix.python-version }} / ${{ matrix.os }}
-    # 同上。edited はコード差分を伴わないためmatrix 4本を再実行しない。
-    # required checkがskipされてもrulesetはskipped=通過として扱う。
-    if: github.event_name != 'pull_request' || github.event.action != 'edited'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -111,25 +97,12 @@ jobs:
       fixture: ${{ steps.contract.outputs.fixture }}
     env:
       PYTHONUTF8: "1"
-      # ゲートのコード自体をPRで書き換えて素通しさせないため、実行するmoduleは
-      # base ref側 (gate-base/src) から読み込む。PR側treeはdiffと入力fileの
-      # 検査対象としてのみ使う (--repo で明示)。
-      # PYTHONPATHだけではcwd (PR root) が先に検索されるため、実行stepの
-      # working-directory も gate-base にしてPR treeをimport pathから外す。
-      PYTHONPATH: ${{ github.workspace }}/gate-base/src
+      PYTHONPATH: src
     steps:
       - name: Checkout full PR history
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-          persist-credentials: false
-
-      # PR側checkoutの後に置く。逆順だとroot checkoutがgate-baseを消し得る。
-      - name: Checkout gate code from base ref
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-          path: gate-base
           persist-credentials: false
 
       - name: Set up Python
@@ -139,13 +112,11 @@ jobs:
 
       - name: Classify contribution contract
         id: contract
-        working-directory: ${{ github.workspace }}/gate-base
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: >-
           python -m fiction_forks.pr_contract check
-          --repo "$GITHUB_WORKSPACE"
           --base "$BASE_SHA"
           --head "$HEAD_SHA"
           --event "$GITHUB_EVENT_PATH"

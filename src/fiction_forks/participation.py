@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping
 
+from .agent_protocol import digest as canonical_digest, validate_social_config
 from .engine import ContractError, ENGINE_VERSION, load_json
 
 
@@ -89,11 +89,65 @@ def _utc_datetime(value: Any, label: str) -> str:
     return text
 
 
-def _canonical_digest(value: Mapping[str, Any]) -> str:
-    encoded = json.dumps(
-        value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
-    ).encode("utf-8")
-    return hashlib.sha256(encoded).hexdigest()
+def _canonical_digest(value: Any) -> str:
+    """parse後の値をcanonical化してからdigestを取る。生バイトのsha256は使わない。"""
+    return canonical_digest(value)
+
+
+def _load_jsonl(path: str | Path) -> list[dict[str, Any]]:
+    """JSONLを1行ずつparseしてdictのlistへ変換する。改行コードに依存しない。"""
+    records: list[dict[str, Any]] = []
+    for line_number, line in enumerate(
+        Path(path).read_text(encoding="utf-8").splitlines(), start=1
+    ):
+        if not line.strip():
+            continue
+        try:
+            value = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise ContractError(f"invalid JSONL at line {line_number}") from error
+        if not isinstance(value, dict):
+            raise ContractError(f"JSONL line {line_number} must be an object")
+        records.append(value)
+    return records
+
+
+def _safe_repo_path(
+    value: Any, *, pattern: str, root_path: Path, label: str
+) -> tuple[str, Path]:
+    """絶対path・`..`・pattern外・root脱出の4段を検査し、repo相対posixと解決先を返す。"""
+    relative = Path(_string(value, label))
+    if (
+        relative.is_absolute()
+        or ".." in relative.parts
+        or not re.fullmatch(pattern, relative.as_posix())
+    ):
+        raise ContractError(f"{label} is unsafe")
+    resolved = (root_path / relative).resolve()
+    if root_path not in resolved.parents:
+        raise ContractError(f"{label} escapes root")
+    return relative.as_posix(), resolved
+
+
+def _sha256_field(value: Any, label: str) -> str:
+    digest = _string(value, label)
+    if not re.fullmatch(r"[0-9a-f]{64}", digest):
+        raise ContractError(f"{label} is invalid")
+    return digest
+
+
+def _resolve_scenario_path(root_path: Path, scenario_id: str, template_id: str) -> Path:
+    """scenario_idがrepo内でちょうど一度だけ解決することを検査し、そのpathを返す。"""
+    matches = [
+        scenario_path
+        for scenario_path in root_path.glob("scenarios/**/scenario.json")
+        if load_json(scenario_path).get("id") == scenario_id
+    ]
+    if len(matches) != 1:
+        raise ContractError(
+            f"template:{template_id} scenario_id must resolve exactly once"
+        )
+    return matches[0]
 
 
 def validate_idea_draft(value: Any) -> dict[str, Any]:
@@ -178,6 +232,11 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
             "intervention_id",
             "intervention_path",
             "intervention_sha256",
+            "social_config_path",
+            "social_config_id",
+            "social_config_sha256",
+            "fixture_path",
+            "fixture_sha256",
             "abstract_function",
             "target_doom",
             "side_effect_candidates",
@@ -211,6 +270,9 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
         intervention_id = _string(
             template["intervention_id"], f"template:{template_id}.intervention_id"
         )
+        social_config_id = _string(
+            template["social_config_id"], f"template:{template_id}.social_config_id"
+        )
         abstract_function = _string(
             template["abstract_function"], f"template:{template_id}.abstract_function"
         )
@@ -222,12 +284,17 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
             f"template:{template_id}.side_effect_candidates",
             maximum=3,
         )
-        expected_digest = _string(
+        expected_digest = _sha256_field(
             template["intervention_sha256"],
-            f"template:{template_id}.intervention_sha256",
+            f"template:{template_id} intervention_sha256",
         )
-        if not re.fullmatch(r"[0-9a-f]{64}", expected_digest):
-            raise ContractError(f"template:{template_id} has invalid intervention_sha256")
+        social_config_digest = _sha256_field(
+            template["social_config_sha256"],
+            f"template:{template_id} social_config_sha256",
+        )
+        fixture_digest = _sha256_field(
+            template["fixture_sha256"], f"template:{template_id} fixture_sha256"
+        )
         seeds = template["allowed_seeds"]
         if not isinstance(seeds, list) or not seeds:
             raise ContractError(f"template:{template_id}.allowed_seeds must be non-empty")
@@ -243,35 +310,41 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
             raise ContractError(
                 f"template:{template_id}.delay_profiles must be non-empty"
             )
-        relative_path = Path(
-            _string(template["intervention_path"], "intervention_path")
+        intervention_relative, intervention_path = _safe_repo_path(
+            template["intervention_path"],
+            pattern=r"interventions/[a-z0-9-]+\.json",
+            root_path=root_path,
+            label=f"template:{template_id} intervention_path",
         )
-        if (
-            relative_path.is_absolute()
-            or ".." in relative_path.parts
-            or not re.fullmatch(
-                r"interventions/[a-z0-9-]+\.json", relative_path.as_posix()
-            )
-        ):
-            raise ContractError(f"template:{template_id} intervention_path is unsafe")
-        intervention_path = (root_path / relative_path).resolve()
-        if root_path not in intervention_path.parents:
-            raise ContractError(f"template:{template_id} intervention_path escapes root")
         intervention = load_json(intervention_path)
         if intervention.get("id") != intervention_id:
             raise ContractError(f"template:{template_id} intervention_id mismatch")
         actual_digest = _canonical_digest(intervention)
         if actual_digest != expected_digest:
             raise ContractError(f"template:{template_id} intervention_sha256 mismatch")
-        scenario_matches = []
-        for scenario_path in root_path.glob("scenarios/**/scenario.json"):
-            scenario = load_json(scenario_path)
-            if scenario.get("id") == scenario_id:
-                scenario_matches.append(scenario_path)
-        if len(scenario_matches) != 1:
+        social_config_relative, social_config_path = _safe_repo_path(
+            template["social_config_path"],
+            pattern=r"scenarios/[a-z0-9-]+/social(-[a-z0-9-]+)?\.json",
+            root_path=root_path,
+            label=f"template:{template_id} social_config_path",
+        )
+        social_config = load_json(social_config_path)
+        if social_config.get("id") != social_config_id:
+            raise ContractError(f"template:{template_id} social_config_id mismatch")
+        if _canonical_digest(social_config) != social_config_digest:
             raise ContractError(
-                f"template:{template_id} scenario_id must resolve exactly once"
+                f"template:{template_id} social_config_sha256 mismatch"
             )
+        fixture_relative, fixture_path = _safe_repo_path(
+            template["fixture_path"],
+            pattern=r"fixtures/social/[a-z0-9-]+\.jsonl",
+            root_path=root_path,
+            label=f"template:{template_id} fixture_path",
+        )
+        if _canonical_digest(_load_jsonl(fixture_path)) != fixture_digest:
+            raise ContractError(f"template:{template_id} fixture_sha256 mismatch")
+        validate_social_config(social_config, intervention)
+        _resolve_scenario_path(root_path, scenario_id, template_id)
         normalized_templates.append(
             {
                 "template_id": template_id,
@@ -279,8 +352,13 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
                 "status": status,
                 "scenario_id": scenario_id,
                 "intervention_id": intervention_id,
-                "intervention_path": relative_path.as_posix(),
+                "intervention_path": intervention_relative,
                 "intervention_sha256": expected_digest,
+                "social_config_path": social_config_relative,
+                "social_config_id": social_config_id,
+                "social_config_sha256": social_config_digest,
+                "fixture_path": fixture_relative,
+                "fixture_sha256": fixture_digest,
                 "abstract_function": abstract_function,
                 "target_doom": target_doom,
                 "side_effect_candidates": side_effect_candidates,
@@ -300,6 +378,40 @@ def validate_template_catalog(value: Any, *, root: str | Path) -> dict[str, Any]
 
 def load_template_catalog(path: str | Path, *, root: str | Path) -> dict[str, Any]:
     return validate_template_catalog(load_json(path), root=root)
+
+
+def resolve_template_inputs(
+    catalog_value: Any, template_id: str, *, root: str | Path
+) -> dict[str, str]:
+    """検証済みcatalogから、CLIへ渡すrepo相対posix pathだけを返す。
+
+    transportがscenario・intervention・social config・fixtureのpathを自分で
+    知らないための唯一の入口である。絶対pathを返さない（argvはbundleと
+    evidenceへ記録されるため、operatorのhome directoryを混入させない）。
+
+    catalogのstatusはここでも検査する。呼び出し順を入れ替えても、新しい
+    呼び出し元が増えても、off-switchを迂回してpathを取り出せないようにする。
+    """
+
+    catalog = validate_template_catalog(catalog_value, root=root)
+    selected = next(
+        (item for item in catalog["templates"] if item["template_id"] == template_id),
+        None,
+    )
+    if selected is None:
+        raise ContractError("template_id is not registered")
+    if selected["status"] != "preview_allowed":
+        raise ContractError("template is not preview_allowed")
+    root_path = Path(root).resolve()
+    scenario_path = _resolve_scenario_path(
+        root_path, selected["scenario_id"], selected["template_id"]
+    )
+    return {
+        "scenario": scenario_path.relative_to(root_path).as_posix(),
+        "intervention": selected["intervention_path"],
+        "social_config": selected["social_config_path"],
+        "fixture": selected["fixture_path"],
+    }
 
 
 def validate_idea_status_projection(value: Any) -> dict[str, Any]:

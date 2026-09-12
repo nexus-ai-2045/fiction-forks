@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from fiction_forks.participation import (
     RUN_SUMMARY_SCHEMA,
     TEMPLATE_CONFIRMATION_SCHEMA,
     prepare_provisional_request,
+    resolve_template_inputs,
     validate_idea_draft,
     validate_idea_status_projection,
     validate_provisional_request,
@@ -20,6 +22,21 @@ from fiction_forks.participation import (
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _symlinks_are_creatable() -> bool:
+    """symlinkを1本張ってみて権限の有無を判定する（Windowsでは特権が要る）。"""
+    with tempfile.TemporaryDirectory() as directory:
+        target = Path(directory) / "target"
+        target.write_text("{}", encoding="utf-8")
+        try:
+            (Path(directory) / "link").symlink_to(target)
+        except (NotImplementedError, OSError):
+            return False
+    return True
+
+
+SYMLINKS_ARE_CREATABLE = _symlinks_are_creatable()
 
 
 def idea_draft(**updates):
@@ -43,7 +60,7 @@ def template_confirmation(**updates):
     value = {
         "schema_version": TEMPLATE_CONFIRMATION_SCHEMA,
         "template_id": "public-tools-access.v1",
-        "template_version": 2,
+        "template_version": 3,
         "intervention_sha256": "2e116cde3f8ad9547261cc58fd1b88c594f8bbefcc0d34961687dc47d21cf455",
         "user_confirmed": True,
     }
@@ -75,7 +92,7 @@ class ParticipationContractTests(unittest.TestCase):
 
     def test_catalog_is_read_back_against_fixed_interventions(self) -> None:
         normalized = validate_template_catalog(self.catalog, root=ROOT)
-        self.assertEqual(normalized["catalog_version"], 2)
+        self.assertEqual(normalized["catalog_version"], 3)
         self.assertEqual(len(normalized["templates"]), 2)
 
     def test_catalog_rejects_non_object_root(self) -> None:
@@ -103,11 +120,198 @@ class ParticipationContractTests(unittest.TestCase):
                 with self.assertRaisesRegex(ContractError, message):
                     validate_template_catalog(catalog, root=ROOT)
 
+    def test_catalog_rejects_social_config_and_fixture_drift(self) -> None:
+        for update, message in (
+            ({"social_config_sha256": "0" * 64}, "social_config_sha256 mismatch"),
+            ({"fixture_sha256": "0" * 64}, "fixture_sha256 mismatch"),
+            ({"social_config_id": "other-dialogue"}, "social_config_id mismatch"),
+        ):
+            with self.subTest(update=update):
+                catalog = copy.deepcopy(self.catalog)
+                catalog["templates"][0].update(update)
+                with self.assertRaisesRegex(ContractError, message):
+                    validate_template_catalog(catalog, root=ROOT)
+
+    def test_catalog_rejects_unsafe_social_config_and_fixture_paths(self) -> None:
+        for update, message in (
+            (
+                {"social_config_path": "scenarios/japan-2036/../../etc/social.json"},
+                "social_config_path is unsafe",
+            ),
+            (
+                {"social_config_path": "/etc/social.json"},
+                "social_config_path is unsafe",
+            ),
+            (
+                {"social_config_path": "scenarios/japan-2036/scenario.json"},
+                "social_config_path is unsafe",
+            ),
+            (
+                {"fixture_path": "fixtures/social/../../escape.jsonl"},
+                "fixture_path is unsafe",
+            ),
+            (
+                {"fixture_path": "fixtures/participation/public-tools-idea-draft.v1.json"},
+                "fixture_path is unsafe",
+            ),
+        ):
+            with self.subTest(update=update):
+                catalog = copy.deepcopy(self.catalog)
+                catalog["templates"][0].update(update)
+                with self.assertRaisesRegex(ContractError, message):
+                    validate_template_catalog(catalog, root=ROOT)
+
+    @unittest.skipUnless(SYMLINKS_ARE_CREATABLE, "symlinkの作成権限が無い")
+    def test_repo_path_guard_rejects_targets_that_do_not_stay_under_root(self) -> None:
+        """公開入口から、symlinkでrootを脱出するpathを拒否することを検査する。"""
+        catalog = copy.deepcopy(self.catalog)
+        catalog["templates"][0]["intervention_path"] = "interventions/escape.json"
+        with tempfile.TemporaryDirectory() as directory:
+            outside = Path(directory) / "outside.json"
+            outside.write_text("{}", encoding="utf-8")
+            root = Path(directory) / "repo"
+            (root / "interventions").mkdir(parents=True)
+            (root / "interventions/escape.json").symlink_to(outside)
+            with self.assertRaisesRegex(ContractError, "escapes root"):
+                validate_template_catalog(catalog, root=root)
+
+    def _catalog_input_relatives(self) -> list[str]:
+        """catalogがsha256でpinしているrepo相対pathと、参照先scenarioを列挙する。"""
+        relatives = ["scenarios/japan-2036/scenario.json"]
+        for template in self.catalog["templates"]:
+            relatives.extend(
+                template[field]
+                for field in ("intervention_path", "social_config_path", "fixture_path")
+            )
+        return relatives
+
+    def _copy_catalog_inputs(
+        self, root: Path, relatives: list[str], *, newline: bytes
+    ) -> Path:
+        """catalogの入力fileを、指定した改行コードへ揃えてtmp rootへ複製する。"""
+        for relative in relatives:
+            source = (ROOT / relative).read_bytes()
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(
+                source.replace(b"\r\n", b"\n").replace(b"\n", newline)
+            )
+        return root
+
+    def test_catalog_digests_survive_crlf_rewrites(self) -> None:
+        """LF版とCRLF版をtmpへ明示的に作り、どちらでもdigestが一致することを検査する。
+
+        catalogがpinしているtracked fileは書き換えない。checkoutの改行コードが
+        片方に寄っていると、repo上のfileを書き戻す形では何も検査できない。
+        """
+        relatives = self._catalog_input_relatives()
+        with tempfile.TemporaryDirectory() as directory:
+            roots = {
+                newline: self._copy_catalog_inputs(
+                    Path(directory) / name, relatives, newline=newline
+                )
+                for name, newline in (("lf", b"\n"), ("crlf", b"\r\n"))
+            }
+            for relative in relatives:
+                with self.subTest(relative=relative):
+                    self.assertNotEqual(
+                        (roots[b"\n"] / relative).read_bytes(),
+                        (roots[b"\r\n"] / relative).read_bytes(),
+                    )
+            normalized = [
+                validate_template_catalog(self.catalog, root=roots[newline])
+                for newline in (b"\n", b"\r\n")
+            ]
+            self.assertEqual(len(normalized[0]["templates"]), 2)
+            self.assertEqual(normalized[0], normalized[1])
+
+    def test_catalog_binds_each_social_config_to_its_own_intervention(self) -> None:
+        catalog = copy.deepcopy(self.catalog)
+        borrowed = catalog["templates"][0]
+        catalog["templates"][1].update(
+            {
+                "social_config_path": borrowed["social_config_path"],
+                "social_config_id": borrowed["social_config_id"],
+                "social_config_sha256": borrowed["social_config_sha256"],
+            }
+        )
+        with self.assertRaisesRegex(ContractError, "node_requirements"):
+            validate_template_catalog(catalog, root=ROOT)
+
+    def test_template_inputs_resolve_to_repo_relative_posix_paths(self) -> None:
+        inputs = resolve_template_inputs(
+            self.catalog, "contested-world-observation.v1", root=ROOT
+        )
+        self.assertEqual(
+            {
+                "scenario": "scenarios/japan-2036/scenario.json",
+                "intervention": "interventions/haruhi-world-observation.json",
+                "social_config": "scenarios/japan-2036/social-haruhi-world-observation.json",
+                "fixture": "fixtures/social/haruhi-world-observation.jsonl",
+            },
+            inputs,
+        )
+        for value in inputs.values():
+            with self.subTest(value=value):
+                self.assertTrue((ROOT / value).is_file())
+                self.assertFalse(Path(value).is_absolute())
+        with self.assertRaisesRegex(ContractError, "not registered"):
+            resolve_template_inputs(self.catalog, "unknown.v1", root=ROOT)
+
+    def test_template_inputs_refuse_a_disabled_template(self) -> None:
+        """catalogのoff-switchを呼び出し順に依存せず効かせる。"""
+        catalog = copy.deepcopy(self.catalog)
+        catalog["templates"][1]["status"] = "disabled"
+        with self.assertRaisesRegex(ContractError, "preview_allowed"):
+            resolve_template_inputs(
+                catalog, "contested-world-observation.v1", root=ROOT
+            )
+
     def test_catalog_rejects_unknown_fields(self) -> None:
         catalog = copy.deepcopy(self.catalog)
         catalog["templates"][0]["provider"] = "arbitrary"
         with self.assertRaisesRegex(ContractError, "unknown fields"):
             validate_template_catalog(catalog, root=ROOT)
+
+    def test_repo_participation_fixtures_match_the_shipped_catalog(self) -> None:
+        """同梱fixture一式が現catalogと整合し、そのままreadyになることを検査する。
+
+        catalogのtemplate_versionを上げるとconfirmation fixtureは必ず拒否される。
+        fixture単体では気付けないため、実catalogと突き合わせて閉じる。
+        """
+        draft = json.loads(
+            (ROOT / "fixtures/participation/public-tools-idea-draft.v1.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        confirmation = json.loads(
+            (
+                ROOT
+                / "fixtures/participation/public-tools-template-confirmation.v1.json"
+            ).read_text(encoding="utf-8")
+        )
+        normalized = validate_template_catalog(self.catalog, root=ROOT)
+        selected = next(
+            item
+            for item in normalized["templates"]
+            if item["template_id"] == confirmation["template_id"]
+        )
+        self.assertEqual(
+            confirmation["template_version"], selected["template_version"]
+        )
+        self.assertEqual(
+            confirmation["intervention_sha256"], selected["intervention_sha256"]
+        )
+        result = prepare_provisional_request(
+            draft,
+            self.catalog,
+            confirmation,
+            root=ROOT,
+            template_id="public-tools-access.v1",
+            seed=2036,
+            delay_profile="none",
+        )
+        self.assertEqual(result["status"], "ready")
 
     def test_confirmed_exact_mapping_creates_stable_request(self) -> None:
         first = prepare_provisional_request(
