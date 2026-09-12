@@ -1,5 +1,26 @@
+import catalogFile from "../../../catalogs/intervention-templates.v1.json";
 import fixture from "../../../artifacts/runs/haruhi-world-observation-fixture.json";
-import { buildLocalRunRequest, parseLocalRunResponse } from "./run-request";
+import { DEFAULT_TEMPLATE_ID, buildLocalRunRequest, parseLocalRunCatalog, parseLocalRunResponse, requestLocalRun } from "./run-request";
+
+const healthTemplate = {
+  template_id: DEFAULT_TEMPLATE_ID,
+  template_version: 3,
+  scenario_id: "japan-2036-centralization",
+  intervention_id: "haruhi-world-observation",
+  intervention_sha256: "6b9420240ae02129b4fd24f679aef0a9e79dbd53dca052f58700e1a7d5c79d70",
+  abstract_function: "複数の独立観測と異議申立てで世界状態の変化を検証する",
+  allowed_seeds: [2036],
+  delay_profiles: ["none"],
+};
+
+const health = {
+  status: "ready",
+  schema_version: "fiction_forks_local_run_response.v1",
+  providers: ["fixture"],
+  catalog_id: "japan-2036-preview-templates",
+  catalog_version: 3,
+  templates: [healthTemplate],
+};
 
 async function artifact(value: unknown) {
   const bytes = new TextEncoder().encode(JSON.stringify(value));
@@ -50,16 +71,72 @@ async function refreshArtifacts(response: Awaited<ReturnType<typeof responseFixt
 }
 
 describe("local simulator wire contract", () => {
-  it("builds only the exact provider confirmation contract", () => {
-    expect(buildLocalRunRequest("fixture", 2036, false)).toEqual({
-      schema_version: "fiction_forks_local_run_request.v1",
-      worldline_id: "haruhi-world-observation",
-      provider: "fixture",
-      seed: 2036,
-      confirm_live: false,
+  it("blames the right side for each adapter status", async () => {
+    const catalog = parseLocalRunCatalog(health);
+    const request = buildLocalRunRequest(catalog, catalog.templates[0], "fixture", 2036, false);
+    const original = globalThis.fetch;
+    // adapterはrequest違反(400)、server側の失敗(500)、実行中(409)を別statusで返す。
+    // 未マップのstatusは「接続できませんでした」へ落ちるため、誰のせいかが逆転する。
+    const expected: Record<number, RegExp> = {
+      400: /契約と一致しません/,
+      403: /session token/,
+      409: /実行中/,
+      413: /大きすぎます/,
+      415: /形式が不正/,
+      500: /シミュレーター側で実行に失敗/,
+    };
+    try {
+      for (const [status, pattern] of Object.entries(expected)) {
+        globalThis.fetch = (async () => new Response(null, { status: Number(status) })) as typeof fetch;
+        await expect(requestLocalRun(request, "token")).rejects.toThrow(pattern);
+        await expect(requestLocalRun(request, "token")).rejects.not.toThrow(/接続できませんでした/);
+      }
+    } finally {
+      globalThis.fetch = original;
+    }
+  });
+
+  it("builds a participation run request inside the transport envelope", () => {
+    const catalog = parseLocalRunCatalog(health);
+    expect(buildLocalRunRequest(catalog, catalog.templates[0], "fixture", 2036, false)).toEqual({
+      schema_version: "fiction_forks_local_run_request.v2",
+      run_request: {
+        schema_version: "fiction_forks_provisional_run_request.v1",
+        scenario_id: "japan-2036-centralization",
+        template_id: DEFAULT_TEMPLATE_ID,
+        template_version: 3,
+        catalog_id: "japan-2036-preview-templates",
+        catalog_version: 3,
+        intervention_id: "haruhi-world-observation",
+        intervention_sha256: healthTemplate.intervention_sha256,
+        seed: 2036,
+        delay_profile: "none",
+        user_confirmed: true,
+      },
+      execution: { provider_id: "fixture", confirm_live: false },
     });
-    expect(() => buildLocalRunRequest("vertex", 2036, false)).toThrow(/明示確認/);
-    expect(buildLocalRunRequest("vertex", 2036, true).confirm_live).toBe(true);
+    expect(() => buildLocalRunRequest(catalog, catalog.templates[0], "vertex", 2036, false)).toThrow(/明示確認/);
+    expect(() => buildLocalRunRequest(catalog, catalog.templates[0], "fixture", 2036, true)).toThrow(/live確認/);
+    expect(() => buildLocalRunRequest(catalog, catalog.templates[0], "fixture", 9999, false)).toThrow(/許可されたseed/);
+    expect(buildLocalRunRequest(catalog, catalog.templates[0], "vertex", 2036, true).execution.confirm_live).toBe(true);
+  });
+
+  it("fails closed when the adapter health projection is not a catalog", () => {
+    expect(() => parseLocalRunCatalog({})).toThrow(/ready/);
+    expect(() => parseLocalRunCatalog({ ...health, templates: [] })).toThrow(/template/);
+    expect(() => parseLocalRunCatalog({ ...health, templates: [{ ...healthTemplate, intervention_sha256: "zz" }] })).toThrow(/intervention_sha256/);
+    expect(() => parseLocalRunCatalog({ ...health, templates: [{ ...healthTemplate, intervention_path: "interventions/x.json" }] })).toThrow(/項目が契約と一致しません/);
+  });
+
+  it("keeps the default template inside the reviewed catalog", () => {
+    const ids = catalogFile.templates.map((entry) => entry.template_id);
+    expect(ids).toContain(DEFAULT_TEMPLATE_ID);
+    for (const entry of health.templates) expect(ids).toContain(entry.template_id);
+    const reviewed = catalogFile.templates.find((entry) => entry.template_id === DEFAULT_TEMPLATE_ID);
+    expect(reviewed?.template_version).toBe(healthTemplate.template_version);
+    expect(reviewed?.intervention_sha256).toBe(healthTemplate.intervention_sha256);
+    expect(catalogFile.catalog_version).toBe(health.catalog_version);
+    expect(catalogFile.catalog_id).toBe(health.catalog_id);
   });
 
   it("accepts a response whose run, replay and evidence share one identity", async () => {

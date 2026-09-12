@@ -1,7 +1,7 @@
 {
   "schema_version": "fiction_forks_template_selection_confirmation.v1",
   "template_id": "public-tools-access.v1",
-  "template_version": 2,
+  "template_version": 3,
   "intervention_sha256": "2e116cde3f8ad9547261cc58fd1b88c594f8bbefcc0d34961687dc47d21cf455",
   "user_confirmed": true
 }

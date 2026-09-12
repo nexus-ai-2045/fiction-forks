@@ -12,6 +12,7 @@ from typing import Any, Mapping
 
 NOT_MEASURED = "not_measured"
 SCHEMA_VERSION = "fiction_forks_emergence_report.v1"
+CURATED_ROOT_RELATIVE = "artifacts/runs"
 DISCLAIMER = (
     "この報告は創発性の断定ではない。"
     "観測できた行動の多様性、相互作用、契約棄却、技術遅延、発動年、破滅判定の分散だけを集計する。"
@@ -113,6 +114,17 @@ def relative_source_path(path: Path | None, repo_root: Path | None) -> Any:
         except ValueError:
             return resolved.name
     return path.name
+
+
+def is_curated(path: Path | None, curated_root: Path | None) -> bool:
+    """curated root 配下と確認できた artifact だけを curated とする。判定不能はuncurated。"""
+    if path is None or curated_root is None:
+        return False
+    try:
+        path.resolve().relative_to(curated_root.resolve())
+    except (OSError, ValueError):
+        return False
+    return True
 
 
 def execution_identity(
@@ -297,6 +309,7 @@ def summarize_document(
     path: Path | None = None,
     file_sha256: str | None = None,
     repo_root: Path | None = None,
+    curated: bool = False,
 ) -> dict[str, Any]:
     identity = execution_identity(
         document, path=path, file_sha256=file_sha256, repo_root=repo_root
@@ -341,6 +354,7 @@ def summarize_document(
         actions = document["turns"]
     return {
         "identity": identity,
+        "curated": curated,
         "source_class": source_class(document, identity),
         "schema_version": document.get("schema_version", NOT_MEASURED),
         "action_ids": action_ids,
@@ -400,8 +414,11 @@ def _provider_model(identity: Mapping[str, Any]) -> Any:
 
 
 def aggregate(rows: list[Mapping[str, Any]]) -> dict[str, Any]:
+    curated_rows = [row for row in rows if row.get("curated") is True]
     return {
         "n": len(rows),
+        "curated": len(curated_rows),
+        "uncurated": len(rows) - len(curated_rows),
         "action_diversity": {
             "mean": _mean([row["action_diversity"] for row in rows]),
             "distribution": _distribution([row["action_diversity"] for row in rows]),
@@ -477,7 +494,10 @@ def load_recognized(path: Path) -> dict[str, Any] | None:
 
 
 def collect_inputs(
-    paths: list[Path], *, repo_root: Path | None = None
+    paths: list[Path],
+    *,
+    repo_root: Path | None = None,
+    curated_root: Path | None = None,
 ) -> list[tuple[Path, dict[str, Any], str]]:
     files: list[Path] = []
     for path in paths:
@@ -493,7 +513,11 @@ def collect_inputs(
             continue
         digest = sha256_file(file_path)
         row = summarize_document(
-            document, path=file_path, file_sha256=digest, repo_root=repo_root
+            document,
+            path=file_path,
+            file_sha256=digest,
+            repo_root=repo_root,
+            curated=is_curated(file_path, curated_root),
         )
         key = identity_key(row["identity"])
         if key in seen:
@@ -503,15 +527,29 @@ def collect_inputs(
     return collected
 
 
-def build_report(paths: list[Path], *, repo_root: Path | None = None) -> dict[str, Any]:
-    collected = collect_inputs(paths, repo_root=repo_root)
+def build_report(
+    paths: list[Path],
+    *,
+    repo_root: Path | None = None,
+    curated_root: Path | None = None,
+) -> dict[str, Any]:
+    if curated_root is None and repo_root is not None:
+        curated_root = repo_root / CURATED_ROOT_RELATIVE
+    collected = collect_inputs(paths, repo_root=repo_root, curated_root=curated_root)
     rows = [row for _path, row, _digest in collected]
     by_class: dict[str, list[dict[str, Any]]] = {}
     for row in rows:
         by_class.setdefault(row["source_class"], []).append(row)
+    uncurated_count = sum(1 for row in rows if row["curated"] is not True)
     report = {
         "schema_version": SCHEMA_VERSION,
         "disclaimer": DISCLAIMER,
+        "input_curation": {
+            "curated_root": relative_source_path(curated_root, repo_root),
+            "curated_only": uncurated_count == 0,
+            "curated": len(rows) - uncurated_count,
+            "uncurated": uncurated_count,
+        },
         "n_executions": len(rows),
         "executions": rows,
         "aggregates": {
@@ -527,23 +565,41 @@ def build_report(paths: list[Path], *, repo_root: Path | None = None) -> dict[st
 
 
 def render_markdown(report: Mapping[str, Any]) -> str:
+    curation = report["input_curation"]
     lines = [
         "# 行動多様性・相互作用・結果分散の観測報告",
         "",
         report["disclaimer"],
         "",
-        f"- 実行数: {report['n_executions']}",
-        "",
-        "## 実行ごとの識別",
-        "",
-        "| source_class | run_id | provider | model | seed | activation_year | collapsed | result SHA |",
-        "|---|---|---|---|---:|---:|---|---|",
     ]
+    if not curation["curated_only"]:
+        lines.extend(
+            [
+                "この報告は curated root の外の入力を含む。"
+                "`curated` が偽の行は人間レビューを通っていない候補であり、"
+                "公式結果でも実測記録でもない。curatedだけの集計として引用しない。",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            f"- 実行数: {report['n_executions']}",
+            f"- curated root: `{curation['curated_root']}`",
+            f"- curated入力のみ: {curation['curated_only']}",
+            f"- curated / uncurated: {curation['curated']} / {curation['uncurated']}",
+            "",
+            "## 実行ごとの識別",
+            "",
+            "| source_class | curated | run_id | provider | model | seed | activation_year | collapsed | result SHA |",
+            "|---|---|---|---|---|---:|---:|---|---|",
+        ]
+    )
     for row in report["executions"]:
         identity = row["identity"]
         lines.append(
-            "| {source} | `{run_id}` | {provider} | {model} | {seed} | {activation} | {collapsed} | `{sha}` |".format(
+            "| {source} | {curated} | `{run_id}` | {provider} | {model} | {seed} | {activation} | {collapsed} | `{sha}` |".format(
                 source=row["source_class"],
+                curated=row["curated"],
                 run_id=identity["run_id"],
                 provider=identity["provider"],
                 model=identity["model"],
@@ -560,6 +616,7 @@ def render_markdown(report: Mapping[str, Any]) -> str:
                 f"### {name}",
                 "",
                 f"- n: {aggregate_row['n']}",
+                f"- curated / uncurated: {aggregate_row['curated']} / {aggregate_row['uncurated']}",
                 f"- action diversity 平均: {aggregate_row['action_diversity']['mean']}",
                 f"- capability coverage 平均: {aggregate_row['capability_coverage']['mean']}",
                 f"- interaction edge 平均: {aggregate_row['interaction_edge_count']['mean']}",
@@ -579,6 +636,7 @@ def render_markdown(report: Mapping[str, Any]) -> str:
             "- fail-closed rate: invalid / event_count。分母が無ければ `not_measured`。",
             "- collapse rate: `collapsed` が真偽値として測定できた実行だけの割合。未知は分母に入れない。",
             "- 実行の区別: `run_id` は世界入力ID。実行差は provider / model / runtime_revision / 実artifact SHA / event SHA。",
+            "- curated: curated root 配下と確認できた入力だけが真。判定できない入力は偽にする。",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -592,15 +650,20 @@ def main(argv: list[str] | None = None) -> int:
         "--input",
         action="append",
         default=[],
-        help="artifact file or directory (repeatable)",
+        help=(
+            "artifact file or directory (repeatable). "
+            f"default is the curated root {CURATED_ROOT_RELATIVE}; "
+            "anything outside it is reported as uncurated"
+        ),
     )
     parser.add_argument("--output-json", required=True)
     parser.add_argument("--output-md", required=True)
     parser.add_argument("--repo-root", default=".")
     args = parser.parse_args(argv)
     repo_root = Path(args.repo_root).resolve()
-    inputs = [Path(item) for item in (args.input or [repo_root / "artifacts/runs"])]
-    report = build_report(inputs, repo_root=repo_root)
+    curated_root = repo_root / CURATED_ROOT_RELATIVE
+    inputs = [Path(item) for item in (args.input or [curated_root])]
+    report = build_report(inputs, repo_root=repo_root, curated_root=curated_root)
     json_path = Path(args.output_json)
     md_path = Path(args.output_md)
     json_path.parent.mkdir(parents=True, exist_ok=True)

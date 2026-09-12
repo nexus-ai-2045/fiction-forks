@@ -4,12 +4,45 @@ import type { ReplayRun } from "./types";
 export type IdeaState = "draft" | "human_review" | "simulator_run" | "verified_artifact";
 export type LocalProvider = "fixture" | "ollama" | "vertex";
 
-export interface LocalRunRequest {
-  schema_version: "fiction_forks_local_run_request.v1";
-  worldline_id: "haruhi-world-observation";
-  provider: LocalProvider;
+export const DEFAULT_TEMPLATE_ID = "contested-world-observation.v1";
+export const LOCAL_DELAY_PROFILE = "none";
+
+export interface LocalRunTemplate {
+  template_id: string;
+  template_version: number;
+  scenario_id: string;
+  intervention_id: string;
+  intervention_sha256: string;
+  abstract_function: string;
+  allowed_seeds: number[];
+  delay_profiles: string[];
+}
+
+export interface LocalRunCatalog {
+  catalog_id: string;
+  catalog_version: number;
+  providers: string[];
+  templates: LocalRunTemplate[];
+}
+
+export interface ProvisionalRunRequest {
+  schema_version: "fiction_forks_provisional_run_request.v1";
+  scenario_id: string;
+  template_id: string;
+  template_version: number;
+  catalog_id: string;
+  catalog_version: number;
+  intervention_id: string;
+  intervention_sha256: string;
   seed: number;
-  confirm_live: boolean;
+  delay_profile: string;
+  user_confirmed: true;
+}
+
+export interface LocalRunRequest {
+  schema_version: "fiction_forks_local_run_request.v2";
+  run_request: ProvisionalRunRequest;
+  execution: { provider_id: LocalProvider; confirm_live: boolean };
 }
 
 export interface VerifiedLocalRun {
@@ -77,11 +110,59 @@ async function verifiedArtifact(value: unknown, expectedDigest: unknown, label: 
   }
 }
 
-export function buildLocalRunRequest(provider: LocalProvider, seed: number, confirmed: boolean): LocalRunRequest {
-  if (!Number.isInteger(seed) || seed < 0 || seed > 2 ** 31 - 1) throw new Error("seedが範囲外です");
+function template(value: unknown, label: string): LocalRunTemplate {
+  const item = record(value, label);
+  exactKeys(item, ["template_id", "template_version", "scenario_id", "intervention_id", "intervention_sha256", "abstract_function", "allowed_seeds", "delay_profiles"], label);
+  for (const key of ["template_id", "scenario_id", "intervention_id", "abstract_function"] as const) if (typeof item[key] !== "string" || !item[key]) throw new Error(`${label}の${key}が不正です`);
+  const version = item.template_version;
+  const digest = item.intervention_sha256;
+  const seeds = item.allowed_seeds;
+  const profiles = item.delay_profiles;
+  if (typeof version !== "number" || !Number.isInteger(version) || version < 1) throw new Error(`${label}のtemplate_versionが不正です`);
+  if (typeof digest !== "string" || !sha256Pattern.test(digest)) throw new Error(`${label}のintervention_sha256が不正です`);
+  if (!Array.isArray(seeds) || seeds.length === 0 || !seeds.every((seed) => typeof seed === "number" && Number.isInteger(seed))) throw new Error(`${label}のallowed_seedsが不正です`);
+  if (!Array.isArray(profiles) || profiles.length === 0 || !profiles.every((profile) => typeof profile === "string")) throw new Error(`${label}のdelay_profilesが不正です`);
+  return item as unknown as LocalRunTemplate;
+}
+
+export function parseLocalRunCatalog(value: unknown): LocalRunCatalog {
+  const health = record(value, "health");
+  const { status, providers, catalog_id: catalogId, catalog_version: catalogVersion, templates } = health;
+  if (status !== "ready") throw new Error("adapterがreadyではありません");
+  if (!Array.isArray(providers) || !providers.includes("fixture")) throw new Error("providersが不正です");
+  if (typeof catalogId !== "string" || !catalogId) throw new Error("catalog_idが不正です");
+  if (typeof catalogVersion !== "number" || !Number.isInteger(catalogVersion) || catalogVersion < 1) throw new Error("catalog_versionが不正です");
+  if (!Array.isArray(templates) || templates.length === 0) throw new Error("preview可能なtemplateがありません");
+  return {
+    catalog_id: catalogId,
+    catalog_version: catalogVersion,
+    providers: providers.filter((item): item is string => typeof item === "string"),
+    templates: templates.map((item, index) => template(item, `templates[${index}]`)),
+  };
+}
+
+export function buildLocalRunRequest(catalog: LocalRunCatalog, selected: LocalRunTemplate, provider: LocalProvider, seed: number, confirmed: boolean): LocalRunRequest {
+  if (!selected.allowed_seeds.includes(seed)) throw new Error("catalogで許可されたseedを選択してください");
+  if (!selected.delay_profiles.includes(LOCAL_DELAY_PROFILE)) throw new Error("local transportはこのdelay profileを実行できません");
   if (provider === "fixture" && confirmed) throw new Error("fixtureはlive確認を要求しません");
   if (provider !== "fixture" && !confirmed) throw new Error("外部AI実行には明示確認が必要です");
-  return { schema_version: "fiction_forks_local_run_request.v1", worldline_id: "haruhi-world-observation", provider, seed, confirm_live: provider !== "fixture" };
+  return {
+    schema_version: "fiction_forks_local_run_request.v2",
+    run_request: {
+      schema_version: "fiction_forks_provisional_run_request.v1",
+      scenario_id: selected.scenario_id,
+      template_id: selected.template_id,
+      template_version: selected.template_version,
+      catalog_id: catalog.catalog_id,
+      catalog_version: catalog.catalog_version,
+      intervention_id: selected.intervention_id,
+      intervention_sha256: selected.intervention_sha256,
+      seed,
+      delay_profile: LOCAL_DELAY_PROFILE,
+      user_confirmed: true,
+    },
+    execution: { provider_id: provider, confirm_live: provider !== "fixture" },
+  };
 }
 
 export async function parseLocalRunResponse(value: unknown): Promise<VerifiedLocalRun> {
@@ -139,7 +220,7 @@ export async function requestLocalRun(request: LocalRunRequest, sessionToken: st
   if (!sessionToken) throw new Error("adapter起動時に表示されたsession tokenを入力してください");
   const response = await fetch("/api/runs", { method: "POST", headers: { "Content-Type": "application/json", "X-Fiction-Forks-Session": sessionToken }, body: JSON.stringify(request) });
   if (!response.ok) {
-    const messages: Record<number, string> = { 400: "実行要求またはprovider設定が契約と一致しません。", 403: "session token、origin、または実行許可を確認してください。", 413: "実行要求が大きすぎます。", 415: "実行要求の形式が不正です。" };
+    const messages: Record<number, string> = { 400: "実行要求またはprovider設定が契約と一致しません。", 403: "session tokenの期限、origin、または実行許可を確認してください。", 409: "別のシミュレーションが実行中です。完了してから再実行してください。", 413: "実行要求が大きすぎます。", 415: "実行要求の形式が不正です。", 500: "シミュレーター側で実行に失敗しました。要求ではなくadapterを起動した環境を確認してください。" };
     throw new Error(messages[response.status] ?? "シミュレーターへ接続できませんでした。");
   }
   return parseLocalRunResponse(await response.json());

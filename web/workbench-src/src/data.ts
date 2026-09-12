@@ -63,17 +63,14 @@ export const contestationDelayHeading = describeActivationDelay(
   contestationDelay.fork.activation_year,
 );
 
+// artifactが名乗るprovenanceがmanifestと一致することだけを見る。
+// technology scheduleの網羅性はvalidateWorkbenchRelationshipsが持ち、
+// metric deltaとscheduleの再計算突合はcontract.test.tsのcross-language contract testが持つ。
+// PythonのroundとTypeScriptのtoFixedは丸め方が違うため、ここで再計算すると
+// 正しいPython出力を誤ってrejectしうる。
 for (const artifact of [comparison, contestationDelay]) {
   if (artifact.engine_version !== manifest.engine_version || artifact.scenario_id !== manifest.scenario_id ||
       artifact.intervention_id !== manifest.intervention_id || artifact.seed !== manifest.seed) {
     throw new Error("artifact provenance does not match the canonical manifest");
-  }
-  const scheduleIds = Object.keys(artifact.fork.technology_schedule);
-  if (scheduleIds.length !== nodeIds.size || scheduleIds.some((nodeId) => !nodeIds.has(nodeId))) {
-    throw new Error("artifact technology schedule does not cover the canonical technology tree");
-  }
-  for (const key of Object.keys(artifact.state_delta_at_comparison_year) as Array<keyof typeof artifact.state_delta_at_comparison_year>) {
-    const expectedDelta = Number((artifact.fork.state_at_comparison_year[key] - artifact.baseline.state_at_comparison_year[key]).toFixed(2));
-    if (artifact.state_delta_at_comparison_year[key] !== expectedDelta) throw new Error(`artifact delta is inconsistent for ${key}`);
   }
 }

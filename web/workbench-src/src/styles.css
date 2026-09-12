@@ -191,4 +191,5 @@ footer { background: var(--ink); color: white; padding: 28px clamp(20px, 7vw, 11
 .local-run > button { min-height: 44px; padding: .7rem 1rem; border: 1px solid var(--ink); background: var(--ink); color: #fff; font-weight: 800; }
 .local-run > button:disabled { opacity: .55; cursor: not-allowed; }
 .run-warning, .local-run [role="alert"] { color: #8a1c13; font-weight: 700; }
+.run-status { overflow-wrap: anywhere; }
 .run-success { padding: 1rem; border-left: 5px solid #28733c; background: #edf8ef; overflow-wrap: anywhere; }
