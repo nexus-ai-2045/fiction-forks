@@ -1,0 +1,65 @@
+<!-- fiction-forks-pr-type: worldline -->
+
+# WORLDLINE PR
+
+関連Issue: closes #
+作業repo: `fork` / `本repo内branch`
+
+## 介入する未来問題
+
+<!-- 一件だけに固定してください。 -->
+
+## フィクションから抽出した部品
+
+- 参照作品:
+- 参照した登場人物（任意）:
+- 抽出した機能・問い:
+- 作品を知らない人向けの同義表現:
+- 実現方式: `literal` / `functional_equivalent` / `institutional_equivalent`
+
+## 必須成果物
+
+slug: `example-slug`
+
+- [ ] `interventions/<slug>.json`
+- [ ] `scenarios/japan-2036/social-<slug>.json`
+- [ ] `fixtures/social/<slug>.jsonl`
+- [ ] 同一seedの放置／介入比較
+- [ ] 一つ以上のノード遅延比較
+- [ ] 全テスト結果
+
+## 技術・制度・運用ツリー
+
+<!-- ノード、依存先、所要年、完成の観測方法を書いてください。 -->
+
+## 比較結果
+
+- scenario:
+- seed:
+- 発動年:
+- 改善した指標:
+- 悪化した指標:
+- 破滅年の変化:
+
+## 5役の対話
+
+- provider: `fixture` / `replay` / `openai`
+- 5役×3ターン:
+- invalid / abstain:
+- 反対・条件によって不採用になったintent:
+- live runの場合のexact commit / model / output hash:
+
+## 費用・副作用・失敗条件
+
+- 費用:
+- 副作用:
+- 失敗条件:
+
+## 根拠と境界
+
+- 現実について参照した一次資料:
+- Fiction Forks独自の仮説:
+- [ ] 第三者IPの画像・台詞・ロゴ等を含まない
+- [ ] 公式協力や公認を示唆しない
+- [ ] fixtureをlive AI-agent runと表現していない
+- [ ] 人間レビュー前であり、merge・公式化・効果認定を意味しない

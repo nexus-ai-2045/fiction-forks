@@ -1,0 +1,614 @@
+{
+  "actions": [
+    {
+      "action": {
+        "action_id": "audit-assumptions",
+        "agent_id": "civic_auditor",
+        "condition_count": 1,
+        "confidence": 0.78,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "infra_engineer"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "7bde3b4ecd22c3b24c74d1beb49d7422fad229870a559ec5abccfbda35fa4e9f",
+      "intent_id": "t1:civic_auditor",
+      "invalid_reason": null,
+      "previous_event_hash": "8c6187f287fd03f5544aa4e9224d2200720820745eb02dfca952b44c93e3ddd1",
+      "state_after_hash": "f4099e07871342d91eabdc3f6dea284448f3a501b05b1f077dc5034877ecc616",
+      "state_before_hash": "28d40af01a1b415988ee4a454c46a70447155ceaa4d689957761d9f6797482d0",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "translate-consent",
+        "agent_id": "community_interpreter",
+        "condition_count": 1,
+        "confidence": 0.8,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "civic_auditor"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "34861d4295e5a9b4032d23b02f10cd9b9b395a59028b132cec694dc042b672a4",
+      "intent_id": "t1:community_interpreter",
+      "invalid_reason": null,
+      "previous_event_hash": "7bde3b4ecd22c3b24c74d1beb49d7422fad229870a559ec5abccfbda35fa4e9f",
+      "state_after_hash": "8b3cbfaf83266c41ffae915dd1026101666a079886fa35f66ad71f24a23216f5",
+      "state_before_hash": "f4099e07871342d91eabdc3f6dea284448f3a501b05b1f077dc5034877ecc616",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "prototype-repair-network",
+        "agent_id": "infra_engineer",
+        "condition_count": 1,
+        "confidence": 0.74,
+        "evidence_ids": [
+          "public-technology-tree"
+        ],
+        "responds_to": [],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "logistics_operator"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "fd9fed3f4609423a68ced1dedb9cea4ff5eb2239bd62010d509bec5dc82014e9",
+      "intent_id": "t1:infra_engineer",
+      "invalid_reason": null,
+      "previous_event_hash": "34861d4295e5a9b4032d23b02f10cd9b9b395a59028b132cec694dc042b672a4",
+      "state_after_hash": "0e62f3e0325276bfc2448f74974a3f63467dc815fe1b455ccc0ad8fbd3506382",
+      "state_before_hash": "8b3cbfaf83266c41ffae915dd1026101666a079886fa35f66ad71f24a23216f5",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "preposition-logistics",
+        "agent_id": "logistics_operator",
+        "condition_count": 1,
+        "confidence": 0.72,
+        "evidence_ids": [
+          "public-technology-tree"
+        ],
+        "responds_to": [],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "infra_engineer"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "4d84a549078883bef5bc667016c2bdd81749e5f4a81e3653e45c33abd1481a4e",
+      "intent_id": "t1:logistics_operator",
+      "invalid_reason": null,
+      "previous_event_hash": "fd9fed3f4609423a68ced1dedb9cea4ff5eb2239bd62010d509bec5dc82014e9",
+      "state_after_hash": "ab1b8f68458c362e831a7ec120aae9df4ad5840aea9ba171b7b7cc58517c8dd5",
+      "state_before_hash": "0e62f3e0325276bfc2448f74974a3f63467dc815fe1b455ccc0ad8fbd3506382",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "red-team-boundaries",
+        "agent_id": "threat_analyst",
+        "condition_count": 1,
+        "confidence": 0.7,
+        "evidence_ids": [
+          "public-technology-tree"
+        ],
+        "responds_to": [],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "infra_engineer"
+        ],
+        "text_redacted": true,
+        "turn": 1
+      },
+      "event_hash": "cc76be2a157019e5c02c5703d7e2203aa107fe59c5545a615cde4ee8bac77769",
+      "intent_id": "t1:threat_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "4d84a549078883bef5bc667016c2bdd81749e5f4a81e3653e45c33abd1481a4e",
+      "state_after_hash": "f96dc9ba3a19e5f365cb2bb619a7244bafb97844350eb9a0321a8827b704c7ab",
+      "state_before_hash": "ab1b8f68458c362e831a7ec120aae9df4ad5840aea9ba171b7b7cc58517c8dd5",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "audit-assumptions",
+        "agent_id": "civic_auditor",
+        "condition_count": 1,
+        "confidence": 0.75,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t1:logistics_operator"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "community_interpreter"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "1d050122cb4a9a31d760607716f742627e03a6a4c4ff5e4ffbaeca8e63cbebb5",
+      "intent_id": "t2:civic_auditor",
+      "invalid_reason": null,
+      "previous_event_hash": "cc76be2a157019e5c02c5703d7e2203aa107fe59c5545a615cde4ee8bac77769",
+      "state_after_hash": "d33ae8fd3bc787efed69378dbd68ca89759da338e7484388ceccbeba55d01da0",
+      "state_before_hash": "f96dc9ba3a19e5f365cb2bb619a7244bafb97844350eb9a0321a8827b704c7ab",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "translate-consent",
+        "agent_id": "community_interpreter",
+        "condition_count": 1,
+        "confidence": 0.73,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [
+          "t1:civic_auditor"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "logistics_operator"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "533d803ec7db21f2a16993cba655396f358f03c851c7fb90bd214ff4dc069264",
+      "intent_id": "t2:community_interpreter",
+      "invalid_reason": null,
+      "previous_event_hash": "1d050122cb4a9a31d760607716f742627e03a6a4c4ff5e4ffbaeca8e63cbebb5",
+      "state_after_hash": "041f648f824df43b708cad996c5666ddc0837d0f06c20e095f46e8fbaa4ba6bb",
+      "state_before_hash": "d33ae8fd3bc787efed69378dbd68ca89759da338e7484388ceccbeba55d01da0",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "red-team-boundaries",
+        "agent_id": "infra_engineer",
+        "condition_count": 1,
+        "confidence": 0.68,
+        "evidence_ids": [
+          "public-technology-tree"
+        ],
+        "responds_to": [
+          "t1:threat_analyst"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "threat_analyst"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "efaf5b15c7b76f08fbd86f953e8695cfb98cb626a54350ed2f3a018bf3691b86",
+      "intent_id": "t2:infra_engineer",
+      "invalid_reason": null,
+      "previous_event_hash": "533d803ec7db21f2a16993cba655396f358f03c851c7fb90bd214ff4dc069264",
+      "state_after_hash": "e4c20e13cd1cf11ce6729f50846000857f44bd11bd7403d8a11dacc389210ed2",
+      "state_before_hash": "041f648f824df43b708cad996c5666ddc0837d0f06c20e095f46e8fbaa4ba6bb",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "coordinate-drill",
+        "agent_id": "logistics_operator",
+        "condition_count": 1,
+        "confidence": 0.76,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t1:community_interpreter"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "community_interpreter",
+          "civic_auditor"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "16a368f6ceb9a940737ddf19318285baeb63ca31d1ff4a5e8be8c5969d01d551",
+      "intent_id": "t2:logistics_operator",
+      "invalid_reason": null,
+      "previous_event_hash": "efaf5b15c7b76f08fbd86f953e8695cfb98cb626a54350ed2f3a018bf3691b86",
+      "state_after_hash": "3f20c1c7ca5648863e0790254769229210219affc5ad098048c77e51adbaaad8",
+      "state_before_hash": "e4c20e13cd1cf11ce6729f50846000857f44bd11bd7403d8a11dacc389210ed2",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "audit-assumptions",
+        "agent_id": "threat_analyst",
+        "condition_count": 1,
+        "confidence": 0.66,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t1:civic_auditor"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "civic_auditor"
+        ],
+        "text_redacted": true,
+        "turn": 2
+      },
+      "event_hash": "805a6c21affc2a451b4d732abf2341aeaa39fa0de19b273c2081df575b0294e2",
+      "intent_id": "t2:threat_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "16a368f6ceb9a940737ddf19318285baeb63ca31d1ff4a5e8be8c5969d01d551",
+      "state_after_hash": "7df5f9c8aec6cb6026dfc6f77a636108dd0b317630dd089bc7358997b4866292",
+      "state_before_hash": "3f20c1c7ca5648863e0790254769229210219affc5ad098048c77e51adbaaad8",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "coordinate-drill",
+        "agent_id": "civic_auditor",
+        "condition_count": 1,
+        "confidence": 0.77,
+        "evidence_ids": [
+          "public-technology-tree"
+        ],
+        "responds_to": [
+          "t2:logistics_operator"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "logistics_operator"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "01fd564ad1ad52c3283db02f4d64974c7d488747ff182f67194086abad2c9da7",
+      "intent_id": "t3:civic_auditor",
+      "invalid_reason": null,
+      "previous_event_hash": "805a6c21affc2a451b4d732abf2341aeaa39fa0de19b273c2081df575b0294e2",
+      "state_after_hash": "6ca14e8ca4cb55c70c5ec9dc0d811c3b39f45afb0f7ed663f143d2342aaefe12",
+      "state_before_hash": "7df5f9c8aec6cb6026dfc6f77a636108dd0b317630dd089bc7358997b4866292",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "coordinate-drill",
+        "agent_id": "community_interpreter",
+        "condition_count": 1,
+        "confidence": 0.79,
+        "evidence_ids": [
+          "public-technology-tree"
+        ],
+        "responds_to": [
+          "t2:civic_auditor"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "civic_auditor"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "f0c017ac6fcbfd53f8422c0961abb2fc12004e69366a6e020a00ecd5e579b455",
+      "intent_id": "t3:community_interpreter",
+      "invalid_reason": null,
+      "previous_event_hash": "01fd564ad1ad52c3283db02f4d64974c7d488747ff182f67194086abad2c9da7",
+      "state_after_hash": "9f132e5fe31d8f5a02b54faf0eed2515070a88e4252041648eb7a5c08083fbe6",
+      "state_before_hash": "6ca14e8ca4cb55c70c5ec9dc0d811c3b39f45afb0f7ed663f143d2342aaefe12",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "prototype-repair-network",
+        "agent_id": "infra_engineer",
+        "condition_count": 1,
+        "confidence": 0.71,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [
+          "t2:community_interpreter"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "community_interpreter"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "d11a6c5bba74384f66a7533b1711041a6567c6839e72f3512c4727ee8c7ba132",
+      "intent_id": "t3:infra_engineer",
+      "invalid_reason": null,
+      "previous_event_hash": "f0c017ac6fcbfd53f8422c0961abb2fc12004e69366a6e020a00ecd5e579b455",
+      "state_after_hash": "41412c0f2b040a7d72100cec458d9cacb22914a418d942441da406bcb06066db",
+      "state_before_hash": "9f132e5fe31d8f5a02b54faf0eed2515070a88e4252041648eb7a5c08083fbe6",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "preposition-logistics",
+        "agent_id": "logistics_operator",
+        "condition_count": 1,
+        "confidence": 0.7,
+        "evidence_ids": [
+          "public-collapse-gate"
+        ],
+        "responds_to": [
+          "t2:threat_analyst"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "threat_analyst"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "3d0212dace8e691b9bf3d3d45f97bbe5dd5ba402c6747a5ffec1de6e4e2bcdf5",
+      "intent_id": "t3:logistics_operator",
+      "invalid_reason": null,
+      "previous_event_hash": "d11a6c5bba74384f66a7533b1711041a6567c6839e72f3512c4727ee8c7ba132",
+      "state_after_hash": "49f10142160b665f78e035e23fa15edc4f8b77426542a43ee52b015082d32a86",
+      "state_before_hash": "41412c0f2b040a7d72100cec458d9cacb22914a418d942441da406bcb06066db",
+      "valid": true
+    },
+    {
+      "action": {
+        "action_id": "red-team-boundaries",
+        "agent_id": "threat_analyst",
+        "condition_count": 1,
+        "confidence": 0.69,
+        "evidence_ids": [
+          "public-ip-boundary"
+        ],
+        "responds_to": [
+          "t2:infra_engineer"
+        ],
+        "run_id": "ff-d3674fbb82db8614",
+        "schema_version": "fiction_forks_action.v1",
+        "stance": "condition",
+        "target_ids": [
+          "infra_engineer"
+        ],
+        "text_redacted": true,
+        "turn": 3
+      },
+      "event_hash": "9e6aadfc484e44f966bfb8f54c004be50e3f09f4ed98241b8e250fe90c2760fe",
+      "intent_id": "t3:threat_analyst",
+      "invalid_reason": null,
+      "previous_event_hash": "3d0212dace8e691b9bf3d3d45f97bbe5dd5ba402c6747a5ffec1de6e4e2bcdf5",
+      "state_after_hash": "2bd874451e8cbd16f247f30450d68cdb3a1402e025d40182956f41db4d48d633",
+      "state_before_hash": "49f10142160b665f78e035e23fa15edc4f8b77426542a43ee52b015082d32a86",
+      "valid": true
+    }
+  ],
+  "assumption_notice": "これは意思決定条件の観察用シミュレーションであり、未来予測、政策助言、実在組織の評価ではない。",
+  "engine_version": "0.2.0",
+  "final_event_hash": "9e6aadfc484e44f966bfb8f54c004be50e3f09f4ed98241b8e250fe90c2760fe",
+  "input_digest": "d3674fbb82db861487318ff61a864f82dcb1c5fc1b6393591e0fc0292f683a3e",
+  "interaction_edges": [
+    {
+      "from_intent_id": "t2:civic_auditor",
+      "stance": "condition",
+      "to_intent_id": "t1:logistics_operator"
+    },
+    {
+      "from_intent_id": "t2:community_interpreter",
+      "stance": "condition",
+      "to_intent_id": "t1:civic_auditor"
+    },
+    {
+      "from_intent_id": "t2:infra_engineer",
+      "stance": "condition",
+      "to_intent_id": "t1:threat_analyst"
+    },
+    {
+      "from_intent_id": "t2:logistics_operator",
+      "stance": "condition",
+      "to_intent_id": "t1:community_interpreter"
+    },
+    {
+      "from_intent_id": "t2:threat_analyst",
+      "stance": "condition",
+      "to_intent_id": "t1:civic_auditor"
+    },
+    {
+      "from_intent_id": "t3:civic_auditor",
+      "stance": "condition",
+      "to_intent_id": "t2:logistics_operator"
+    },
+    {
+      "from_intent_id": "t3:community_interpreter",
+      "stance": "condition",
+      "to_intent_id": "t2:civic_auditor"
+    },
+    {
+      "from_intent_id": "t3:infra_engineer",
+      "stance": "condition",
+      "to_intent_id": "t2:community_interpreter"
+    },
+    {
+      "from_intent_id": "t3:logistics_operator",
+      "stance": "condition",
+      "to_intent_id": "t2:threat_analyst"
+    },
+    {
+      "from_intent_id": "t3:threat_analyst",
+      "stance": "condition",
+      "to_intent_id": "t2:infra_engineer"
+    }
+  ],
+  "intervention_id": "doraemon-public-tools",
+  "metrics": {
+    "abstention_count": 0,
+    "action_count": 15,
+    "capability_coverage": 6,
+    "conditioned_intent_count": 15,
+    "interaction_edge_count": 10,
+    "invalid_action_count": 0,
+    "opposed_intent_count": 0,
+    "referenced_evidence_count": 3,
+    "reversible_action_ratio": 1.0,
+    "valid_action_count": 15
+  },
+  "missing_actions_by_node": {
+    "joint-governance-and-drills": [],
+    "local-data-governance": [],
+    "public-ai-reference-stack": [],
+    "regional-fabrication-cells": []
+  },
+  "protocol_version": "1.0.0",
+  "provider": {
+    "model": null,
+    "name": "fixture"
+  },
+  "roles": [
+    "civic_auditor",
+    "infra_engineer",
+    "logistics_operator",
+    "community_interpreter",
+    "threat_analyst"
+  ],
+  "run_id": "ff-d3674fbb82db8614",
+  "scenario_id": "japan-2036-centralization",
+  "schema_version": "fiction_forks_social_result.v1",
+  "seed": 2036,
+  "selected_action_ids": [
+    "audit-assumptions",
+    "coordinate-drill",
+    "preposition-logistics",
+    "prototype-repair-network",
+    "red-team-boundaries",
+    "translate-consent"
+  ],
+  "technology_delays": {
+    "joint-governance-and-drills": 0,
+    "local-data-governance": 0,
+    "public-ai-reference-stack": 0,
+    "regional-fabrication-cells": 0
+  },
+  "turn_count": 3,
+  "world_comparison": {
+    "baseline": {
+      "collapse_year": 2036,
+      "collapsed": true,
+      "final_state": {
+        "cognitive_sovereignty": 6.0,
+        "legitimacy": 38.0,
+        "living_systems": 43.0,
+        "repair_capacity": 33.0,
+        "strategic_autonomy": 17.0
+      },
+      "state_at_comparison_year": {
+        "cognitive_sovereignty": 6.0,
+        "legitimacy": 38.0,
+        "living_systems": 43.0,
+        "repair_capacity": 33.0,
+        "strategic_autonomy": 17.0
+      }
+    },
+    "comparison_year": 2036,
+    "declared_costs": [
+      "平時から公共拠点と監査人材を維持する費用",
+      "自治体間の仕様調整と責任分担"
+    ],
+    "declared_failure_modes": [
+      "監査可能と称しながら実装が単一事業者へ依存する",
+      "利用者教育が間に合わず専門知の格差が残る",
+      "非常時の権限と責任主体が曖昧になる"
+    ],
+    "declared_side_effects": [
+      "道具へのアクセス格差",
+      "悪用や過信による局地的被害",
+      "維持費が短期の生活基盤投資を圧迫する"
+    ],
+    "engine_version": "0.2.0",
+    "fork": {
+      "activation_year": 2032,
+      "collapse_year": null,
+      "collapsed": false,
+      "final_state": {
+        "cognitive_sovereignty": 11.0,
+        "legitimacy": 43.0,
+        "living_systems": 38.0,
+        "repair_capacity": 63.0,
+        "strategic_autonomy": 40.0
+      },
+      "state_at_comparison_year": {
+        "cognitive_sovereignty": 11.0,
+        "legitimacy": 43.0,
+        "living_systems": 38.0,
+        "repair_capacity": 63.0,
+        "strategic_autonomy": 40.0
+      },
+      "technology_delays": {
+        "joint-governance-and-drills": 0,
+        "local-data-governance": 0,
+        "public-ai-reference-stack": 0,
+        "regional-fabrication-cells": 0
+      },
+      "technology_schedule": {
+        "joint-governance-and-drills": 2032,
+        "local-data-governance": 2030,
+        "public-ai-reference-stack": 2029,
+        "regional-fabrication-cells": 2030
+      }
+    },
+    "intervention_id": "doraemon-public-tools",
+    "scenario_id": "japan-2036-centralization",
+    "schema_version": "fiction_forks_comparison.v1",
+    "seed": 2036,
+    "state_delta_at_comparison_year": {
+      "cognitive_sovereignty": 5.0,
+      "legitimacy": 5.0,
+      "living_systems": -5.0,
+      "repair_capacity": 30.0,
+      "strategic_autonomy": 23.0
+    }
+  }
+}

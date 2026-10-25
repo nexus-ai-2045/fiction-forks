@@ -1,0 +1,101 @@
+{
+  "schema_version": "fiction_forks_intervention.v1",
+  "id": "haruhi-world-observation",
+  "fiction_reference": "『涼宮ハルヒの憂鬱』",
+  "extracted_function": "単一の権威では捉えきれない世界の変化を、複数の観測者が継続的に照合して異常として検知する",
+  "realization_mode": "institutional_equivalent",
+  "implementation_hypothesis": "公開仕様の分散観測網、証拠来歴台帳、独立した異議申立て手続、地域横断の観測訓練を組み合わせ、危機時にも不一致と不確実性を消さずに検証可能な状態へ保つ。",
+  "prerequisites": [
+    "auditable_public_ai",
+    "local_data_trusts",
+    "distributed_fabrication"
+  ],
+  "technology_tree": {
+    "nodes": [
+      {
+        "id": "federated-observation-probes",
+        "label": "公開仕様の分散観測プローブ",
+        "kind": "technology",
+        "lead_time_years": 1,
+        "completion_evidence": "異なる運営主体の3系統が同じ公開テスト事象を観測し、時刻・欠測・校正誤差を含む機械可読記録を再現できる",
+        "depends_on": [
+          "auditable_public_ai"
+        ]
+      },
+      {
+        "id": "observation-data-charter",
+        "label": "観測データ憲章と訂正・撤回手続",
+        "kind": "institution",
+        "lead_time_years": 1,
+        "completion_evidence": "住民が観測目的、保存期間、推論利用を確認し、訂正・撤回・異議申立ての処理時間を監査できる",
+        "depends_on": [
+          "local_data_trusts"
+        ]
+      },
+      {
+        "id": "local-verification-labs",
+        "label": "地域検証ラボと交換可能な観測部品",
+        "kind": "technology",
+        "lead_time_years": 1,
+        "completion_evidence": "複数地域が公開設計から観測部品を交換・校正し、一地域停止時にも相互検証を継続できる",
+        "depends_on": [
+          "distributed_fabrication",
+          "federated-observation-probes"
+        ]
+      },
+      {
+        "id": "contested-evidence-protocol",
+        "label": "証拠来歴と対立仮説の公開検証手続",
+        "kind": "institution",
+        "lead_time_years": 1,
+        "completion_evidence": "独立監査者が同一証拠から複数仮説を再計算し、棄却理由、少数意見、訂正履歴を公開記録として追跡できる",
+        "depends_on": [
+          "federated-observation-probes",
+          "observation-data-charter"
+        ]
+      },
+      {
+        "id": "cross-observer-anomaly-drills",
+        "label": "観測不一致の共同判定・停止訓練",
+        "kind": "operations",
+        "lead_time_years": 1,
+        "completion_evidence": "誤警報、欠測、運営主体停止を含む訓練で、人間の停止権、引継ぎ時間、未合意点、再開条件を記録できる",
+        "depends_on": [
+          "local-verification-labs",
+          "contested-evidence-protocol"
+        ]
+      }
+    ],
+    "activation_requires": [
+      "cross-observer-anomaly-drills"
+    ]
+  },
+  "activation_effects": {
+    "cognitive_sovereignty": 4,
+    "legitimacy": 2,
+    "repair_capacity": 3
+  },
+  "annual_effects": {
+    "living_systems": -1,
+    "strategic_autonomy": 1,
+    "cognitive_sovereignty": 5,
+    "legitimacy": 1,
+    "repair_capacity": 4
+  },
+  "costs": [
+    "複数系統の観測設備、校正、人材、公開監査を平時から維持する費用",
+    "単一の即断よりも不一致の検証と異議処理に時間がかかる"
+  ],
+  "side_effects": [
+    "観測対象の拡大が監視社会化や目的外利用につながる危険",
+    "誤警報や対立仮説の並存が意思決定を遅らせる",
+    "維持費が短期の生活基盤投資を圧迫する"
+  ],
+  "failure_modes": [
+    "独立系に見える観測網が同じデータ供給者やモデルへ集中する",
+    "少数意見を残す制度がなく、異常を多数決で消してしまう",
+    "観測精度の高さを政策判断の正しさと取り違える",
+    "緊急時を理由に停止権、訂正、撤回の手続を無効化する"
+  ],
+  "rights_notice": "作品名と抽象化した観測機能だけを参照し、画像、台詞、音声、ロゴ、キャラクター表現、特徴的な口調、公式協力の示唆を含まない。"
+}

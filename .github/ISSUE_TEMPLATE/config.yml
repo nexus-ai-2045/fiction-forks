@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Fiction Forks Idea Builder
+    url: https://nexus-ai-2045.github.io/fiction-forks/
+    about: 作品や登場人物から未来介入のアイデアを対話的に整理します。
+  - name: セキュリティ上の報告
+    url: https://github.com/nexus-ai-2045/fiction-forks/security/policy
+    about: 脆弱性や秘密情報は公開Issueへ書かず、SECURITY.mdの窓口を使ってください。

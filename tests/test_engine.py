@@ -1,0 +1,234 @@
+from __future__ import annotations
+
+import json
+import re
+import sys
+import time
+import tomllib
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
+
+from fiction_forks import __version__
+from fiction_forks.engine import (
+    ENGINE_VERSION,
+    ContractError,
+    compare_worlds,
+    load_json,
+    simulate,
+    validate_intervention,
+    validate_scenario,
+)
+
+
+HOME_PATH_PATTERN = re.compile(
+    r"(?i)(?<![a-z0-9:/])(?:[a-z]:[\\/]+users[\\/]+|/(?:users|home)/)"
+)
+
+
+class SimulationContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.scenario = load_json(ROOT / "scenarios/japan-2036/scenario.json")
+        cls.intervention = load_json(ROOT / "interventions/doraemon-public-tools.json")
+
+    def test_same_seed_is_reproducible(self) -> None:
+        first = simulate(self.scenario, seed=2036)
+        second = simulate(self.scenario, seed=2036)
+        self.assertEqual(first, second)
+
+    def test_version_ssot_is_synchronized(self) -> None:
+        project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+        project_version = project["project"]["version"]
+        result = simulate(self.scenario, seed=2036)
+        comparison = compare_worlds(self.scenario, self.intervention, seed=2036)
+        self.assertEqual(project_version, __version__)
+        self.assertEqual(ENGINE_VERSION, result["engine_version"])
+        self.assertEqual(ENGINE_VERSION, comparison["engine_version"])
+
+    def test_baseline_collapses_from_declared_gate(self) -> None:
+        result = simulate(self.scenario, seed=2036)
+        self.assertTrue(result["collapsed"])
+        self.assertEqual(2036, result["collapse_year"])
+        gate = result["timeline"][-1]["collapse_gate"]
+        self.assertGreaterEqual(len(gate["breached_metrics"]), 2)
+        self.assertEqual(2, gate["consecutive_danger_turns"])
+
+    def test_intervention_waits_for_technology_tree(self) -> None:
+        result = simulate(self.scenario, self.intervention, seed=2036)
+        self.assertEqual(2032, result["activation_year"])
+        self.assertEqual(
+            {
+                "joint-governance-and-drills": 2032,
+                "local-data-governance": 2030,
+                "public-ai-reference-stack": 2029,
+                "regional-fabrication-cells": 2030,
+            },
+            result["technology_schedule"],
+        )
+        before = [
+            event
+            for turn in result["timeline"]
+            if turn["year"] < 2032
+            for event in turn["events"]
+            if event["kind"].startswith("intervention")
+        ]
+        self.assertEqual([], before)
+
+    def test_cyclic_technology_tree_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.intervention))
+        broken["technology_tree"]["nodes"][0]["depends_on"] = [
+            "joint-governance-and-drills"
+        ]
+        broken["prerequisites"].remove("auditable_public_ai")
+        with self.assertRaisesRegex(ContractError, "cycle"):
+            simulate(self.scenario, broken)
+
+    def test_technology_delay_can_miss_intervention_window(self) -> None:
+        result = simulate(
+            self.scenario,
+            self.intervention,
+            seed=2036,
+            technology_delays={"joint-governance-and-drills": 5},
+        )
+        self.assertEqual(2037, result["activation_year"])
+        self.assertTrue(result["collapsed"])
+        self.assertEqual(2036, result["collapse_year"])
+
+    def test_technology_node_requires_completion_evidence(self) -> None:
+        broken = json.loads(json.dumps(self.intervention))
+        del broken["technology_tree"]["nodes"][0]["completion_evidence"]
+        with self.assertRaisesRegex(ContractError, "completion_evidence"):
+            simulate(self.scenario, broken)
+
+    def test_example_fork_changes_outcome_and_keeps_declared_costs(self) -> None:
+        result = compare_worlds(self.scenario, self.intervention, seed=2036)
+        self.assertTrue(result["baseline"]["collapsed"])
+        self.assertFalse(result["fork"]["collapsed"])
+        delta = result["state_delta_at_comparison_year"]
+        self.assertLess(delta["living_systems"], 0)
+        self.assertGreater(delta["repair_capacity"], 0)
+        self.assertTrue(result["declared_side_effects"])
+        self.assertTrue(result["declared_failure_modes"])
+        self.assertEqual(2036, result["comparison_year"])
+
+    def test_all_versioned_inputs_satisfy_contract(self) -> None:
+        scenarios = [
+            load_json(path) for path in (ROOT / "scenarios").rglob("scenario.json")
+        ]
+        self.assertTrue(scenarios)
+        for scenario in scenarios:
+            validate_scenario(scenario)
+        for path in (ROOT / "interventions").glob("*.json"):
+            validate_intervention(load_json(path), self.scenario)
+
+    def test_unknown_metric_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["baseline_annual_effects"]["unknown_metric"] = 1
+        with self.assertRaises(ContractError):
+            simulate(broken)
+
+    def test_boolean_effect_is_not_accepted_as_a_number(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["baseline_annual_effects"]["living_systems"] = True
+        with self.assertRaisesRegex(ContractError, "must be numeric"):
+            simulate(broken)
+
+    def test_malformed_nested_shock_fails_with_contract_error(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["shocks"][0] = {"id": "broken", "effects": []}
+        with self.assertRaisesRegex(ContractError, "shock:broken"):
+            simulate(broken)
+
+    def test_shock_year_outside_simulated_window_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["shocks"][0]["year"] = int(broken["end_year"]) + 1
+        with self.assertRaisesRegex(ContractError, "year must be between"):
+            simulate(broken)
+
+    def test_shock_year_before_start_year_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["shocks"][0]["year"] = int(broken["start_year"]) - 1
+        with self.assertRaisesRegex(ContractError, "year must be between"):
+            simulate(broken)
+
+    def test_duplicate_shock_id_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        duplicate = json.loads(json.dumps(broken["shocks"][0]))
+        broken["shocks"].append(duplicate)
+        with self.assertRaisesRegex(ContractError, "shock ids must be unique"):
+            simulate(broken)
+
+    def test_duplicate_collapse_metric_fails_closed(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["collapse"]["metrics"] = ["legitimacy", "legitimacy"]
+        broken["collapse"]["minimum_breaches"] = 2
+        with self.assertRaisesRegex(ContractError, "collapse.metrics must be unique"):
+            simulate(broken)
+
+    def test_many_duplicate_collapse_metrics_fail_closed_in_linear_time(self) -> None:
+        broken = json.loads(json.dumps(self.scenario))
+        broken["collapse"]["metrics"] = ["legitimacy"] * 40_000
+        broken["collapse"]["minimum_breaches"] = 2
+        started = time.perf_counter()
+        with self.assertRaisesRegex(ContractError, "collapse.metrics must be unique"):
+            simulate(broken)
+        elapsed = time.perf_counter() - started
+        self.assertLess(elapsed, 1.0, f"duplicate check took {elapsed:.3f}s")
+
+    def test_technology_delays_without_intervention_fails_closed(self) -> None:
+        with self.assertRaisesRegex(
+            ContractError, "technology delays require an intervention"
+        ):
+            simulate(
+                self.scenario,
+                seed=2036,
+                technology_delays={"joint-governance-and-drills": 5},
+            )
+
+    def test_empty_technology_delays_without_intervention_is_allowed(self) -> None:
+        result = simulate(self.scenario, seed=2036, technology_delays={})
+        self.assertEqual({}, result["technology_delays"])
+
+    def test_public_files_do_not_contain_windows_home_path(self) -> None:
+        for path in ROOT.rglob("*"):
+            if not path.is_file() or {
+                ".git",
+                "node_modules",
+                "test-results",
+                "playwright-report",
+            }.intersection(path.parts):
+                continue
+            if path.resolve() == Path(__file__).resolve():
+                continue
+            if path.suffix.lower() not in {
+                ".md",
+                ".py",
+                ".json",
+                ".jsonl",
+                ".html",
+                ".js",
+                ".toml",
+                ".txt",
+                ".yml",
+            }:
+                continue
+            text = path.read_text(encoding="utf-8")
+            # JSON escapes Windows separators, so normalize the serialized
+            # representation before checking all common home path forms.
+            normalized = text.replace("\\\\", "\\")
+            self.assertIsNone(HOME_PATH_PATTERN.search(normalized), str(path))
+
+    def test_home_path_detector_catches_json_escaped_windows_path(self) -> None:
+        # 公開前検査が例示パスを個人パスと誤検出しないよう、実行時に組み立てる。
+        windows_path = "\\".join(["C:", "Users", "USER", "python.exe"])
+        rendered = json.dumps({"command": [windows_path]})
+        self.assertIsNotNone(HOME_PATH_PATTERN.search(rendered.replace("\\\\", "\\")))
+
+
+if __name__ == "__main__":
+    unittest.main()

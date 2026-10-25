@@ -1,0 +1,87 @@
+{
+  "schema_version": "fiction_forks_intervention.v1",
+  "id": "adaptive-safety-envelope",
+  "fiction_reference": "『呪術廻戦』",
+  "extracted_function": "危機との距離が縮むほど複数の防護層を再構成し、単一障害を越えて安全余白を保つ",
+  "realization_mode": "institutional_equivalent",
+  "implementation_hypothesis": "公開仕様の危機センサー、独立した複数の停止層、住民の異議申立て、地域の手動退避拠点、継続的な突破訓練を組み合わせる。危機を無限に消せるとは仮定せず、防護層を使い切る前に人間が停止・退避・再設計できる適応型セーフティ・エンベロープとして実装する。",
+  "prerequisites": [
+    "auditable_public_ai",
+    "local_data_trusts",
+    "distributed_fabrication"
+  ],
+  "technology_tree": {
+    "nodes": [
+      {
+        "id": "open-hazard-probes",
+        "label": "公開仕様の危機検知プローブと誤警報記録",
+        "kind": "technology",
+        "lead_time_years": 1,
+        "completion_evidence": "独立した3主体が同じ試験危機を観測し、欠測、誤警報、検知遅延を含む記録を再現できる",
+        "depends_on": ["auditable_public_ai"]
+      },
+      {
+        "id": "layered-stop-charter",
+        "label": "多層停止、異議申立て、強制解除の公開憲章",
+        "kind": "institution",
+        "lead_time_years": 1,
+        "completion_evidence": "各防護層の発動条件、停止権、解除権、補償、監査期限を第三者が追跡できる",
+        "depends_on": ["local_data_trusts"]
+      },
+      {
+        "id": "replaceable-safety-modules",
+        "label": "交換可能な地域防護モジュール",
+        "kind": "technology",
+        "lead_time_years": 1,
+        "completion_evidence": "一つの供給者や拠点が停止しても、複数地域が公開設計から防護部品を交換できる",
+        "depends_on": ["distributed_fabrication", "open-hazard-probes"]
+      },
+      {
+        "id": "human-escape-corridors",
+        "label": "自動防護を越えて退避できる手動回廊",
+        "kind": "institution",
+        "lead_time_years": 1,
+        "completion_evidence": "通信断、誤検知、権限衝突時にも住民が人手で退避し、保護を拒否できる経路を実地確認できる",
+        "depends_on": ["layered-stop-charter", "replaceable-safety-modules"]
+      },
+      {
+        "id": "adaptive-breach-drills",
+        "label": "防護層の突破、枯渇、誤作動を含む共同訓練",
+        "kind": "operations",
+        "lead_time_years": 1,
+        "completion_evidence": "連続突破、共通原因故障、資源枯渇を含む訓練で、退避時間、残存層、再開条件を記録できる",
+        "depends_on": ["human-escape-corridors"]
+      }
+    ],
+    "activation_requires": ["adaptive-breach-drills"]
+  },
+  "activation_effects": {
+    "living_systems": 2,
+    "strategic_autonomy": 2,
+    "repair_capacity": 4
+  },
+  "annual_effects": {
+    "living_systems": 2,
+    "strategic_autonomy": 2,
+    "cognitive_sovereignty": 1,
+    "legitimacy": -1,
+    "repair_capacity": 4
+  },
+  "costs": [
+    "複数の防護層、予備資源、退避拠点、突破訓練を常時維持する費用",
+    "誤警報と停止判断を検証する人員および監査時間"
+  ],
+  "side_effects": [
+    "安全を理由に移動、通信、取引を過剰に遮断する危険",
+    "防護層への依存が根本原因の除去を遅らせる",
+    "常時監視が目的外利用や萎縮を生む",
+    "高コストな地域と導入できない地域の安全格差"
+  ],
+  "failure_modes": [
+    "複数層が同じデータ、モデル、電源へ依存し同時に破られる",
+    "危機を無限に回避できるという誤信が退避判断を遅らせる",
+    "防護の強制解除権が一主体へ集中する",
+    "防護資源を使い切った後の撤退・再設計条件が定義されない"
+  ],
+  "rights_notice": "作品名と抽象化した危機回避機能だけを参照し、画像、台詞、音声、ロゴ、人物、技名の演出や公式協力の示唆を含まない。危機を文字どおり無限に回避できるとは主張しない。"
+}

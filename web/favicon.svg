@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Fiction Forks">
+  <rect width="32" height="32" rx="4" fill="#122523"/>
+  <path d="M10 9v8c0 4 3 6 7 6h2" fill="none" stroke="#7ccdc0" stroke-width="3" stroke-linecap="round"/>
+  <path d="M22 9v2c0 4-3 6-7 6" fill="none" stroke="#e3b72e" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="10" cy="8" r="3" fill="#7ccdc0"/>
+  <circle cx="22" cy="8" r="3" fill="#e3b72e"/>
+  <circle cx="21" cy="23" r="3" fill="#fbfaf6"/>
+</svg>

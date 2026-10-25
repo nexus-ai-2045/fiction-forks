@@ -1,0 +1,27 @@
+{
+  "schema_version": "fiction_forks_idea_status_projection.v1",
+  "observed_at": "2026-08-28",
+  "repository": "nexus-ai-2045/fiction-forks",
+  "ideas": [
+    {
+      "issue_number": 12,
+      "issue_url": "https://github.com/nexus-ai-2045/fiction-forks/issues/12",
+      "source_updated_at": "2026-08-24T03:15:24Z",
+      "lifecycle": {
+        "listed": true,
+        "assigned": false,
+        "implemented": false,
+        "simulated": false,
+        "reported_back": false
+      },
+      "simulation_status": "not-ready",
+      "missing_conditions": [
+        "タケコプターを作品非依存の抽象機能へ言い換える",
+        "作用させるactive doomと因果を選ぶ",
+        "技術・制度・運用の完成証拠を定義する",
+        "費用・副作用・失敗条件を定義する"
+      ],
+      "next_action": "guided対話で理解を確認し、本人確認済みIdeaDraftを作る"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+# 提出後の判断票
+
+この文書はロードマップを複製しません。0.4の実装順と残務は[プロダクト設計](product-design.md#04の実装順)を正本とし、ここには人間判断が必要な停止点だけを記録します。
+
+## Issue #12 の公式化判断
+
+- 状態: evaluation-onlyを維持する（推奨）
+- 根拠: `catalogs/idea-status.v1.json`は`listed=true`、`assigned=false`、`implemented=false`、`simulated=false`、`reported_back=false`、`simulation_status=not-ready`を正本projectionとして持つ。`evaluation/worldline-issue12/`は評価fixtureであり、公式worldlineの正本ではない
+- 人間判断: 抽象機能、対象doom、完成証拠、副作用・失敗条件を本人確認したうえで、公式worldline PRへ進めるか
+- owner: Issue #12の提案者とmaintainer
+- next_action: guided対話または人間レビューで不足fieldを確認し、公式化する場合だけ新しいworldline PR候補を作る
+- resume_condition: 本人確認済み`IdeaDraft`と、既存templateへの写像または独立介入としての実装契約が揃う
+- external_boundary: Issue close、Issue comment、PR作成、mergeは別承認
+
+## v0.3.1 リリース判断
+
+- candidate: `cc86dd1c7b69ffdc54cdd33637dda82bc5bf500f`
+- 状態: release公開の人間レビュー待ち
+- 根拠: `pyproject.toml`は`0.3.1`、GitHubの最新tag/releaseは`v0.3.0`。candidateのCIとCodeQLは成功し、通常cloneでunit、Web test、build、desktop/mobile E2Eを再実測済み
+- 人間判断: `cc86dd1`を`v0.3.1`としてtag/release公開するか
+- owner: maintainer
+- next_action: 公開内容、CHANGELOG、artifact、release noteを人間レビューし、承認時だけrelease手順を実行する
+- resume_condition: release対象HEADが`cc86dd1`と一致し、同一HEADのCI、CodeQL、repo-preflightが成功している。HEADが変わった場合はこの判断票を再作成する
+- external_boundary: tag作成、Release公開、外部告知はこの判断票では実行しない
+
+## 0.4と次シーズン
+
+- owner: product maintainer
+- evidence: [プロダクト設計の実装順](product-design.md#04の実装順)
+- next_action: guided参加ループから依存順に進め、現行local adapterのloopback防御とcanonical CLI実行を再利用して`ProvisionalRunRequest`／`RunSummary`へ接続する
+- resume_condition: 各段の前段contractと回帰検査が揃う
+- 残務: [プロダクト設計の0.4実装順](product-design.md#04の実装順)を正本とし、この判断票へ項目を複製しない。現行local adapterはsocial-run用で、同実装順4のprovisional local transport完了証拠には数えない
+
+## local worktree監査
+
+2026-08-30に`git worktree list --porcelain`、各worktreeのstatus、HEAD、`origin/main`との差、GitHub PR状態をread-onlyで照合した。squash mergeではbranch commitが`main`のancestorにならないため、merged PRとの対応だけで削除可能とは判定しない。
+
+| 分類 | 件数 | 対象 | owner / next_action / resume_condition |
+|---|---:|---|---|
+| active canonical | 1 | `fiction-forks` | owner: このcloseout。SSOT差分のreviewとcommit/PR判断へ戻る |
+| merged-equivalent候補 | 11 | `fiction-forks-04-contracts-20260828`、`adventure-theme-20260830`、`chat-simulation-roadmap-20260825`、`issue20-20260830`、`issue20-worldline-20260830`、`release-v030-20260824`、`result-workbench-20260829`、`run-bundle-20260830`、`submission-hardening-20260830`、`web-idea-builder-20260824`、`worldline-list-contract-20260830` | owner: 各branch/PR owner。関連merged PRと保存済みcontextを確認し、未統合差分がないと証明できた後だけ削除判断へ進む |
+| unique candidate | 6 | `claude-ux-20260830`、`cloud-job-mvp-20260829`、`pr14-closeout-20260830`、detached `pr14-format-20260829`、`result-workbench-p2-20260829`、`workbench-slice-20260829` | owner: product maintainer。path別diffを現行`main`へ再評価する。特にcloud-jobは`cloud-autopilot` transport SSOTとの重複を先に判定する。採用・棄却とcontext保存が決まるまで保全する |
+| dirty WIP | 1 | `pr-kinds-activity-20260824`（11 entries） | owner: 元作業者。未commit差分の目的と回収先を確認するまでreset、stash、削除をしない |
+| blocked | 1 | `grok-eval-issue12-20260830`（dubious ownership） | owner: 環境所有者。所有権を正規化するか、対象限定の安全な読取方法を承認した後にstatusとdiffを再測定する |
+
+- external_boundary: worktree/branch削除、ownership設定変更、stash、resetは別の人間承認
+- evidence: merged-equivalent候補は対応PRが`MERGED`、unique candidateは対応merged PRなしまたは独立HEAD、dirty/blockedは各statusの実測結果

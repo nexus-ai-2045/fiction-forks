@@ -1,0 +1,191 @@
+{
+  "schema_version": "fiction_forks_social_config.v1",
+  "id": "japan-2036-world-observation-dialogue",
+  "title": "日本2036：世界状態の不一致をめぐる5者対話",
+  "assumption_notice": "これは観測と異議申立ての成立条件を検査するfixtureであり、未来予測、政策助言、作品世界や人物の再現ではない。",
+  "turns": [
+    {
+      "id": "define-observable-change",
+      "event": "各役が、世界状態の変化を何で観測し、何を未確定として残すかを示す。"
+    },
+    {
+      "id": "conflicting-observations",
+      "event": "複数系統の観測が食い違い、一系統が停止した。誤警報を断定せず計画を更新する。"
+    },
+    {
+      "id": "contest-and-handoff",
+      "event": "他役の異論を自分の責任へ翻訳し、停止・訂正・引継ぎ条件を残す。"
+    }
+  ],
+  "roles": [
+    {
+      "id": "distributed_observer",
+      "title": "分散観測設計役",
+      "objective": "一つの基盤に依存せず、欠測と校正誤差を含む観測を再現可能にする。",
+      "private_context": "観測の一致を真実そのものと扱わず、独立性の偽装を検出したい。"
+    },
+    {
+      "id": "evidence_steward",
+      "title": "証拠来歴管理役",
+      "objective": "証拠の出所、変換、訂正、破棄までを追跡可能にする。",
+      "private_context": "高精度でも来歴不明なデータを採用せず、目的外利用を止めたい。"
+    },
+    {
+      "id": "civic_challenger",
+      "title": "市民異議申立て役",
+      "objective": "観測される側の訂正、撤回、少数意見、人間の停止権を守る。",
+      "private_context": "危機を理由に異論が無効化される制度を避けたい。"
+    },
+    {
+      "id": "operations_coordinator",
+      "title": "観測運用調整役",
+      "objective": "平時の校正から障害時の引継ぎまでを共同訓練で成立させる。",
+      "private_context": "文書だけの相互運用ではなく、停止を含む実地記録を重視する。"
+    },
+    {
+      "id": "failure_analyst",
+      "title": "観測失敗分析役",
+      "objective": "誤警報、共通原因故障、推論の飛躍を防御側から検証する。",
+      "private_context": "実在標的や攻撃手順を扱わず、失敗条件と撤退基準だけを確認したい。"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "public-collapse-gate",
+      "summary": "現行scenarioでは複数指標が連続して閾値を下回ると修復不能へ入る。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "public-observation-contract",
+      "summary": "観測一致は政策判断の正しさを保証せず、来歴、欠測、対立仮説、訂正履歴を同時に残す。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "public-ip-boundary",
+      "summary": "作品名と抽象化した機能だけを参照し、素材、人物、台詞、公式性を持ち込まない。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "private-independence-risk",
+      "summary": "観測系の独立性が共通データ供給者によって失われる未確定リスク。",
+      "visibility": "private",
+      "audience": [
+        "distributed_observer",
+        "failure_analyst"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "abstain",
+      "title": "判断を保留する",
+      "allowed_roles": [
+        "distributed_observer",
+        "evidence_steward",
+        "civic_challenger",
+        "operations_coordinator",
+        "failure_analyst"
+      ],
+      "capability": "dissent",
+      "reversible": true
+    },
+    {
+      "id": "deploy-observation-mesh",
+      "title": "独立系の観測網を小規模実証する",
+      "allowed_roles": [
+        "distributed_observer",
+        "operations_coordinator"
+      ],
+      "capability": "technical",
+      "reversible": true
+    },
+    {
+      "id": "publish-provenance-ledger",
+      "title": "証拠来歴と訂正履歴を公開する",
+      "allowed_roles": [
+        "evidence_steward",
+        "distributed_observer"
+      ],
+      "capability": "provenance",
+      "reversible": true
+    },
+    {
+      "id": "establish-contestation-rights",
+      "title": "訂正・撤回・異議申立て権を確立する",
+      "allowed_roles": [
+        "civic_challenger",
+        "evidence_steward"
+      ],
+      "capability": "governance",
+      "reversible": true
+    },
+    {
+      "id": "calibrate-local-labs",
+      "title": "地域ラボ間で交換校正する",
+      "allowed_roles": [
+        "distributed_observer",
+        "operations_coordinator"
+      ],
+      "capability": "resilience",
+      "reversible": true
+    },
+    {
+      "id": "compare-rival-hypotheses",
+      "title": "対立仮説を同じ証拠で再計算する",
+      "allowed_roles": [
+        "evidence_steward",
+        "failure_analyst",
+        "civic_challenger"
+      ],
+      "capability": "audit",
+      "reversible": true
+    },
+    {
+      "id": "exercise-anomaly-handoff",
+      "title": "観測不一致と停止の引継ぎ訓練を行う",
+      "allowed_roles": [
+        "operations_coordinator",
+        "civic_challenger",
+        "distributed_observer"
+      ],
+      "capability": "operations",
+      "reversible": true
+    },
+    {
+      "id": "audit-common-cause-failure",
+      "title": "共通原因故障と誤警報を監査する",
+      "allowed_roles": [
+        "failure_analyst",
+        "distributed_observer"
+      ],
+      "capability": "safety",
+      "reversible": true
+    }
+  ],
+  "node_requirements": {
+    "federated-observation-probes": [
+      "deploy-observation-mesh",
+      "audit-common-cause-failure"
+    ],
+    "observation-data-charter": [
+      "establish-contestation-rights",
+      "publish-provenance-ledger"
+    ],
+    "local-verification-labs": [
+      "calibrate-local-labs",
+      "deploy-observation-mesh"
+    ],
+    "contested-evidence-protocol": [
+      "compare-rival-hypotheses",
+      "publish-provenance-ledger"
+    ],
+    "cross-observer-anomaly-drills": [
+      "exercise-anomaly-handoff",
+      "establish-contestation-rights"
+    ]
+  },
+  "missing_action_delay_years": 5
+}

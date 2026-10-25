@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; connect-src https://api.github.com; img-src 'self' data:; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'"
+    >
+    <meta
+      name="description"
+      content="作品や登場人物から抽出した機能を、日本の未来を変えるアイデアIssueへ翻訳するFiction Forksの参加UI"
+    >
+    <title>Fiction Forks — Idea Builder</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#idea-builder">入力フォームへ移動</a>
+
+    <header class="site-header">
+      <a class="wordmark" href="./" aria-label="Fiction Forks Idea Builder ホーム">
+        <span class="branch-mark" aria-hidden="true">
+          <i></i><i></i><i></i><i></i>
+        </span>
+        <span>FICTION FORKS</span>
+        <small>IDEA BUILDER</small>
+      </a>
+      <nav aria-label="補助ナビゲーション">
+        <a href="#handoff">参加の流れ</a>
+        <a href="https://github.com/nexus-ai-2045/fiction-forks" rel="noreferrer">GitHub</a>
+        <button class="text-button" type="button" data-action="open-boundary">権利・プライバシー</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="builder-shell" id="idea-builder" aria-labelledby="builder-title">
+        <div class="builder-heading">
+          <h1 id="builder-title">フィクションの力で、<br>未来の選択肢をひらく。</h1>
+          <p>
+            作品の設定を再現するのではなく、役立つ機能を一つ抽出して、
+            日本の未来課題へつなげます。
+          </p>
+        </div>
+
+        <div class="builder-grid">
+          <form class="form-surface" id="idea-form" novalidate>
+            <section class="form-step is-active" aria-labelledby="idea-form-title">
+              <div class="section-number" aria-hidden="true">IDEA</div>
+              <div class="section-copy">
+                <h2 id="idea-form-title">作品とアイデア</h2>
+                <p>知っている作品と、「この力を未来に取り入れたい」を一つ書くだけです。</p>
+              </div>
+
+              <label for="work-title">作品名 <span>必須</span></label>
+              <input
+                id="work-title"
+                name="workTitle"
+                maxlength="100"
+                autocomplete="off"
+                placeholder="例：ドラえもん、呪術廻戦、銀河鉄道の夜"
+                required
+              >
+              <p class="field-help">作品名は会話の入口としてのみ使います。</p>
+
+              <label for="idea-text">アイデア <span>必須</span></label>
+              <textarea
+                id="idea-text"
+                name="ideaText"
+                maxlength="800"
+                rows="8"
+                placeholder="例：どこでもドアのように、災害時でも離れた地域へ医療や物資を届けられる仕組みがあれば未来が良くなる"
+                required
+              ></textarea>
+              <p class="field-help">技術、制度、費用、副作用は、worldline PRを作るcontributorが一緒に詰めます。</p>
+
+              <fieldset class="boundary-checks">
+                <legend>権利・安全の確認</legend>
+                <label>
+                  <input type="checkbox" name="rightsConfirmed" required>
+                  <span>画像、台詞、ロゴ、音声、キャラクターの口調・外見の再現を入力していません。</span>
+                </label>
+                <label>
+                  <input type="checkbox" name="safetyConfirmed" required>
+                  <span>個人情報、秘密情報、実在システムへの攻撃手順を入力していません。</span>
+                </label>
+              </fieldset>
+            </section>
+
+            <p class="form-error" id="form-error" role="alert" aria-live="polite"></p>
+
+            <div class="form-actions">
+              <button class="button button-primary" type="button" data-action="next">
+                Issueを確認
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </form>
+
+          <aside class="summary-surface" aria-labelledby="summary-title">
+            <div class="summary-header">
+              <div>
+                <p>LIVE SUMMARY</p>
+                <h2 id="summary-title">入力内容のサマリー</h2>
+              </div>
+              <span class="local-only">ブラウザ内のみ</span>
+            </div>
+
+            <div class="idea-summary">
+              <div><span>作品</span><p data-summary="work">未入力</p></div>
+              <div><span>アイデア</span><p data-summary="idea">未入力</p></div>
+            </div>
+
+            <div class="boundary-note">
+              <strong>収集しないもの</strong>
+              <p>公式画像・台詞・ロゴ・音声、人物の外見や口調の再現、個人情報、秘密情報。</p>
+            </div>
+
+            <section class="issue-preview" id="issue-preview" hidden aria-labelledby="preview-title">
+              <div class="preview-heading">
+                <div><p>READY TO REVIEW</p><h3 id="preview-title">Issueの内容を確認</h3></div>
+                <button class="text-button" type="button" data-action="edit">編集する</button>
+              </div>
+              <pre tabindex="0"><code id="issue-markdown"></code></pre>
+              <p class="preview-note">この段階ではシミュレーションを実行しません。GitHubでも投稿前に編集できます。</p>
+              <div class="preview-actions">
+                <a class="button button-primary" id="github-issue-link" href="#" target="_blank" rel="noopener noreferrer">
+                  GitHubでIssueを確認 <span aria-hidden="true">↗</span>
+                </a>
+                <button class="button button-secondary" type="button" data-action="copy-issue">文章をコピー</button>
+              </div>
+              <p class="copy-status" id="copy-status" aria-live="polite"></p>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="handoff" id="handoff" aria-labelledby="handoff-title">
+        <div class="handoff-heading">
+          <p>CONTRIBUTOR HANDOFF</p>
+          <h2 id="handoff-title">Issueから、動く世界線へ。</h2>
+          <span>アイデアはIssue、シミュレーション可能な実装はworldline PRに分けます。</span>
+        </div>
+
+        <div class="contributor-shortcut">
+          <div>
+            <strong>PRを追加したい人へ</strong>
+            <p>
+              下の一覧からIdeaを一つ選び、「AIにworldline PR化を頼む」を押してください。
+              Issue URL入りの依頼文を、そのままAIへ渡せます。
+            </p>
+          </div>
+          <ol>
+            <li><span>1</span>Ideaを選ぶ</li>
+            <li><span>2</span>AI・fork・ローカルのどれかで実装</li>
+            <li><span>3</span>worldline PRを出す</li>
+          </ol>
+          <a href="#idea-library">実装するIdeaを選ぶ <span aria-hidden="true">↓</span></a>
+        </div>
+
+        <div class="handoff-stage">
+          <ol class="handoff-flow">
+            <li>
+              <span class="flow-number">1</span>
+              <b>IDEA</b>
+              <h3>Issueで着想を共有</h3>
+              <p>作品、抽象機能、未来課題、実現条件を公開して対話します。</p>
+            </li>
+            <li>
+              <span class="flow-number">2</span>
+              <b>BUILD</b>
+              <h3>実装方法を選ぶ</h3>
+              <div class="handoff-links">
+                <button type="button" data-action="copy-ai-prompt">AIにPR化を頼む</button>
+                <a href="https://github.com/nexus-ai-2045/fiction-forks/fork" rel="noreferrer">Forkして実装</a>
+                <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/CONTRIBUTING.md#issueからworldline-prへ" rel="noreferrer">ローカルで実装</a>
+                <a href="https://colab.research.google.com/github/nexus-ai-2045/fiction-forks/blob/main/notebooks/validate-worldline.ipynb" target="_blank" rel="noopener noreferrer">Colabで検証</a>
+              </div>
+            </li>
+            <li>
+              <span class="flow-number">3</span>
+              <b>WORLDLINE PR</b>
+              <h3>再現可能な差分へ</h3>
+              <p>介入JSON、5役の対話条件、fixture、費用と副作用を一PRにします。</p>
+            </li>
+            <li>
+              <span class="flow-number">4</span>
+              <b>SIMULATION</b>
+              <h3>同じ条件で世界線を比較</h3>
+              <p>Checksが投稿者名、介入、15行動、2036年比較を表示し、人間がレビューします。</p>
+            </li>
+          </ol>
+
+          <aside class="worldline-card" aria-labelledby="worldline-card-title">
+            <p>WORLDLINEとは？</p>
+            <h3 id="worldline-card-title">1 PR = 1 WORLDLINE</h3>
+            <div class="worldline-branch" aria-hidden="true"><i></i><i></i><i></i></div>
+            <p>
+              一つの介入と技術ツリーを、一つのPull Requestとして追加します。
+              Issueを作っただけではシミュレーションは走りません。
+            </p>
+            <dl>
+              <div><dt>Issue</dt><dd>まだ未実装のアイデア</dd></div>
+              <div><dt>PR</dt><dd>再現できる世界線</dd></div>
+              <div><dt>Merge</dt><dd>レビュー済みの共有世界</dd></div>
+            </dl>
+          </aside>
+        </div>
+        <p class="handoff-status" id="handoff-status" aria-live="polite"></p>
+      </section>
+
+      <section class="idea-queue" id="idea-library" aria-labelledby="queue-title">
+        <div class="idea-queue-heading">
+          <div>
+          <p>PUBLIC IDEA QUEUE</p>
+            <h2 id="queue-title">これまでのアイデア</h2>
+            <span>Idea Issueの履歴と、repoへ実装されたworldlineを同じ場所で見られます。</span>
+          </div>
+          <a class="queue-all" href="https://github.com/nexus-ai-2045/fiction-forks/issues?q=is%3Aissue+label%3Aidea" rel="noreferrer">
+            GitHubですべて見る <span aria-hidden="true">→</span>
+          </a>
+        </div>
+
+        <div class="idea-library-grid">
+          <section class="idea-issue-panel" aria-labelledby="idea-issue-title">
+            <div class="library-panel-heading">
+              <div>
+                <p>IDEA ISSUES</p>
+                <h3 id="idea-issue-title">提案された着想</h3>
+              </div>
+              <span>OPEN / CLOSED</span>
+            </div>
+            <div class="queue-list" id="idea-queue-list" aria-live="polite">
+              <article class="queue-item" data-fallback-idea="12">
+                <div class="queue-item-meta">
+                  <strong>#12</strong>
+                  <span class="idea-state">OPEN</span>
+                </div>
+                <h4>[idea] ドラえもんから考える：夢のロボット</h4>
+                <p>タケコプター</p>
+                <span class="queue-author">提案者 @nexus-ai-2045</span>
+                <div class="queue-actions">
+                  <a href="https://github.com/nexus-ai-2045/fiction-forks/issues/12" rel="noreferrer">Issueを見る</a>
+                  <button type="button" data-action="copy-idea-prompt" data-issue-url="https://github.com/nexus-ai-2045/fiction-forks/issues/12">
+                    AIにworldline PR化を頼む
+                  </button>
+                </div>
+              </article>
+              <article class="queue-item" data-fallback-idea="7">
+                <div class="queue-item-meta">
+                  <strong>#7</strong>
+                  <span class="idea-state is-closed">CLOSED</span>
+                </div>
+                <h4>[idea] 複数系統で世界の変化を観測する力</h4>
+                <p>複数の独立した観測者が社会状態を測り、不一致や少数意見を消さずに訂正・停止判断へつなげる。</p>
+                <span class="queue-author">提案者 @D-Hibiki</span>
+                <div class="queue-actions">
+                  <a href="https://github.com/nexus-ai-2045/fiction-forks/issues/7" rel="noreferrer">Issueを見る</a>
+                  <button type="button" data-action="copy-idea-prompt" data-issue-url="https://github.com/nexus-ai-2045/fiction-forks/issues/7">
+                    AIにworldline PR化を頼む
+                  </button>
+                </div>
+              </article>
+            </div>
+            <p class="queue-status" id="idea-queue-status" aria-live="polite">
+              HTMLに保存した一覧を表示中。GitHubから最新状態を確認します。
+            </p>
+          </section>
+
+          <section class="implemented-panel" aria-labelledby="implemented-title">
+            <div class="library-panel-heading">
+              <div>
+                <p>MERGED WORLDLINES</p>
+                <h3 id="implemented-title">実装された世界線</h3>
+              </div>
+              <span>REVIEWED</span>
+            </div>
+            <div class="implemented-list">
+              <article class="implemented-item" data-worldline-id="doraemon-public-tools">
+                <span>『ドラえもん』から借りる</span>
+                <h4>未来の道具を、監査可能な公共インフラへ</h4>
+                <p>公共AI、地域データ信託、分散工作拠点を住民が使える制度として実装。</p>
+                <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/interventions/doraemon-public-tools.json" rel="noreferrer">実装JSONを見る →</a>
+              </article>
+              <article class="implemented-item" data-worldline-id="haruhi-world-observation">
+                <span>『涼宮ハルヒの憂鬱』から借りる</span>
+                <h4>複数系統で世界の変化を観測する</h4>
+                <p>観測の不一致、欠測、少数意見を残し、人間の停止判断へつなぐ仕組みを実装。</p>
+                <div>
+                  <a href="https://github.com/nexus-ai-2045/fiction-forks/pull/6" rel="noreferrer">PR #6を見る →</a>
+                  <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/interventions/haruhi-world-observation.json" rel="noreferrer">実装JSONを見る →</a>
+                </div>
+              </article>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="boundary-dialog" aria-labelledby="boundary-title">
+      <div class="dialog-content">
+        <button class="dialog-close" type="button" data-action="close-boundary" aria-label="閉じる">×</button>
+        <h2 id="boundary-title">権利・プライバシーの境界</h2>
+        <p>
+          このページは入力をサーバーへ保存しません。「GitHubでIssueを確認」を押した時だけ、
+          入力内容をGitHubのIssue作成確認画面へ渡します。
+        </p>
+        <ul>
+          <li>作品名と登場人物名は、共通言語の参照点として入力できます。</li>
+          <li>画像、台詞、音声、映像、ロゴ、人物の外見・口調の再現は入力しません。</li>
+          <li>実在人物の個人情報、秘密情報、攻撃手順は入力しません。</li>
+          <li>Issueは公開情報になります。GitHub上で内容を再確認してから投稿します。</li>
+        </ul>
+        <button class="button button-primary" type="button" data-action="close-boundary">理解しました</button>
+      </div>
+    </dialog>
+
+    <footer>
+      <span>FICTION FORKS</span>
+      <p>フィクションを、未来実装の共通言語に。</p>
+      <a href="https://github.com/nexus-ai-2045/fiction-forks/blob/main/docs/security-model.md">Security &amp; Rights</a>
+    </footer>
+  </body>
+</html>

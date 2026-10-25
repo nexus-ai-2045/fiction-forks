@@ -1,0 +1,29 @@
+{
+  "name": "fiction-forks-workbench",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config web/workbench-src/vite.config.ts",
+    "verify:assets": "node tools/verify_workbench_assets.mjs",
+    "build": "npm run verify:assets && tsc -p web/workbench-src/tsconfig.json --noEmit && vite build --config web/workbench-src/vite.config.ts",
+    "test": "node --test tools/verify_workbench_assets.test.mjs && vitest run --config web/workbench-src/vitest.config.ts",
+    "test:e2e": "playwright test --config web/workbench-src/playwright.config.ts"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.2.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "25.5.0",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "jsdom": "27.4.0",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
+  }
+}

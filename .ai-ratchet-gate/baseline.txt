@@ -1,0 +1,2 @@
+# ai-ratchet-gate の baseline (ratchet)。
+# 新規repoの導入時点では tracked かつ ignored の既存矛盾は0件。

@@ -1,0 +1,137 @@
+{
+  "schema_version": "fiction_forks_social_config.v1",
+  "id": "japan-2036-adaptive-safety-dialogue",
+  "title": "日本2036：多層防護を突破されても退避できるかを検証する5者対話",
+  "assumption_notice": "これは危機回避制度の成立条件と失敗条件を検査するシミュレーションであり、未来予測、政策助言、作品世界や人物の再現ではない。",
+  "turns": [
+    {
+      "id": "define-safety-distance",
+      "event": "各役が、危機との安全距離、防護層の限界、未確定事項を示す。"
+    },
+    {
+      "id": "common-cause-breach",
+      "event": "複数の防護層が同じデータ障害で同時に弱体化した。無限回避を仮定せず計画を更新する。"
+    },
+    {
+      "id": "escape-and-redesign",
+      "event": "他役の異論を自分の責任へ翻訳し、停止、退避、資源枯渇、再設計の条件を残す。"
+    }
+  ],
+  "roles": [
+    {
+      "id": "layer_architect",
+      "title": "多層防護設計役",
+      "objective": "異なる故障モードを持つ防護層を構成し、共通原因故障を検出する。",
+      "private_context": "層の数を安全性そのものと扱わず、残存余力を測りたい。"
+    },
+    {
+      "id": "escape_steward",
+      "title": "退避経路管理役",
+      "objective": "自動防護を信用できない時にも、人間が拒否、停止、退避できる経路を守る。",
+      "private_context": "保護を理由に閉じ込める運用を避けたい。"
+    },
+    {
+      "id": "civic_challenger",
+      "title": "市民異議申立て役",
+      "objective": "誤警報、過剰遮断、監視、地域格差に対する異議申立てと補償を成立させる。",
+      "private_context": "危機を理由に停止権や拒否権が無効化される制度を避けたい。"
+    },
+    {
+      "id": "resource_coordinator",
+      "title": "防護資源運用役",
+      "objective": "予備資源、交換部品、人員、退避拠点が枯渇する前に引継ぎを成立させる。",
+      "private_context": "無限の資源を仮定せず、撤退判断を記録したい。"
+    },
+    {
+      "id": "breach_analyst",
+      "title": "突破・誤作動分析役",
+      "objective": "共通原因故障、連続突破、誤作動、強制解除の集中を防御側から検証する。",
+      "private_context": "実在標的や攻撃手順を扱わず、失敗条件と停止基準だけを確認したい。"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "public-collapse-gate",
+      "summary": "現行scenarioでは複数指標が連続して閾値を下回ると2036年に修復不能へ入る。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "public-finite-defense-contract",
+      "summary": "防護層、資源、時間は有限であり、回避成功は根本原因の除去や永久安全を意味しない。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "public-rights-boundary",
+      "summary": "安全を理由にした過剰遮断を防ぐため、停止、拒否、退避、異議申立てを同時に残す。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "private-common-cause-risk",
+      "summary": "独立に見える防護層が同じモデル、データ、電源へ依存する未確定リスク。",
+      "visibility": "private",
+      "audience": ["layer_architect", "breach_analyst"]
+    }
+  ],
+  "actions": [
+    {
+      "id": "abstain",
+      "title": "判断を保留する",
+      "allowed_roles": ["layer_architect", "escape_steward", "civic_challenger", "resource_coordinator", "breach_analyst"],
+      "capability": "dissent",
+      "reversible": true
+    },
+    {
+      "id": "deploy-hazard-probes",
+      "title": "独立した危機検知を小規模実証する",
+      "allowed_roles": ["layer_architect", "breach_analyst"],
+      "capability": "technical",
+      "reversible": true
+    },
+    {
+      "id": "establish-stop-rights",
+      "title": "多層停止、拒否、強制解除の権限を公開する",
+      "allowed_roles": ["civic_challenger", "escape_steward"],
+      "capability": "governance",
+      "reversible": true
+    },
+    {
+      "id": "fabricate-replaceable-modules",
+      "title": "交換可能な防護部品を複数地域で製造する",
+      "allowed_roles": ["layer_architect", "resource_coordinator"],
+      "capability": "resilience",
+      "reversible": true
+    },
+    {
+      "id": "verify-manual-escape",
+      "title": "通信断でも使える手動退避経路を実地確認する",
+      "allowed_roles": ["escape_steward", "civic_challenger", "resource_coordinator"],
+      "capability": "operations",
+      "reversible": true
+    },
+    {
+      "id": "audit-common-cause-breach",
+      "title": "共通原因故障と連続突破を監査する",
+      "allowed_roles": ["breach_analyst", "layer_architect"],
+      "capability": "safety",
+      "reversible": true
+    },
+    {
+      "id": "exercise-resource-exhaustion",
+      "title": "防護資源の枯渇と引継ぎを訓練する",
+      "allowed_roles": ["resource_coordinator", "escape_steward", "breach_analyst"],
+      "capability": "operations",
+      "reversible": true
+    }
+  ],
+  "node_requirements": {
+    "open-hazard-probes": ["deploy-hazard-probes", "audit-common-cause-breach"],
+    "layered-stop-charter": ["establish-stop-rights"],
+    "replaceable-safety-modules": ["fabricate-replaceable-modules", "deploy-hazard-probes"],
+    "human-escape-corridors": ["verify-manual-escape", "establish-stop-rights"],
+    "adaptive-breach-drills": ["exercise-resource-exhaustion", "audit-common-cause-breach"]
+  },
+  "missing_action_delay_years": 5
+}

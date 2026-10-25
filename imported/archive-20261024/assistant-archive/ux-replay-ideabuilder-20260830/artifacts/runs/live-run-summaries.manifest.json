@@ -1,0 +1,27 @@
+{
+  "schema_version": "fiction_forks_live_run_manifest.v1",
+  "summaries": [
+    {
+      "artifact_path": "artifacts/runs/ollama-live-run-summary.json",
+      "artifact_sha256": "68069c51cb9b1df549bb7ef0f743f4cc0c8e96f0405f04bfddd8bf56c8b62a43",
+      "run_id": "ff-c705e4136e2fce00",
+      "provider": "ollama",
+      "model": "qwen2.5vl:3b",
+      "seed": 2036,
+      "runtime_revision": "1fb1d97906501ca361a58337dc227ecdc83d359d",
+      "result_sha256": "90a426aad6f2a39ecfd4fff51318c66d5567704f3320c99740410eec81e1372c",
+      "event_stream_sha256": "a5f80bb5f00c4b905467c64378b30944b2ca5614a06a86b1eb1b1b6937c18be8"
+    },
+    {
+      "artifact_path": "artifacts/runs/vertex-live-run-summary.json",
+      "artifact_sha256": "d1a758b63c61f90e422fc38bbaed07d212847f18f1e712f9052dbfae8b6e7bd8",
+      "run_id": "ff-c705e4136e2fce00",
+      "provider": "vertex",
+      "model": "gemini-2.5-flash",
+      "seed": 2036,
+      "runtime_revision": "2f5b91e43cf303e88898a171d0e381f05854c9da",
+      "result_sha256": "47c715588686a6934c26966088b21ee69ce5f5f8c83d0bad19964af7e72d9c8b",
+      "event_stream_sha256": "cb7a5f714d21eb27cb2eb1d31010be5479c19fb10a9f9553a343dacc10c00293"
+    }
+  ]
+}

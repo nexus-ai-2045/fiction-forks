@@ -1,0 +1,61 @@
+# Cloud Run Job向けシミュレーションbundle
+
+## 目的
+
+既存のPython engine、5役×3ターンharness、fixture、replay契約を一つの非rootコンテナで実行する。これは新しいengineでも公開APIでもなく、ローカルと外部実行基盤で同じ計算と証拠形式を使うための包装である。
+
+Cloud Run Jobはリクエスト待受を必要とせず、処理終了時にcontainerが終了する一回実行型なので、このCLI workloadに適合する。デプロイ、IAM、課金、Artifact Registry、Cloud Storage、AI providerの認証はこのbundleの外側で管理する。
+
+## ローカルbuild
+
+```powershell
+py -3.13 tools/build_job_image.py
+$revision = git rev-parse HEAD
+```
+
+`tools/build_job_image.py`を正準build入口とする。repository root、完全なHEAD SHA、tracked/untrackedを含むclean treeを検査してから、そのHEADだけを`SOURCE_REVISION`へ渡す。dirty treeや任意SHAを名乗るbuildはDocker起動前に拒否する。直接の`docker build`はprovenance契約外である。
+
+Docker daemonが利用できる環境では、書込先だけをmountしてread-only root filesystemで実行する。
+
+```powershell
+docker run --rm --read-only --tmpfs /tmp `
+  --mount type=bind,source=${PWD}/job-output,target=/outputs `
+  fiction-forks-job:$revision
+```
+
+成功時は次を上書きなしで生成する。
+
+- fixture artifact
+- replay artifact
+- artifact SHA-256、exact source revision、input digest、final event hashを持つmanifest
+- stdoutの一行JSON summary
+
+fixtureはAI実測ではないため、manifestは常に`ai_measured: false`とする。外部AI providerを接続した将来のrunも、artifactを同じreplay検証へ通すまでデモ証拠として採用しない。
+
+## Cloud Run Jobへの接続境界
+
+container imageの作成・push後は、一task・再試行0・固定image digestを推奨する。自動再試行は外部AI呼出しや費用を重複させ得るため、失敗を分類してから人間が再実行する。
+
+```text
+Cloud Run Job
+  -> 固定worldline入力
+  -> 外部providerが制約付きactionを選択
+  -> canonical Python engine
+  -> artifact
+  -> replay同値検証
+  -> immutable storage（別lane）
+```
+
+Google Cloud resourceの作成、`gcloud run jobs deploy`、IAM変更、WIF/ADC設定、課金開始は別の人間承認を必要とする。サービスアカウントkey JSONは作らず、Cloud Runのservice identityまたは短命credentialを使う。
+
+## 完了判定
+
+- containerは非rootで動く
+- root filesystemをread-onlyにしても`/outputs`だけへ書ける
+- fixtureとreplayが同値
+- manifestのhashが生成物と一致する
+- 既存出力、未知worldline、不正path、source revision不在をfail-closedで拒否する
+- image buildはrepository rootのclean treeかつexact HEADだけを受理する
+- engine、scenario、interventionの正本を複製しない
+
+公式資料: [Cloud Run Jobsの作成](https://cloud.google.com/run/docs/create-jobs)、[container runtime contract](https://cloud.google.com/run/docs/container-contract)

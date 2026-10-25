@@ -1,0 +1,136 @@
+{
+  "schema_version": "fiction_forks_social_config.v1",
+  "id": "japan-2036-five-role-dialogue",
+  "title": "日本2036：修復能力をめぐる5者対話",
+  "assumption_notice": "これは意思決定条件の観察用シミュレーションであり、未来予測、政策助言、実在組織の評価ではない。",
+  "turns": [
+    {
+      "id": "initial-position",
+      "event": "各役が、2036年までに修復能力を残すための最初の一手を示す。"
+    },
+    {
+      "id": "compound-shock",
+      "event": "物流障害と情報混乱が同時発生した。安全な範囲で計画を更新する。"
+    },
+    {
+      "id": "translate-and-revise",
+      "event": "他役の懸念を自分の専門へ翻訳し、採用条件または異論を残す。"
+    }
+  ],
+  "roles": [
+    {
+      "id": "civic_auditor",
+      "title": "市民監査役",
+      "objective": "公共性、説明可能性、異論を残したまま検証可能にする。",
+      "private_context": "監査不能な一括導入を避け、停止条件を明文化したい。"
+    },
+    {
+      "id": "infra_engineer",
+      "title": "基盤技術者",
+      "objective": "小さく試し、壊れても地域で直せる技術経路を作る。",
+      "private_context": "単一ベンダーと未検証の自動化に依存したくない。"
+    },
+    {
+      "id": "logistics_operator",
+      "title": "物流運用者",
+      "objective": "平時と障害時をつなぐ物資、人員、訓練の運用を成立させる。",
+      "private_context": "机上の計画より、引継ぎと代替経路の実地確認を重視する。"
+    },
+    {
+      "id": "community_interpreter",
+      "title": "地域翻訳者",
+      "objective": "専門語を生活上の選択肢へ翻訳し、同意と撤回を可能にする。",
+      "private_context": "参加者が理解できない同意や、地域差の消去を避けたい。"
+    },
+    {
+      "id": "threat_analyst",
+      "title": "脅威分析役",
+      "objective": "悪用、依存、誤作動を先に洗い出し、防御可能な境界を作る。",
+      "private_context": "実在標的や攻撃手順を出さず、失敗モードだけを検証したい。"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "public-collapse-gate",
+      "summary": "現行scenarioでは複数指標が連続して閾値を下回ると修復不能へ入る。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "public-technology-tree",
+      "summary": "介入には技術、制度、運用の完了証拠がそろうまでのリードタイムがある。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "public-ip-boundary",
+      "summary": "既存作品は機能を考える共通言語として参照し、素材や公式性は持ち込まない。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "private-audit-note",
+      "summary": "監査役だけが持つ未確定の停止条件メモ。公開事実として扱わない。",
+      "visibility": "private",
+      "audience": ["civic_auditor"]
+    }
+  ],
+  "actions": [
+    {
+      "id": "abstain",
+      "title": "判断を保留する",
+      "allowed_roles": ["civic_auditor", "infra_engineer", "logistics_operator", "community_interpreter", "threat_analyst"],
+      "capability": "dissent",
+      "reversible": true
+    },
+    {
+      "id": "audit-assumptions",
+      "title": "前提と停止条件を監査する",
+      "allowed_roles": ["civic_auditor", "threat_analyst"],
+      "capability": "governance",
+      "reversible": true
+    },
+    {
+      "id": "prototype-repair-network",
+      "title": "地域修復ネットワークを小規模実証する",
+      "allowed_roles": ["infra_engineer", "logistics_operator"],
+      "capability": "technical",
+      "reversible": true
+    },
+    {
+      "id": "preposition-logistics",
+      "title": "代替物流と引継ぎを事前配置する",
+      "allowed_roles": ["logistics_operator", "infra_engineer"],
+      "capability": "operations",
+      "reversible": true
+    },
+    {
+      "id": "translate-consent",
+      "title": "同意と撤回条件を生活語へ翻訳する",
+      "allowed_roles": ["community_interpreter", "civic_auditor"],
+      "capability": "consent",
+      "reversible": true
+    },
+    {
+      "id": "red-team-boundaries",
+      "title": "悪用と依存の境界を防御側から検証する",
+      "allowed_roles": ["threat_analyst", "infra_engineer"],
+      "capability": "safety",
+      "reversible": true
+    },
+    {
+      "id": "coordinate-drill",
+      "title": "共同訓練と責任分界を確定する",
+      "allowed_roles": ["logistics_operator", "community_interpreter", "civic_auditor"],
+      "capability": "coordination",
+      "reversible": true
+    }
+  ],
+  "node_requirements": {
+    "public-ai-reference-stack": ["audit-assumptions", "red-team-boundaries"],
+    "regional-fabrication-cells": ["prototype-repair-network", "preposition-logistics"],
+    "local-data-governance": ["translate-consent", "audit-assumptions"],
+    "joint-governance-and-drills": ["coordinate-drill"]
+  },
+  "missing_action_delay_years": 5
+}

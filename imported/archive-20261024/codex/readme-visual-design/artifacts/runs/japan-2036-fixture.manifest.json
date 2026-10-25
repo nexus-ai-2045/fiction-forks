@@ -1,0 +1,17 @@
+{
+  "schema_version": "fiction_forks_run_manifest.v1",
+  "recorded_at": "2026-08-24",
+  "run_kind": "fixture",
+  "ai_measured": false,
+  "engine_commit": "5edebf7f0f7141d887281ea23a8b6b6e028959b3",
+  "engine_version": "0.2.0",
+  "scenario_id": "japan-2036-centralization",
+  "intervention_id": "doraemon-public-tools",
+  "seed": 2036,
+  "run_id": "ff-d3674fbb82db8614",
+  "input_digest": "d3674fbb82db861487318ff61a864f82dcb1c5fc1b6393591e0fc0292f683a3e",
+  "final_event_hash": "9e6aadfc484e44f966bfb8f54c004be50e3f09f4ed98241b8e250fe90c2760fe",
+  "artifact_path": "artifacts/runs/japan-2036-fixture.json",
+  "artifact_sha256": "b0fb526a01c4a6e8c91727c8f7cf76ba625effed11b5b725cc8a9b44aa4efdb4",
+  "replay_equivalent": true
+}

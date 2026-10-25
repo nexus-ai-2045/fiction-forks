@@ -1,0 +1,11 @@
+.git
+.github
+.pytest_cache
+.pytest-tmp
+__pycache__
+*.py[cod]
+artifacts
+docs
+notebooks
+tests
+web

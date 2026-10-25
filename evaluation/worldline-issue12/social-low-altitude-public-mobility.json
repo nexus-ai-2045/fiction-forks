@@ -1,0 +1,179 @@
+{
+  "schema_version": "fiction_forks_social_config.v1",
+  "id": "japan-2036-low-altitude-mobility-dialogue",
+  "title": "日本2036：近距離低空移動の公共化をめぐる5者対話",
+  "assumption_notice": "これは近距離低空移動を公共インフラとして成立させる条件を検査するfixtureであり、未来予測、政策助言、作品世界や人物の再現ではない。",
+  "turns": [
+    {
+      "id": "define-public-access",
+      "event": "各役が、子どもを含む非専門家の近距離低空移動を何をもって公共インフラとみなすかを示す。"
+    },
+    {
+      "id": "incident-and-complaint",
+      "event": "騒音と落下未遂が同時に報告された。便益を断定せず、停止と検証の条件を更新する。"
+    },
+    {
+      "id": "consent-and-handoff",
+      "event": "他役の異論を自分の責任へ翻訳し、同意、修理、捜索救助、撤退条件を残す。"
+    }
+  ],
+  "roles": [
+    {
+      "id": "child_safety_steward",
+      "title": "子ども安全・同意役",
+      "objective": "未成年の利用目的、時間帯、空域制限、撤回と停止権を残す。",
+      "private_context": "便利さを理由に同意と禁止空域が消える制度を避けたい。"
+    },
+    {
+      "id": "open_vehicle_engineer",
+      "title": "公開設計機体役",
+      "objective": "交換可能な安全装置を含む公開設計を、単一事業者に依存せず維持する。",
+      "private_context": "見た目は公開でも通信と部品が閉鎖される経路を検出したい。"
+    },
+    {
+      "id": "rescue_logistics_operator",
+      "title": "捜索救助運用役",
+      "objective": "落下、迷子、悪天候、拠点停止を含む実地の引継ぎを成立させる。",
+      "private_context": "机上の到達時間より、権限移譲と未合意点の記録を重視する。"
+    },
+    {
+      "id": "neighborhood_interpreter",
+      "title": "地域生活翻訳役",
+      "objective": "騒音、落下、覗き込みを生活上の被害として翻訳し、異議を通せるようにする。",
+      "private_context": "遊びの言葉で責任と被害申立てを曖昧にしたくない。"
+    },
+    {
+      "id": "misuse_analyst",
+      "title": "悪用・依存分析役",
+      "objective": "目的外監視、過信、事業者ロックインを防御側から検証する。",
+      "private_context": "実在標的や攻撃手順を扱わず、失敗条件と撤退基準だけを確認したい。"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "public-collapse-gate",
+      "summary": "現行scenarioでは複数指標が連続して閾値を下回ると修復不能へ入る。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "public-mobility-contract",
+      "summary": "近距離低空移動の便益は、同意、禁止空域、修理、捜索救助、異議申立てが揃うまで発動しない。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "public-ip-boundary",
+      "summary": "作品名と抽象化した機能だけを参照し、素材、人物、台詞、公式性を持ち込まない。",
+      "visibility": "public",
+      "audience": []
+    },
+    {
+      "id": "private-lockin-risk",
+      "summary": "公開設計に見える機体が同一通信基盤と部品供給へ集中する未確定リスク。",
+      "visibility": "private",
+      "audience": [
+        "open_vehicle_engineer",
+        "misuse_analyst"
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "id": "abstain",
+      "title": "判断を保留する",
+      "allowed_roles": [
+        "child_safety_steward",
+        "open_vehicle_engineer",
+        "rescue_logistics_operator",
+        "neighborhood_interpreter",
+        "misuse_analyst"
+      ],
+      "capability": "dissent",
+      "reversible": true
+    },
+    {
+      "id": "publish-open-vehicle-design",
+      "title": "公開設計の低空機を小規模実証する",
+      "allowed_roles": [
+        "open_vehicle_engineer",
+        "rescue_logistics_operator"
+      ],
+      "capability": "technical",
+      "reversible": true
+    },
+    {
+      "id": "establish-child-consent-and-nofly",
+      "title": "子ども利用の同意と飛行禁止空域を確立する",
+      "allowed_roles": [
+        "child_safety_steward",
+        "neighborhood_interpreter"
+      ],
+      "capability": "governance",
+      "reversible": true
+    },
+    {
+      "id": "stand-up-local-repair-bays",
+      "title": "地域修理拠点と部品交換を立ち上げる",
+      "allowed_roles": [
+        "open_vehicle_engineer",
+        "rescue_logistics_operator"
+      ],
+      "capability": "resilience",
+      "reversible": true
+    },
+    {
+      "id": "file-noise-and-fall-complaints",
+      "title": "騒音と落下の異議申立て経路を開く",
+      "allowed_roles": [
+        "neighborhood_interpreter",
+        "child_safety_steward"
+      ],
+      "capability": "redress",
+      "reversible": true
+    },
+    {
+      "id": "run-search-rescue-drills",
+      "title": "落下と拠点停止を含む捜索救助訓練を行う",
+      "allowed_roles": [
+        "rescue_logistics_operator",
+        "child_safety_steward",
+        "neighborhood_interpreter"
+      ],
+      "capability": "operations",
+      "reversible": true
+    },
+    {
+      "id": "audit-vendor-lock-and-misuse",
+      "title": "事業者依存と目的外監視を監査する",
+      "allowed_roles": [
+        "misuse_analyst",
+        "open_vehicle_engineer"
+      ],
+      "capability": "safety",
+      "reversible": true
+    }
+  ],
+  "node_requirements": {
+    "open-low-altitude-platform": [
+      "publish-open-vehicle-design",
+      "audit-vendor-lock-and-misuse"
+    ],
+    "child-consent-and-airspace-charter": [
+      "establish-child-consent-and-nofly"
+    ],
+    "neighborhood-repair-bays": [
+      "stand-up-local-repair-bays",
+      "publish-open-vehicle-design"
+    ],
+    "nuisance-and-fall-redress": [
+      "file-noise-and-fall-complaints",
+      "establish-child-consent-and-nofly"
+    ],
+    "joint-search-rescue-drills": [
+      "run-search-rescue-drills",
+      "establish-child-consent-and-nofly"
+    ]
+  },
+  "missing_action_delay_years": 5
+}

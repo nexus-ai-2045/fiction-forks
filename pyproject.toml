@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools==83.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fiction-forks"
+version = "0.3.1"
+description = "フィクション由来の介入で日本の未来分岐を比較する透明な社会シミュレーション"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "nexus_ai"}]
+dependencies = ["rfc8785==0.1.4"]
+
+[project.optional-dependencies]
+agents = ["openai==2.37.0"]
+
+[project.scripts]
+fiction-forks = "fiction_forks.cli:main"
+fiction-forks-local = "fiction_forks.local_adapter:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
