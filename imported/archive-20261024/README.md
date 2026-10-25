@@ -155,4 +155,4 @@
 
 ## 伏せたもの
 
-- なし
+- `codex/post-submission-canonicalize-20260830/PROJECT_SSOT.md.txt`：交換schemaの正本として書かれていた非公開リポの名前を「非公開の交換契約リポ（名前は伏せる）」に置き換えた（本体の `PROJECT_SSOT.md` と同じ扱い）。
