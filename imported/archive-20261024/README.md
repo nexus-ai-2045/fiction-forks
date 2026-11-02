@@ -5,6 +5,7 @@
 - 置き方: `<控えの枝またはタグ>/<元のパス>`。中身は控えのままです（下の「伏せたもの」を除く）。
 - ここにあるファイルは実行も読み込みもされません。テストの収集からも外しています。
 - 古い版の `.md` は末尾に `.txt` を付けて置いています。中の相対リンクが今のリポの文書リンク検査に掛からないようにするためで、中身は変えていません。
+- 依存の定義ファイル（`package.json`・`package-lock.json`・`pyproject.toml`）も末尾に `.txt` を付けています。GitHub の依存グラフと Dependabot が、実行されない控えの古い版を今の依存として警告しないようにするためで、中身は変えていません。
 - 今のコードへ採り入れるかは、ファイルごとに別のPRで決めます。
 - 公開側の履歴に同じ中身があるもの、行がすべて公開側にあるもの、ほかの版で行がそろうものは入れていません。
 - 意図して外されていたもの（個人の情報を含む、公開側で削除済みなど）は入れていません。
@@ -49,7 +50,7 @@
 | `src/fiction_forks/providers.py` | `codex/fiction-forks-04-contracts-20260828` ほか12 | `codex/fiction-forks-04-contracts-20260828/src/fiction_forks/providers.py` |  |
 | `tests/test_participation.py` | `codex/fiction-forks-04-contracts-20260828` | `codex/fiction-forks-04-contracts-20260828/tests/test_participation.py` |  |
 | `web/index.html` | `codex/fiction-forks-04-contracts-20260828` ほか3 | `codex/fiction-forks-04-contracts-20260828/web/index.html` |  |
-| `package.json` | `codex/fiction-forks-pr14-closeout-20260830` ほか5 | `codex/fiction-forks-pr14-closeout-20260830/package.json` |  |
+| `package.json` | `codex/fiction-forks-pr14-closeout-20260830` ほか5 | `codex/fiction-forks-pr14-closeout-20260830/package.json.txt` |  |
 | `web/workbench-src/playwright.config.ts` | `codex/fiction-forks-pr14-closeout-20260830` ほか5 | `codex/fiction-forks-pr14-closeout-20260830/web/workbench-src/playwright.config.ts` |  |
 | `web/workbench-src/src/App.test.tsx` | `codex/fiction-forks-pr14-closeout-20260830` ほか3 | `codex/fiction-forks-pr14-closeout-20260830/web/workbench-src/src/App.test.tsx` |  |
 | `web/workbench-src/src/contract.test.ts` | `codex/fiction-forks-pr14-closeout-20260830` ほか4 | `codex/fiction-forks-pr14-closeout-20260830/web/workbench-src/src/contract.test.ts` |  |
@@ -81,7 +82,7 @@
 | `Dockerfile` | `codex/hackathon-cloud-job-mvp-20260829` | `codex/hackathon-cloud-job-mvp-20260829/Dockerfile` |  |
 | `PROJECT_SSOT.md` | `codex/hackathon-cloud-job-mvp-20260829` | `codex/hackathon-cloud-job-mvp-20260829/PROJECT_SSOT.md.txt` |  |
 | `docs/cloud-run-job.md` | `codex/hackathon-cloud-job-mvp-20260829` | `codex/hackathon-cloud-job-mvp-20260829/docs/cloud-run-job.md.txt` |  |
-| `pyproject.toml` | `codex/hackathon-cloud-job-mvp-20260829` | `codex/hackathon-cloud-job-mvp-20260829/pyproject.toml` |  |
+| `pyproject.toml` | `codex/hackathon-cloud-job-mvp-20260829` | `codex/hackathon-cloud-job-mvp-20260829/pyproject.toml.txt` |  |
 | `src/fiction_forks/job_runner.py` | `codex/hackathon-cloud-job-mvp-20260829` | `codex/hackathon-cloud-job-mvp-20260829/src/fiction_forks/job_runner.py` |  |
 | `src/fiction_forks/run_manifest.py` | `codex/hackathon-cloud-job-mvp-20260829` | `codex/hackathon-cloud-job-mvp-20260829/src/fiction_forks/run_manifest.py` |  |
 | `tests/test_build_job_image.py` | `codex/hackathon-cloud-job-mvp-20260829` | `codex/hackathon-cloud-job-mvp-20260829/tests/test_build_job_image.py` |  |
@@ -129,13 +130,13 @@
 | `docs/architecture.md` | `codex/readme-visual-design` | `codex/readme-visual-design/docs/architecture.md.txt` |  |
 | `docs/product-design.md` | `codex/readme-visual-design` | `codex/readme-visual-design/docs/product-design.md.txt` |  |
 | `docs/security-model.md` | `codex/readme-visual-design` | `codex/readme-visual-design/docs/security-model.md.txt` |  |
-| `pyproject.toml` | `codex/readme-visual-design` | `codex/readme-visual-design/pyproject.toml` |  |
+| `pyproject.toml` | `codex/readme-visual-design` | `codex/readme-visual-design/pyproject.toml.txt` |  |
 | `src/fiction_forks/__init__.py` | `codex/readme-visual-design` | `codex/readme-visual-design/src/fiction_forks/__init__.py` |  |
 | `src/fiction_forks/cli.py` | `codex/readme-visual-design` | `codex/readme-visual-design/src/fiction_forks/cli.py` |  |
 | `src/fiction_forks/engine.py` | `codex/readme-visual-design` | `codex/readme-visual-design/src/fiction_forks/engine.py` |  |
 | `tests/test_docs.py` | `codex/readme-visual-design` | `codex/readme-visual-design/tests/test_docs.py` |  |
-| `package-lock.json` | `dependabot/npm_and_yarn/vite-8.3.5` | `dependabot/npm_and_yarn/vite-8.3.5/package-lock.json` |  |
-| `package.json` | `dependabot/npm_and_yarn/vite-8.3.5` | `dependabot/npm_and_yarn/vite-8.3.5/package.json` |  |
+| `package-lock.json` | `dependabot/npm_and_yarn/vite-8.3.5` | `dependabot/npm_and_yarn/vite-8.3.5/package-lock.json.txt` |  |
+| `package.json` | `dependabot/npm_and_yarn/vite-8.3.5` | `dependabot/npm_and_yarn/vite-8.3.5/package.json.txt` |  |
 | `evaluation/emergence_metrics.py` | `grok/eval-issue12-20260830` | `grok/eval-issue12-20260830/evaluation/emergence_metrics.py` |  |
 | `evaluation/outputs/emergence-metrics.json` | `grok/eval-issue12-20260830` | `grok/eval-issue12-20260830/evaluation/outputs/emergence-metrics.json` |  |
 | `evaluation/outputs/emergence-metrics.md` | `grok/eval-issue12-20260830` | `grok/eval-issue12-20260830/evaluation/outputs/emergence-metrics.md.txt` |  |

@@ -4,6 +4,8 @@ Fiction Forksの利用者に影響する変更を記録します。形式は [Ke
 
 ## [Unreleased]
 
+- build backendを脆弱性修正版`setuptools==84.1.0`へ上げた
+- 控え（`imported/archive-20261024`）の依存定義ファイルに`.txt`を付け、実行されない古い版がDependabotの警告に出ないようにした
 - 開発用ゲート`ai-ratchet-gate`の固定先をv0.1.1からv0.2.0（release wheel、SHA-256固定）へ上げた
 - ローカルadapterのrequestを`fiction_forks_local_run_request.v2` envelope（`ProvisionalRunRequest` + `execution`）へ置き換え、`worldline_id`を運ぶv1を並行サポートなしで撤去した
 - 承認済み世界線をcatalogだけに置くため、social configとfixtureのpathとSHA-256をtemplateへ必須追加し、`catalog_version`を2から3、両templateの`template_version`を2から3へ上げた。v2として確認済みのtemplate confirmationは無効になり、再確認が要る
