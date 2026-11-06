@@ -6,7 +6,7 @@ import sys
 import time
 import tomllib
 import unittest
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
@@ -225,7 +225,7 @@ class SimulationContractTests(unittest.TestCase):
 
     def test_home_path_detector_catches_json_escaped_windows_path(self) -> None:
         # 公開前検査が例示パスを個人パスと誤検出しないよう、実行時に組み立てる。
-        windows_path = "\\".join(["C:", "Users", "USER", "python.exe"])
+        windows_path = str(PureWindowsPath('C:\\', 'Users', 'USER', 'python.exe'))
         rendered = json.dumps({"command": [windows_path]})
         self.assertIsNotNone(HOME_PATH_PATTERN.search(rendered.replace("\\\\", "\\")))
 
